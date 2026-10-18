@@ -1,66 +1,109 @@
 package persistencia;
-import java.io.*;
-import java.time.*;
-import java.util.*;
-import java.util.stream.*;
-import modelo.personas.*;
-import modelo.deportes.*;
-import modelo.actividades.*;
-import modelo.competencias.*;
-import modelo.personal.*;
-import modelo.inventario.*;
-import modelo.comercio.*;
-import modelo.tipos.*;
-import logica.*;
-import excepciones.*;
-/** Archivo JSON versionado con una instantánea binaria Base64 del grafo de objetos. */
-public class PersistenciaJson implements IPersistenciaClub {
-    public void salvar(ClubDeportivo club,String ruta) {
-        Objects.requireNonNull(club);
-        java.nio.file.Path destino=java.nio.file.Path.of(ruta).toAbsolutePath();
-        try {
-            java.nio.file.Files.createDirectories(destino.getParent());
-            ByteArrayOutputStream bytes=new ByteArrayOutputStream();
-            try(ObjectOutputStream out=new ObjectOutputStream(bytes)) {
-                out.writeObject(club);
+
+import excepciones.ClubException;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.util.Base64;
+import logica.ClubDeportivo;
+
+/**
+ * Implementa el contrato de persistencia del modelo.
+ * Combina la serializacion de objetos vista en clase con una envoltura JSON.
+ * La serializacion conserva las referencias compartidas entre los objetos.
+ */
+public class PersistenciaJson implements IPersistenciaClub
+{
+    @Override
+    public void salvar(ClubDeportivo club, String ruta) throws ClubException
+    {
+        if (club == null)
+        {
+            throw new ClubException("No hay un club para guardar");
+        }
+        File archivo = new File(ruta);
+        File carpeta = archivo.getAbsoluteFile().getParentFile();
+        if (!carpeta.exists() && !carpeta.mkdirs())
+        {
+            throw new ClubException("No se pudo crear la carpeta de datos");
+        }
+        try
+        {
+            ByteArrayOutputStream memoria = new ByteArrayOutputStream();
+            try (ObjectOutputStream salida = new ObjectOutputStream(memoria))
+            {
+                salida.writeObject(club);
             }
-            String texto="{\n  \"formato\": \"CDS-1\",\n  \"datos\": \""+Base64.getEncoder().encodeToString(bytes.toByteArray())+"\"\n}\n";
-            java.nio.file.Path temp=java.nio.file.Files.createTempFile(destino.getParent(),"club-",".tmp");
-            try {
-                java.nio.file.Files.writeString(temp,texto,java.nio.charset.StandardCharsets.UTF_8);
-                try {
-                    java.nio.file.Files.move(temp,destino,java.nio.file.StandardCopyOption.ATOMIC_MOVE,java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            // Base64 permite representar los bytes del objeto como texto JSON.
+            String datos = Base64.getEncoder().encodeToString(memoria.toByteArray());
+            try (PrintWriter escritor = new PrintWriter(new OutputStreamWriter( new FileOutputStream(archivo), "UTF-8")))
+            {
+                escritor.println("{");
+                escritor.println("  \"formato\": \"CDS-1\",");
+                escritor.println("  \"datos\": \"" + datos + "\"");
+                escritor.println("}");
+                if (escritor.checkError())
+                {
+                    throw new IOException("No se pudo escribir el archivo completo");
                 }
-                catch(java.nio.file.AtomicMoveNotSupportedException e) {
-                    java.nio.file.Files.move(temp,destino,java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                }
-            }
-            finally {
-                java.nio.file.Files.deleteIfExists(temp);
             }
         }
-        catch(IOException e) {
-            throw new ClubException("No fue posible salvar: "+e.getMessage());
+        catch (IOException e)
+        {
+            throw new ClubException("No fue posible guardar el club", e);
         }
     }
-    public ClubDeportivo cargar(String ruta) {
-        try {
-            String texto=java.nio.file.Files.readString(java.nio.file.Path.of(ruta),java.nio.charset.StandardCharsets.UTF_8);
-            java.util.regex.Matcher m=java.util.regex.Pattern.compile("\\A\\s*\\{\\s*\"formato\"\\s*:\\s*\"CDS-1\"\\s*,\\s*\"datos\"\\s*:\\s*\"([A-Za-z0-9+/=]+)\"\\s*\\}\\s*\\z").matcher(texto);
-            if(!m.matches())throw new ClubException("Formato de persistencia inválido");
-            byte[] datos=Base64.getDecoder().decode(m.group(1));
-            try(ObjectInputStream in=new ObjectInputStream(new ByteArrayInputStream(datos))) {
-                in.setObjectInputFilter(info-> {
-                    if(info.depth()>100||info.references()>200000||info.arrayLength()>2000000)return ObjectInputFilter.Status.REJECTED;Class<?> c=info.serialClass();if(c==null)return ObjectInputFilter.Status.UNDECIDED;while(c.isArray())c=c.getComponentType();String n=c.getName();return c.isPrimitive()||n.startsWith("modelo.")||n.startsWith("logica.")||n.startsWith("java.lang.")||n.startsWith("java.util.")||n.startsWith("java.time.")?ObjectInputFilter.Status.ALLOWED:ObjectInputFilter.Status.REJECTED;
+    @Override
+    public ClubDeportivo cargar(String ruta) throws ClubException
+    {
+        try (BufferedReader lector = new BufferedReader(new InputStreamReader( new FileInputStream(ruta), "UTF-8")))
+        {
+            String apertura = lector.readLine();
+            String formato = lector.readLine();
+            String datos = lector.readLine();
+            String cierre = lector.readLine();
+            if (apertura == null || formato == null || datos == null || cierre == null || !apertura.trim().equals("{") || !formato.trim().equals("\"formato\": \"CDS-1\",") || !cierre.trim().equals("}") || lector.readLine() != null)
+            {
+                throw new ClubException("Formato de persistencia incorrecto");
+            }
+            datos = datos.trim();
+            String prefijo = "\"datos\": \"";
+            if (!datos.startsWith(prefijo) || !datos.endsWith("\""))
+            {
+                throw new ClubException("Falta el campo datos del archivo");
+            }
+            String contenido = datos.substring(prefijo.length(), datos.length() - 1);
+            byte[] bytes = Base64.getDecoder().decode(contenido);
+            try (ObjectInputStream entrada = new ObjectInputStream(new ByteArrayInputStream(bytes)))
+            {
+                Object objeto = entrada.readObject();
+                if (!(objeto instanceof ClubDeportivo))
+                {
+                    throw new ClubException("El archivo no contiene un club deportivo");
                 }
-                );
-                Object o=in.readObject();
-                if(!(o instanceof ClubDeportivo))throw new ClubException("Archivo no contiene un club");
-                return (ClubDeportivo)o;
+                return (ClubDeportivo) objeto;
             }
         }
-        catch(IOException|ClassNotFoundException|IllegalArgumentException e) {
-            throw new ClubException("No fue posible cargar: "+e.getMessage());
+        catch (IOException e)
+        {
+            throw new ClubException("No fue posible leer el archivo del club", e);
+        }
+        catch (ClassNotFoundException e)
+        {
+            throw new ClubException("No se encontro una clase guardada en el archivo", e);
+        }
+        catch (IllegalArgumentException e)
+        {
+            throw new ClubException("Los datos del archivo no son validos", e);
         }
     }
 }

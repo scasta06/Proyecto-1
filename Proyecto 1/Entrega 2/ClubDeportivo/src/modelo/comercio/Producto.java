@@ -1,42 +1,41 @@
 package modelo.comercio;
-import java.io.*;
-import java.time.*;
-import java.util.*;
-import java.util.stream.*;
-import modelo.personas.*;
-import modelo.deportes.*;
-import modelo.actividades.*;
-import modelo.competencias.*;
-import modelo.personal.*;
-import modelo.inventario.*;
-import modelo.comercio.*;
-import modelo.tipos.*;
-import logica.*;
-import excepciones.*;
-public abstract class Producto implements Serializable {
+
+import excepciones.ClubException;
+import java.io.Serializable;
+import modelo.tipos.Rubro;
+
+public abstract class Producto implements Serializable
+{
     private static final long serialVersionUID = 1L;
-    protected String codigo,nombre;
-    protected double precio;
-    protected Producto(String c,String n,double p) {
+    private String codigo;
+    private String nombre;
+    private double precio;
+    protected Producto(String c,String n,double p) throws ClubException
+    {
         codigo=textoRequerido(c);
         nombre=textoRequerido(n);
         precio=redondearDinero(p);
     }
     public abstract Rubro getRubro();
-    public String getCodigo() {
+    public String getCodigo()
+    {
         return codigo;
     }
-    public String getNombre() {
+    public String getNombre()
+    {
         return nombre;
     }
-    public double getPrecio() {
+    public double getPrecio()
+    {
         return precio;
     }
-    private static String textoRequerido(String valor) {
-        if(valor==null||valor.isBlank())throw new ClubException("Texto obligatorio");
+    private static String textoRequerido(String valor) throws ClubException
+    {
+        if(valor==null||valor.trim().isEmpty())throw new ClubException("Texto obligatorio");
         return valor.trim();
     }
-    private static double redondearDinero(double valor) {
+    private static double redondearDinero(double valor) throws ClubException
+    {
         if(!Double.isFinite(valor)||valor<0)throw new ClubException("Valor monetario inválido");
         return Math.round(valor*100.0)/100.0;
     }

@@ -26,15 +26,15 @@
 <path d="M350.0 335 h45 v20 h-45" fill="none" stroke="#244a78" marker-end="url(#arrow)"/>
 <text x="360.0" y="325" font-family="Arial" font-size="12" fill="#26384d">codificar Base64 en envoltura JSON CDS-1</text>
 <path d="M350.0 400 H850.0" fill="none" stroke="#244a78" marker-end="url(#arrow)"/>
-<text x="358.0" y="390" font-family="Arial" font-size="12" fill="#26384d">escribir temporal y reemplazar atómicamente</text>
+<text x="358.0" y="390" font-family="Arial" font-size="12" fill="#26384d">escribir con PrintWriter en UTF-8</text>
 <path d="M100.0 465 H350.0" fill="none" stroke="#244a78" marker-end="url(#arrow)"/>
 <text x="108.0" y="455" font-family="Arial" font-size="12" fill="#26384d">cargar(ruta)</text>
 <path d="M350.0 530 H850.0" fill="none" stroke="#244a78" marker-end="url(#arrow)"/>
-<text x="358.0" y="520" font-family="Arial" font-size="12" fill="#26384d">leer texto y validar formato</text>
+<text x="358.0" y="520" font-family="Arial" font-size="12" fill="#26384d">leer con BufferedReader y validar formato</text>
 <path d="M350.0 595 h45 v20 h-45" fill="none" stroke="#244a78" marker-end="url(#arrow)"/>
 <text x="360.0" y="585" font-family="Arial" font-size="12" fill="#26384d">decodificar Base64</text>
 <path d="M350.0 660 H1100.0" fill="none" stroke="#244a78" marker-end="url(#arrow)"/>
-<text x="358.0" y="650" font-family="Arial" font-size="12" fill="#26384d">filtro de clases, límites y readObject()</text>
+<text x="358.0" y="650" font-family="Arial" font-size="12" fill="#26384d">readObject()</text>
 <path d="M1100.0 725 H350.0" fill="none" stroke="#244a78" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
 <text x="358.0" y="715" font-family="Arial" font-size="12" fill="#26384d">ClubDeportivo con referencias compartidas</text>
 <path d="M350.0 790 H100.0" fill="none" stroke="#244a78" stroke-dasharray="5 4" marker-end="url(#arrow)"/>

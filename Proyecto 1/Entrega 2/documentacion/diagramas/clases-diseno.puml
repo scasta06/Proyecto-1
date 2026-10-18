@@ -1,5 +1,7 @@
 @startuml
 title Club Deportivo Séneca - diseño detallado
+class Exception <<Java>>
+Exception <|-- ClubException
 skinparam classAttributeIconSize 0
 hide empty members
 left to right direction
@@ -7,7 +9,7 @@ package "consola" {
 class ConsolaAdministrador {
   - Administrador admin
   + ConsolaAdministrador(ClubDeportivo c,Administrador p)
-  + void mostrarMenu()
+  + void mostrarMenu() throws ClubException
 }
 abstract class ConsolaBase {
   # ClubDeportivo club
@@ -16,7 +18,7 @@ abstract class ConsolaBase {
   # String pedirCadena(String msg)
   # int pedirEntero(String msg)
   # LocalDate pedirFecha(String msg)
-  + abstract void mostrarMenu()
+  + abstract void mostrarMenu() throws ClubException
 }
 class ConsolaEntrenador {
   - Entrenador entrenador
@@ -31,8 +33,8 @@ class ConsolaFisioterapeuta {
 class ConsolaPrincipal {
   - ClubDeportivo club
   + static void main(String[] args)
-  - void iniciarSesion()
-  - void abrirConsola(Persona p)
+  - void iniciarSesion() throws ClubException
+  - void abrirConsola(Persona p) throws ClubException
 }
 class ConsolaSocio {
   - Socio socio
@@ -42,39 +44,35 @@ class ConsolaSocio {
 }
 package "excepciones" {
 class ClubException {
-  - static final long serialVersionUID
   + ClubException(String msg)
+  + ClubException(String mensaje, Throwable causa)
 }
 class InscripcionException {
-  - static final long serialVersionUID
   + InscripcionException(String msg)
 }
 class InventarioException {
-  - static final long serialVersionUID
   + InventarioException(String msg)
 }
 class ParticipacionException {
-  - static final long serialVersionUID
   + ParticipacionException(String msg)
 }
 class ReservaException {
-  - static final long serialVersionUID
   + ReservaException(String msg)
 }
 class TurnoException {
-  - static final long serialVersionUID
   + TurnoException(String msg)
 }
 class VentaException {
-  - static final long serialVersionUID
   + VentaException(String msg)
 }
 }
 package "logica" {
 class ClubDeportivo {
-  - static final long serialVersionUID
-  - String nombre,nit,direccion
-  - LocalTime horaApertura,horaCierre
+  - String nombre
+  - String nit
+  - String direccion
+  - LocalTime horaApertura
+  - LocalTime horaCierre
   - GestorUsuarios usuarios
   - GestorInstalaciones instalaciones
   - GestorDeportivo deportivo
@@ -82,8 +80,8 @@ class ClubDeportivo {
   - GestorComercio comercio
   - GestorPersonal personal
   - GestorReportes reportes
-  + ClubDeportivo(String n,String nit,String dir,LocalTime ini,LocalTime fin)
-  + Persona iniciarSesion(String login,String clave)
+  + ClubDeportivo(String n,String nit,String dir,LocalTime ini,LocalTime fin) throws ClubException
+  + Persona iniciarSesion(String login,String clave) throws ClubException
   + GestorUsuarios getGestorUsuarios()
   + GestorInstalaciones getGestorInstalaciones()
   + GestorDeportivo getGestorDeportivo()
@@ -92,10 +90,9 @@ class ClubDeportivo {
   + GestorPersonal getGestorPersonal()
   + GestorReportes getGestorReportes()
   + String getNombre()
-  - static void validar(boolean condicion,String mensaje)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
 }
 class GestorComercio {
-  - static final long serialVersionUID
   - Tienda tienda
   - Cafeteria cafeteria
   - Inventario inventario
@@ -109,38 +106,36 @@ class GestorComercio {
   + Tienda getTienda()
   + Cafeteria getCafeteria()
   + List<Producto> getProductos()
-  + void registrarProducto(Producto p)
-  + Venta iniciarVenta(PuntoVenta pv,Persona comprador)
-  + void agregarProducto(Venta v,Producto p,int cant)
+  + void registrarProducto(Producto p) throws ClubException
+  + Venta iniciarVenta(PuntoVenta pv,Persona comprador) throws ClubException
+  + void agregarProducto(Venta v,Producto p,int cant) throws ClubException
   + List<Ingrediente> consultarIngredientes(Snack s)
-  + synchronized Venta finalizarVenta(Venta v,double propina,int puntos)
+  + synchronized Venta finalizarVenta(Venta v,double propina,int puntos) throws ClubException
   - boolean alergenosInformados(Venta v)
-  + Mensualidad registrarMensualidad(Socio s,YearMonth periodo,ConceptoMensualidad c,double valor)
+  + Mensualidad registrarMensualidad(Socio s,YearMonth periodo,ConceptoMensualidad c,double valor) throws ClubException
   + List<Snack> buscarSnacksConAlergeno(Alergeno a)
-  + List<Venta> getVentas(LocalDate ini,LocalDate fin)
-  + List<Mensualidad> getMensualidades(LocalDate ini,LocalDate fin)
+  + List<Venta> getVentas(LocalDate ini,LocalDate fin) throws ClubException
+  + List<Mensualidad> getMensualidades(LocalDate ini,LocalDate fin) throws ClubException
   + Inventario getInventario()
-  - static void validar(boolean condicion,String mensaje)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
   - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class GestorCompetencias {
-  - static final long serialVersionUID
   - List<Competencia> competencias
   - GestorInstalaciones instalaciones
   + GestorCompetencias(GestorInstalaciones i)
-  + void registrarCompetencia(Competencia c)
+  + void registrarCompetencia(Competencia c) throws ClubException
   + List<Competencia> getCompetencias()
-  - void abierta(Competencia c)
-  + InscripcionCompetencia inscribirEquipo(Competencia c,Equipo e,List<Socio> nomina)
-  + InscripcionCompetencia inscribirIndividual(Competencia c,Socio s)
-  + PartidoOficial programarPartido(Competencia c,InscripcionCompetencia i,String rival,LocalDate f,LocalTime ini,boolean local)
-  + void registrarResultado(PartidoOficial p,int propio,int rival)
+  - void abierta(Competencia c) throws ClubException
+  + InscripcionCompetencia inscribirEquipo(Competencia c,Equipo e,List<Socio> nomina) throws ClubException
+  + InscripcionCompetencia inscribirIndividual(Competencia c,Socio s) throws ClubException
+  + PartidoOficial programarPartido(Competencia c,InscripcionCompetencia i,String rival,LocalDate f,LocalTime ini,boolean local) throws ClubException
+  + void registrarResultado(PartidoOficial p,int propio,int rival) throws ClubException
   + List<InscripcionCompetencia> consultarTabla(Competencia c)
-  - static void validar(boolean condicion,String mensaje)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
   - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class GestorDeportivo {
-  - static final long serialVersionUID
   - List<Deporte> deportes
   - List<Equipo> equipos
   - List<Academia> academias
@@ -149,143 +144,137 @@ class GestorDeportivo {
   - Map<Deporte,Ranking> rankings
   - GestorInstalaciones instalaciones
   + GestorDeportivo(GestorInstalaciones i)
-  + void registrarDeporte(Deporte d)
-  + void crearEquipo(Equipo e)
-  + void registrarAcademia(Academia a)
+  + void registrarDeporte(Deporte d) throws ClubException
+  + void crearEquipo(Equipo e) throws ClubException
+  + void registrarAcademia(Academia a) throws ClubException
   + List<Deporte> getDeportes()
   + List<Equipo> getEquipos()
   + List<Academia> getAcademias()
   + List<SesionEntrenamiento> getSesiones()
   + List<PartidoPractica> getPartidosPractica()
-  + InscripcionEquipo inscribirEnEquipo(Socio s,Equipo e,String pos,int numero)
+  + InscripcionEquipo inscribirEnEquipo(Socio s,Equipo e,String pos,int numero) throws ClubException
   - Equipo buscarEquipoDe(Socio s,Deporte d)
-  + InscripcionAcademia inscribirEnAcademia(Socio s,Academia a)
-  + SesionEntrenamiento programarEntrenamiento(Entrenador en,LocalDate f,LocalTime ini,int dur,Instalacion i,List<Socio> conv)
-  + void registrarAsistencia(Entrenador en,SesionEntrenamiento se,Socio s,EstadoAsistencia e,Integer nota,String com)
-  + PartidoPractica programarPartidoPractica(Socio sol,Persona rival,Deporte d,LocalDate f,LocalTime ini)
-  + Estadistica registrarEstadistica(Entrenador en,Partido p,Socio j,Map<String,Integer> v)
-  + List<EntradaRanking> consultarRanking(Deporte d)
-  - static void validar(boolean condicion,String mensaje)
+  + InscripcionAcademia inscribirEnAcademia(Socio s,Academia a) throws ClubException
+  + SesionEntrenamiento programarEntrenamiento(Entrenador en,LocalDate f,LocalTime ini,int dur,Instalacion i,List<Socio> conv) throws ClubException
+  + void registrarAsistencia(Entrenador en,SesionEntrenamiento se,Socio s,EstadoAsistencia e,Integer nota,String com) throws ClubException
+  + PartidoPractica programarPartidoPractica(Socio sol,Persona rival,Deporte d,LocalDate f,LocalTime ini) throws ClubException
+  + Estadistica registrarEstadistica(Entrenador en,Partido p,Socio j,Map<String,Integer> v) throws ClubException
+  + List<EntradaRanking> consultarRanking(Deporte d) throws ClubException
+  - static void validar(boolean condicion,String mensaje) throws ClubException
   - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class GestorInstalaciones {
-  - static final long serialVersionUID
   - List<Instalacion> instalaciones
   - List<Reserva> reservas
-  + void registrarInstalacion(Instalacion i)
+  + void registrarInstalacion(Instalacion i) throws ClubException
   + List<Instalacion> getInstalaciones()
   + List<Reserva> getReservas()
-  + Instalacion buscarDisponible(Deporte d,LocalDate f,LocalTime ini,int dur,int n)
-  + Reserva reservar(Socio s,Deporte d,LocalDate f,LocalTime ini,int dur,int n,ModalidadReserva m)
-  + void cancelarReserva(Reserva r)
+  + Instalacion buscarDisponible(Deporte d,LocalDate f,LocalTime ini,int dur,int n) throws ClubException
+  + Reserva reservar(Socio s,Deporte d,LocalDate f,LocalTime ini,int dur,int n,ModalidadReserva m) throws ClubException
+  + void cancelarReserva(Reserva r) throws ClubException
   + Map<Instalacion,List<LocalTime>> consultarDisponibilidad(Deporte d,LocalDate f)
-  - static void validar(boolean condicion,String mensaje)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
   - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class GestorPersonal {
-  - static final long serialVersionUID
   - List<Turno> turnos
   - List<SolicitudCambioTurno> solicitudes
   + static final int MIN_ENTRENADORES
-  - LocalTime horaApertura,horaCierre
+  - LocalTime horaApertura
+  - LocalTime horaCierre
   + GestorPersonal(LocalTime ini,LocalTime fin)
-  + void asignarTurno(Turno t)
-  + SolicitudCambioTurno solicitarCambio(Empleado e,Turno actual,Turno propuesto,String motivo)
-  + void aprobarCambio(SolicitudCambioTurno s,Administrador a)
-  + void rechazarCambio(SolicitudCambioTurno s,Administrador a,String obs)
+  + void asignarTurno(Turno t) throws ClubException
+  + SolicitudCambioTurno solicitarCambio(Empleado e,Turno actual,Turno propuesto,String motivo) throws ClubException
+  + void aprobarCambio(SolicitudCambioTurno s,Administrador a) throws ClubException
+  + void rechazarCambio(SolicitudCambioTurno s,Administrador a,String obs) throws ClubException
   + boolean coberturaMinimaCumplida(List<Turno> lista,LocalDate f)
   - int contarDisponibles(List<Turno> lista,LocalDate f,LocalTime h,Class<?> tipo)
   + List<Turno> getTurnos()
   + List<SolicitudCambioTurno> getSolicitudes()
-  - static void validar(boolean condicion,String mensaje)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
   - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class GestorReportes {
-  - static final long serialVersionUID
   - GestorComercio comercio
   + GestorReportes(GestorComercio c)
-  + ReporteVentas generarReporteVentas(LocalDate ini,LocalDate fin)
+  + ReporteVentas generarReporteVentas(LocalDate ini,LocalDate fin) throws ClubException
 }
 class GestorUsuarios {
-  - static final long serialVersionUID
   - Map<String,Persona> personas
-  + Persona autenticar(String login,String clave)
-  - void registrar(Persona p)
-  + void registrarSocio(Socio s)
-  + void registrarEmpleado(Empleado e)
-  + Socio buscarSocio(String d)
+  + Persona autenticar(String login,String clave) throws ClubException
+  - void registrar(Persona p) throws ClubException
+  + void registrarSocio(Socio s) throws ClubException
+  + void registrarEmpleado(Empleado e) throws ClubException
+  + Socio buscarSocio(String d) throws ClubException
   + List<Entrenador> getEntrenadores()
   + List<Fisioterapeuta> getFisioterapeutas()
-  + Sancion sancionar(Socio s,String motivo,TipoSancion t,LocalDate ini,LocalDate fin,Deporte d)
+  + Sancion sancionar(Socio s,String motivo,TipoSancion t,LocalDate ini,LocalDate fin,Deporte d) throws ClubException
   + List<Persona> getPersonas()
-  - static void validar(boolean condicion,String mensaje)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
   - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class ReporteVentas {
-  - static final long serialVersionUID
-  - LocalDate fechaInicio,fechaFin
+  - LocalDate fechaInicio
+  - LocalDate fechaFin
   - Map<Rubro,Double> totalesPorRubro
   - Map<YearMonth,Map<Rubro,Double>> totalesPorMes
   - int transacciones
-  + ReporteVentas(LocalDate ini,LocalDate fin)
+  + ReporteVentas(LocalDate ini,LocalDate fin) throws ClubException
   + void agregar(Rubro r,YearMonth mes,double valor)
-  + double getTotal()
+  + double getTotal() throws ClubException
   + boolean estaVacio()
   + Map<Rubro,Double> getTotalesPorRubro()
   + Map<YearMonth,Map<Rubro,Double>> getTotalesPorMes()
   + int getTransacciones()
-  - static void validar(boolean condicion,String mensaje)
-  - static double redondearDinero(double valor)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
+  - static double redondearDinero(double valor) throws ClubException
 }
 }
 package "modelo.actividades" {
 abstract class Estadistica {
-  - static final long serialVersionUID
   # LocalDate fechaRegistro
-  # Socio jugador
-  # Partido partido
-  # Map<String,Integer> valores
-  # Estadistica(Socio j,Partido p,Map<String,Integer> v)
+  - Socio jugador
+  - Partido partido
+  - Map<String,Integer> valores
+  # Estadistica(Socio j,Partido p,Map<String,Integer> v) throws ClubException
   + Map<String,Integer> getValores()
   + abstract int calcularPuntosRanking()
   + Socio getJugador()
   + Partido getPartido()
   # int valor(String k)
-  - static void validar(boolean condicion,String mensaje)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
 }
 class EstadisticaBaloncesto {
-  - static final long serialVersionUID
-  - int puntos,rebotes
-  + EstadisticaBaloncesto(Socio j,Partido p,Map<String,Integer> v)
+  - int puntos
+  - int rebotes
+  + EstadisticaBaloncesto(Socio j,Partido p,Map<String,Integer> v) throws ClubException
   + int calcularPuntosRanking()
 }
 class EstadisticaFutbol {
-  - static final long serialVersionUID
-  - int goles,asistencias
-  + EstadisticaFutbol(Socio j,Partido p,Map<String,Integer> v)
+  - int goles
+  - int asistencias
+  + EstadisticaFutbol(Socio j,Partido p,Map<String,Integer> v) throws ClubException
   + int calcularPuntosRanking()
 }
 class EstadisticaIndividual {
-  - static final long serialVersionUID
   - int puntosAnotados
   - boolean gano
-  + EstadisticaIndividual(Socio j,Partido p,Map<String,Integer> v)
+  + EstadisticaIndividual(Socio j,Partido p,Map<String,Integer> v) throws ClubException
   + int calcularPuntosRanking()
 }
 class EstadisticaVoleibol {
-  - static final long serialVersionUID
-  - int aces,bloqueos
-  + EstadisticaVoleibol(Socio j,Partido p,Map<String,Integer> v)
+  - int aces
+  - int bloqueos
+  + EstadisticaVoleibol(Socio j,Partido p,Map<String,Integer> v) throws ClubException
   + int calcularPuntosRanking()
 }
 abstract class Evento {
-  - static final long serialVersionUID
-  # String id
-  # LocalDate fecha
-  # LocalTime horaInicio
-  # int duracionMinutos
-  # Instalacion instalacion
-  # Evento(String id,LocalDate f,LocalTime h,int dur,Instalacion i)
+  - String id
+  - LocalDate fecha
+  - LocalTime horaInicio
+  - int duracionMinutos
+  - Instalacion instalacion
+  # Evento(String id,LocalDate f,LocalTime h,int dur,Instalacion i) throws ClubException
   + LocalTime getHoraFin()
   + boolean seTraslapaCon(LocalDate f,LocalTime ini,LocalTime fin)
   + abstract boolean bloqueaInstalacion()
@@ -293,22 +282,23 @@ abstract class Evento {
   + LocalDate getFecha()
   + LocalTime getHoraInicio()
   + Instalacion getInstalacion()
-  - static void validar(boolean condicion,String mensaje)
-  - static String textoRequerido(String valor)
-  - static int enteroPositivo(int valor)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
+  - static String textoRequerido(String valor) throws ClubException
+  - static int enteroPositivo(int valor) throws ClubException
 }
 class Instalacion {
-  - static final long serialVersionUID
-  - String codigo,nombre
+  - String codigo
+  - String nombre
   - int capacidadMaxima
-  - LocalTime horaApertura,horaCierre
+  - LocalTime horaApertura
+  - LocalTime horaCierre
   - boolean enMantenimiento
   - Deporte deporte
   - List<Evento> ocupaciones
-  + Instalacion(String c,String n,int capacidad,LocalTime abre,LocalTime cierra,Deporte d)
+  + Instalacion(String c,String n,int capacidad,LocalTime abre,LocalTime cierra,Deporte d) throws ClubException
   + boolean estaDisponible(LocalDate f,LocalTime ini,LocalTime fin)
   + boolean admiteCantidad(int n)
-  + void agregarOcupacion(Evento e)
+  + void agregarOcupacion(Evento e) throws ClubException
   + void liberar(Evento e)
   + Deporte getDeporte()
   + String getCodigo()
@@ -318,23 +308,23 @@ class Instalacion {
   + LocalTime getHoraApertura()
   + LocalTime getHoraCierre()
   + List<Evento> getOcupaciones()
-  - static void validar(boolean condicion,String mensaje)
-  - static String textoRequerido(String valor)
-  - static int enteroPositivo(int valor)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
+  - static String textoRequerido(String valor) throws ClubException
+  - static int enteroPositivo(int valor) throws ClubException
   - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 abstract class Partido {
-  - static final long serialVersionUID
-  # EstadoPartido estado
-  # int marcadorPropio,marcadorRival
+  - EstadoPartido estado
+  - int marcadorPropio
+  - int marcadorRival
   # List<Socio> participantes
   # List<Estadistica> estadisticas
-  # Partido(String id,LocalDate f,LocalTime h,int dur,Instalacion i)
-  + void agregarParticipante(Socio s)
+  # Partido(String id,LocalDate f,LocalTime h,int dur,Instalacion i) throws ClubException
+  + void agregarParticipante(Socio s) throws ClubException
   + boolean participo(Socio s)
-  + void registrarResultado(int propio,int rival)
-  + Resultado getResultado()
-  + void agregarEstadistica(Estadistica e)
+  + void registrarResultado(int propio,int rival) throws ClubException
+  + Resultado getResultado() throws ClubException
+  + void agregarEstadistica(Estadistica e) throws ClubException
   + abstract Deporte getDeporte()
   + boolean bloqueaInstalacion()
   + EstadoPartido getEstado()
@@ -342,61 +332,58 @@ abstract class Partido {
   + List<Estadistica> getEstadisticas()
   + int getMarcadorPropio()
   + int getMarcadorRival()
-  + void cancelar()
-  - static void validar(boolean condicion,String mensaje)
+  + void cancelar() throws ClubException
+  - static void validar(boolean condicion,String mensaje) throws ClubException
   - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class PartidoOficial {
-  - static final long serialVersionUID
-  - String rival,fase
+  - String rival
+  - String fase
   - boolean esLocal
   - Competencia competencia
   - InscripcionCompetencia inscripcion
-  + PartidoOficial(String id,Competencia c,InscripcionCompetencia i,String rival,LocalDate f,LocalTime h,boolean local,Instalacion inst)
-  + void agregarParticipante(Socio s)
-  + int getPuntosObtenidos()
+  + PartidoOficial(String id,Competencia c,InscripcionCompetencia i,String rival,LocalDate f,LocalTime h,boolean local,Instalacion inst) throws ClubException
+  + void agregarParticipante(Socio s) throws ClubException
+  + int getPuntosObtenidos() throws ClubException
   + Deporte getDeporte()
   + InscripcionCompetencia getInscripcion()
   + Competencia getCompetencia()
   + String getFase()
-  + void setFase(String f)
+  + void setFase(String f) throws ClubException
   + String getRival()
-  - static void validar(boolean condicion,String mensaje)
-  - static String textoRequerido(String valor)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
+  - static String textoRequerido(String valor) throws ClubException
 }
 class PartidoPractica {
-  - static final long serialVersionUID
   - boolean nivelesVerificados
   - Persona rival
   - Deporte deporte
-  + PartidoPractica(String id,Socio sol,Persona rival,Deporte d,LocalDate f,LocalTime h,Instalacion i)
+  + PartidoPractica(String id,Socio sol,Persona rival,Deporte d,LocalDate f,LocalTime h,Instalacion i) throws ClubException
   + boolean incluyeEntrenador()
   + Deporte getDeporte()
   + boolean isNivelesVerificados()
-  - static void validar(boolean condicion,String mensaje)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
 }
 class RegistroAsistencia {
-  - static final long serialVersionUID
   - Socio jugador
   - EstadoAsistencia estado
   - Integer notaDesempeno
   - String comentario
-  + RegistroAsistencia(Socio s,EstadoAsistencia e,Integer nota,String com)
+  + RegistroAsistencia(Socio s,EstadoAsistencia e,Integer nota,String com) throws ClubException
   + boolean tieneNota()
   + Socio getJugador()
   + EstadoAsistencia getEstado()
   + Integer getNotaDesempeno()
   + String getComentario()
-  - static void validar(boolean condicion,String mensaje)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
 }
 class Reserva {
-  - static final long serialVersionUID
   - Socio socio
   - int cantidadJugadores
   - ModalidadReserva modalidad
   - EstadoReserva estado
-  + Reserva(String id,Socio s,LocalDate f,LocalTime h,int dur,Instalacion i,int n,ModalidadReserva m)
-  + void cancelar()
+  + Reserva(String id,Socio s,LocalDate f,LocalTime h,int dur,Instalacion i,int n,ModalidadReserva m) throws ClubException
+  + void cancelar() throws ClubException
   + boolean bloqueaInstalacion()
   + Socio getSocio()
   + EstadoReserva getEstado()
@@ -404,176 +391,173 @@ class Reserva {
   + ModalidadReserva getModalidad()
 }
 class SesionEntrenamiento {
-  - static final long serialVersionUID
   - String objetivo
   - boolean cancelada
   - Entrenador entrenador
   - List<Socio> convocados
   - Map<Socio,RegistroAsistencia> registros
-  + SesionEntrenamiento(String id,LocalDate f,LocalTime h,int dur,Instalacion i,Entrenador en,List<Socio> socios)
+  + SesionEntrenamiento(String id,LocalDate f,LocalTime h,int dur,Instalacion i,Entrenador en,List<Socio> socios) throws ClubException
   + boolean estaConvocado(Socio s)
-  + RegistroAsistencia registrarAsistencia(Socio s,EstadoAsistencia e,Integer nota,String com)
+  + RegistroAsistencia registrarAsistencia(Socio s,EstadoAsistencia e,Integer nota,String com) throws ClubException
   + boolean bloqueaInstalacion()
   + Entrenador getEntrenador()
   + List<Socio> getConvocados()
   + List<RegistroAsistencia> getRegistros()
   + void cancelar()
-  + void setObjetivo(String o)
-  - static void validar(boolean condicion,String mensaje)
-  - static String textoRequerido(String valor)
+  + void setObjetivo(String o) throws ClubException
+  - static void validar(boolean condicion,String mensaje) throws ClubException
+  - static String textoRequerido(String valor) throws ClubException
   - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 }
 package "modelo.comercio" {
 class Alergeno {
-  - static final long serialVersionUID
-  - String nombre,descripcion
-  + Alergeno(String n,String d)
+  - String nombre
+  - String descripcion
+  + Alergeno(String n,String d) throws ClubException
   + String getNombre()
   + String getDescripcion()
-  - static String textoRequerido(String valor)
+  - static String textoRequerido(String valor) throws ClubException
 }
 class ArticuloDeportivo {
-  - static final long serialVersionUID
-  - String marca,talla
-  + ArticuloDeportivo(String c,String n,double p,String marca,String talla)
+  - String marca
+  - String talla
+  + ArticuloDeportivo(String c,String n,double p,String marca,String talla) throws ClubException
   + Rubro getRubro()
   + String getMarca()
   + String getTalla()
 }
 class Cafeteria {
-  - static final long serialVersionUID
   + static final double TASA_IMPOCONSUMO
-  + Cafeteria(Ubicacion u)
+  + Cafeteria(Ubicacion u) throws ClubException
   + boolean admiteProducto(Producto p)
   + double calcularDescuento(Persona c,double s)
-  + double calcularImpuesto(double b)
+  + double calcularImpuesto(double b) throws ClubException
   + boolean admitePropina()
-  + double sugerirPropina(double s)
-  - static void validar(boolean condicion,String mensaje)
-  - static double redondearDinero(double valor)
+  + double sugerirPropina(double s) throws ClubException
+  - static void validar(boolean condicion,String mensaje) throws ClubException
+  - static double redondearDinero(double valor) throws ClubException
 }
 class CuentaFidelizacion {
-  - static final long serialVersionUID
   - int puntos
   + static final int PESOS_POR_PUNTO
-  + int acumular(double pago)
+  + int acumular(double pago) throws ClubException
   + boolean puedeRedimir(int p)
-  + double redimir(int p)
+  + double redimir(int p) throws ClubException
   + int getPuntos()
-  - static double redondearDinero(double valor)
+  - static double redondearDinero(double valor) throws ClubException
 }
 class Ingrediente {
-  - static final long serialVersionUID
   - String nombre
   - List<Alergeno> alergenos
-  + Ingrediente(String n,List<Alergeno> a)
+  + Ingrediente(String n,List<Alergeno> a) throws ClubException
   + String getNombre()
   + List<Alergeno> getAlergenos()
-  - static String textoRequerido(String valor)
+  - static String textoRequerido(String valor) throws ClubException
   - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class ItemVenta {
-  - static final long serialVersionUID
   - Producto producto
   - int cantidad
   - double precioUnitario
-  + ItemVenta(Producto p,int n)
-  + double getSubtotal()
+  + ItemVenta(Producto p,int n) throws ClubException
+  + double getSubtotal() throws ClubException
   + Producto getProducto()
   + int getCantidad()
-  - static int enteroPositivo(int valor)
-  - static double redondearDinero(double valor)
+  - static int enteroPositivo(int valor) throws ClubException
+  - static double redondearDinero(double valor) throws ClubException
 }
 class Mensualidad {
-  - static final long serialVersionUID
   - Socio socio
   - Academia academia
   - YearMonth periodo
   - ConceptoMensualidad concepto
   - double valor
   - LocalDate fechaPago
-  + Mensualidad(Socio s,YearMonth p,ConceptoMensualidad c,double v)
+  + Mensualidad(Socio s,YearMonth p,ConceptoMensualidad c,double v) throws ClubException
   + Rubro getRubro()
   + Socio getSocio()
   + YearMonth getPeriodo()
   + ConceptoMensualidad getConcepto()
   + double getValor()
   + LocalDate getFechaPago()
-  - static double redondearDinero(double valor)
+  - static double redondearDinero(double valor) throws ClubException
 }
 abstract class Producto {
-  - static final long serialVersionUID
-  # String codigo,nombre
-  # double precio
-  # Producto(String c,String n,double p)
+  - String codigo
+  - String nombre
+  - double precio
+  # Producto(String c,String n,double p) throws ClubException
   + abstract Rubro getRubro()
   + String getCodigo()
   + String getNombre()
   + double getPrecio()
-  - static String textoRequerido(String valor)
-  - static double redondearDinero(double valor)
+  - static String textoRequerido(String valor) throws ClubException
+  - static double redondearDinero(double valor) throws ClubException
 }
 abstract class PuntoVenta {
-  - static final long serialVersionUID
-  # String nombre
-  # Ubicacion ubicacion
+  - String nombre
+  - Ubicacion ubicacion
   # List<Venta> ventas
   # PuntoVenta(String n,Ubicacion u)
   + abstract boolean admiteProducto(Producto p)
-  + abstract double calcularDescuento(Persona c,double subtotal)
-  + abstract double calcularImpuesto(double base)
+  + abstract double calcularDescuento(Persona c,double subtotal) throws ClubException
+  + abstract double calcularImpuesto(double base) throws ClubException
   + abstract boolean admitePropina()
-  + void registrarVenta(Venta v)
+  + void registrarVenta(Venta v) throws ClubException
   + Ubicacion getUbicacion()
   + List<Venta> getVentas()
   + String getNombre()
-  - static void validar(boolean condicion,String mensaje)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
   - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class Snack {
-  - static final long serialVersionUID
   - int calorias
   - List<Ingrediente> ingredientes
-  + Snack(String c,String n,double p,int cal,List<Ingrediente> ing)
+  + Snack(String c,String n,double p,int cal,List<Ingrediente> ing) throws ClubException
   + Rubro getRubro()
   + List<Ingrediente> getIngredientes()
   + List<Alergeno> getAlergenos()
   + boolean contieneAlergeno(Alergeno a)
-  - static void validar(boolean condicion,String mensaje)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
   - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class Tienda {
-  - static final long serialVersionUID
   + static final double TASA_IVA
-  + Tienda(Ubicacion u)
+  + Tienda(Ubicacion u) throws ClubException
   + boolean admiteProducto(Producto p)
-  + double calcularDescuento(Persona c,double s)
-  + double calcularImpuesto(double b)
+  + double calcularDescuento(Persona c,double s) throws ClubException
+  + double calcularImpuesto(double b) throws ClubException
   + boolean admitePropina()
-  - static void validar(boolean condicion,String mensaje)
-  - static double redondearDinero(double valor)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
+  - static double redondearDinero(double valor) throws ClubException
 }
 class Venta {
-  - static final long serialVersionUID
   - String numero
   - LocalDateTime fechaHora
-  - double subtotal,descuento,impuesto,propina,valorRedimido,totalPagado
-  - int puntosRedimidos,puntosGanados
-  - boolean alergenosInformados,cerrada
+  - double subtotal
+  - double descuento
+  - double impuesto
+  - double propina
+  - double valorRedimido
+  - double totalPagado
+  - int puntosRedimidos
+  - int puntosGanados
+  - boolean alergenosInformados
+  - boolean cerrada
   - Persona comprador
   - PuntoVenta puntoVenta
   - List<ItemVenta> items
   + Venta(String n,Persona c,PuntoVenta pv)
-  - void abierta()
-  + void agregarItem(Producto p,int cantidad)
+  - void abierta() throws ClubException
+  + void agregarItem(Producto p,int cantidad) throws ClubException
   + boolean requiereInfoAlergenos()
-  + void marcarAlergenosInformados()
-  + void calcularTotales(PuntoVenta pv)
-  + void aplicarPropina(double v)
-  + void redimirPuntos(int p,double valor)
+  + void marcarAlergenosInformados() throws ClubException
+  + void calcularTotales(PuntoVenta pv) throws ClubException
+  + void aplicarPropina(double v) throws ClubException
+  + void redimirPuntos(int p,double valor) throws ClubException
   + double getBaseFidelizacion()
-  + void cerrar()
+  + void cerrar() throws ClubException
   + boolean isAlergenosInformados()
   + boolean isCerrada()
   + Persona getComprador()
@@ -588,27 +572,30 @@ class Venta {
   + int getPuntosGanados()
   + void setPuntosGanados(int n)
   + String getNumero()
-  - static void validar(boolean condicion,String mensaje)
-  - static double redondearDinero(double valor)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
+  - static double redondearDinero(double valor) throws ClubException
   - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 }
 package "modelo.competencias" {
 class Competencia {
-  - static final long serialVersionUID
-  - String codigo,nombre,organizador
+  - String codigo
+  - String nombre
+  - String organizador
   - Categoria categoria
   - FormatoCompetencia formato
   - EstadoCompetencia estado
-  - LocalDate fechaInicio,fechaFin,cierreInscripciones
+  - LocalDate fechaInicio
+  - LocalDate fechaFin
+  - LocalDate cierreInscripciones
   - int puntosVictoria
   - Deporte deporte
   - List<InscripcionCompetencia> inscripciones
   - List<PartidoOficial> partidos
-  + Competencia(String cod,String nom,String org,Deporte d,Categoria cat,FormatoCompetencia formato,LocalDate ini,LocalDate fin,LocalDate cierre)
+  + Competencia(String cod,String nom,String org,Deporte d,Categoria cat,FormatoCompetencia formato,LocalDate ini,LocalDate fin,LocalDate cierre) throws ClubException
   + boolean inscripcionesAbiertas(LocalDate f)
   + int puntosPor(Resultado r)
-  + void agregarInscripcion(InscripcionCompetencia i)
+  + void agregarInscripcion(InscripcionCompetencia i) throws ClubException
   + void agregarPartido(PartidoOficial p)
   + List<InscripcionCompetencia> getTablaPosiciones()
   + Deporte getDeporte()
@@ -620,28 +607,27 @@ class Competencia {
   + List<PartidoOficial> getPartidos()
   + EstadoCompetencia getEstado()
   + String getCodigo()
-  + void finalizar()
-  - static void validar(boolean condicion,String mensaje)
-  - static String textoRequerido(String valor)
+  + void finalizar() throws ClubException
+  - static void validar(boolean condicion,String mensaje) throws ClubException
+  - static String textoRequerido(String valor) throws ClubException
   - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class EntradaRanking {
-  - static final long serialVersionUID
   - Socio jugador
   - int partidosJugados,puntosRanking
   - Map<String,Integer> acumulados
   + EntradaRanking(Socio s)
-  + void acumular(Estadistica e)
+  + void acumular(Estadistica e) throws ClubException
   + Socio getJugador()
   + int getPartidosJugados()
   + int getPuntosRanking()
   + Map<String,Integer> getAcumulados()
-  - static void validar(boolean condicion,String mensaje)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
 }
 class InscripcionCompetencia {
-  - static final long serialVersionUID
   - LocalDate fechaInscripcion
-  - int puntosAcumulados,partidosJugados
+  - int puntosAcumulados
+  - int partidosJugados
   - boolean eliminada
   - Competencia competencia
   - Equipo equipo
@@ -661,85 +647,90 @@ class InscripcionCompetencia {
   - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class Ranking {
-  - static final long serialVersionUID
   - Deporte deporte
   - LocalDate ultimaActualizacion
   - Map<Socio,EntradaRanking> entradas
   - Set<Estadistica> procesadas
   + Ranking(Deporte d)
-  + void actualizar(Estadistica e)
+  + void actualizar(Estadistica e) throws ClubException
   + EntradaRanking getEntrada(Socio s)
   + List<EntradaRanking> getPosiciones()
-  - static void validar(boolean condicion,String mensaje)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
 }
 }
 package "modelo.deportes" {
 class Academia {
-  - static final long serialVersionUID
-  - String nombre,horario
-  - int nivelMinimo,nivelMaximo,cupoMaximo
+  - String nombre
+  - String horario
+  - int nivelMinimo
+  - int nivelMaximo
+  - int cupoMaximo
   - double valorMensualidad
   - Deporte deporte
   - Entrenador entrenador
   - List<InscripcionAcademia> inscripciones
-  + Academia(String n,Deporte d,Entrenador en,int min,int max,int cupo,String h,double valor)
+  + Academia(String n,Deporte d,Entrenador en,int min,int max,int cupo,String h,double valor) throws ClubException
   + boolean tieneCupo()
   + boolean admiteNivel(int n)
-  + InscripcionAcademia inscribir(Socio s,LocalDate f)
+  + InscripcionAcademia inscribir(Socio s,LocalDate f) throws ClubException
   + Deporte getDeporte()
   + String getNombre()
   + double getValorMensualidad()
   + Entrenador getEntrenador()
-  - static void validar(boolean condicion,String mensaje)
-  - static int enteroPositivo(int valor)
-  - static double redondearDinero(double valor)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
+  - static int enteroPositivo(int valor) throws ClubException
+  - static double redondearDinero(double valor) throws ClubException
 }
 class Deporte {
-  - static final long serialVersionUID
   - String nombre
-  - boolean esDeConjunto,permiteEmpate
-  - int jugadoresEnCampo,minJugadoresReserva,maxJugadoresReserva,minJugadoresNomina,maxJugadoresNomina,duracionPartidoMin,diferenciaNivelPermitida
+  - boolean esDeConjunto
+  - boolean permiteEmpate
+  - int jugadoresEnCampo
+  - int minJugadoresReserva
+  - int maxJugadoresReserva
+  - int minJugadoresNomina
+  - int maxJugadoresNomina
+  - int duracionPartidoMin
+  - int diferenciaNivelPermitida
   - List<String> posiciones
   - TipoEstadistica tipoEstadistica
-  + Deporte(String nombre,boolean conjunto,int campo,int minReserva,int maxReserva,int minNomina,int maxNomina,int duracion,boolean empate,int diferencia,List<String> posiciones,TipoEstadistica tipo)
+  + Deporte(String nombre,boolean conjunto,int campo,int minReserva,int maxReserva,int minNomina,int maxNomina,int duracion,boolean empate,int diferencia,List<String> posiciones,TipoEstadistica tipo) throws ClubException
   + boolean cantidadReservaValida(int n)
   + boolean nominaValida(int n)
   + boolean esPosicionValida(String p)
   + boolean nivelesCompatibles(int a,int b)
-  + Estadistica crearEstadistica(Socio j,Partido p,Map<String,Integer> v)
+  + Estadistica crearEstadistica(Socio j,Partido p,Map<String,Integer> v) throws ClubException
   + String getNombre()
   + boolean isEsDeConjunto()
   + int getJugadoresEnCampo()
   + int getDuracionPartidoMin()
   + boolean isPermiteEmpate()
   + TipoEstadistica getTipoEstadistica()
-  - static void validar(boolean condicion,String mensaje)
-  - static String textoRequerido(String valor)
-  - static int enteroPositivo(int valor)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
+  - static String textoRequerido(String valor) throws ClubException
+  - static int enteroPositivo(int valor) throws ClubException
 }
 class Equipo {
-  - static final long serialVersionUID
   - String nombre
   - Categoria categoria
   - int cupoMaximo
   - Deporte deporte
   - Entrenador entrenador
   - List<InscripcionEquipo> inscripciones
-  + Equipo(String n,Categoria c,int cupo,Deporte d,Entrenador en)
+  + Equipo(String n,Categoria c,int cupo,Deporte d,Entrenador en) throws ClubException
   + boolean tieneCupo()
   + boolean esIntegrante(Socio s)
-  + InscripcionEquipo inscribir(Socio s,String pos,int num,LocalDate f)
+  + InscripcionEquipo inscribir(Socio s,String pos,int num,LocalDate f) throws ClubException
   + List<Socio> getJugadoresActivos()
   + Deporte getDeporte()
   + Categoria getCategoria()
   + String getNombre()
   + Entrenador getEntrenador()
-  - static void validar(boolean condicion,String mensaje)
-  - static String textoRequerido(String valor)
-  - static int enteroPositivo(int valor)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
+  - static String textoRequerido(String valor) throws ClubException
+  - static int enteroPositivo(int valor) throws ClubException
 }
 class InscripcionAcademia {
-  - static final long serialVersionUID
   - Socio alumno
   - Academia academia
   - LocalDate fechaInscripcion
@@ -752,7 +743,6 @@ class InscripcionAcademia {
   + LocalDate getFechaInscripcion()
 }
 class InscripcionEquipo {
-  - static final long serialVersionUID
   - Socio jugador
   - Equipo equipo
   - LocalDate fechaInscripcion
@@ -771,98 +761,99 @@ class InscripcionEquipo {
 }
 package "modelo.inventario" {
 class Existencia {
-  - static final long serialVersionUID
   - Producto producto
   - Ubicacion ubicacion
-  - int cantidad,stockMinimo
+  - int cantidad
+  - int stockMinimo
   + Existencia(Producto p,Ubicacion u)
-  + void aumentar(int n)
-  + void disminuir(int n)
+  + void aumentar(int n) throws ClubException
+  + void disminuir(int n) throws ClubException
   + boolean estaBajoMinimo()
   + int getCantidad()
   + Producto getProducto()
   + Ubicacion getUbicacion()
-  + void setStockMinimo(int n)
-  - static void validar(boolean condicion,String mensaje)
-  - static int enteroPositivo(int valor)
+  + void setStockMinimo(int n) throws ClubException
+  - static void validar(boolean condicion,String mensaje) throws ClubException
+  - static int enteroPositivo(int valor) throws ClubException
 }
 class Inventario {
-  - static final long serialVersionUID
   - List<Existencia> existencias
   - List<MovimientoInventario> movimientos
   + boolean estaRegistrado(Producto p)
   + int getCantidad(Producto p,Ubicacion u)
   + List<Existencia> consultar(Ubicacion u)
   + Existencia obtenerExistencia(Producto p,Ubicacion u)
-  + Reabastecimiento reabastecer(Producto p,Ubicacion u,int n,Administrador a)
-  + Traslado trasladar(Producto p,Ubicacion o,Ubicacion d,int n,Administrador a)
-  + void descontar(Producto p,Ubicacion u,int n)
+  + Reabastecimiento reabastecer(Producto p,Ubicacion u,int n,Administrador a) throws ClubException
+  + Traslado trasladar(Producto p,Ubicacion o,Ubicacion d,int n,Administrador a) throws ClubException
+  + void descontar(Producto p,Ubicacion u,int n) throws ClubException
   + List<MovimientoInventario> getMovimientos()
   - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 abstract class MovimientoInventario {
-  - static final long serialVersionUID
   # LocalDateTime fechaHora
-  # int cantidad
-  # Producto producto
-  # Ubicacion destino
-  # Administrador realizadoPor
-  # boolean aplicado
-  # MovimientoInventario(Producto p,Ubicacion d,int n,Administrador a)
-  + abstract void aplicar(Inventario inv)
-  - static int enteroPositivo(int valor)
+  - int cantidad
+  - Producto producto
+  - Ubicacion destino
+  - Administrador realizadoPor
+  - boolean aplicado
+  # MovimientoInventario(Producto p,Ubicacion d,int n,Administrador a) throws ClubException
+  + abstract void aplicar(Inventario inv) throws ClubException
+  - static int enteroPositivo(int valor) throws ClubException
+  # Producto getProducto()
+  # Ubicacion getDestino()
+  # int getCantidad()
+  # boolean isAplicado()
+  # void marcarAplicado()
 }
 class Reabastecimiento {
-  - static final long serialVersionUID
-  + Reabastecimiento(Producto p,Ubicacion d,int n,Administrador a)
-  + void aplicar(Inventario inv)
-  - static void validar(boolean condicion,String mensaje)
+  + Reabastecimiento(Producto p,Ubicacion d,int n,Administrador a) throws ClubException
+  + void aplicar(Inventario inv) throws ClubException
+  - static void validar(boolean condicion,String mensaje) throws ClubException
 }
 class Traslado {
-  - static final long serialVersionUID
   - Ubicacion origen
-  + Traslado(Producto p,Ubicacion o,Ubicacion d,int n,Administrador a)
-  + void aplicar(Inventario inv)
-  - static void validar(boolean condicion,String mensaje)
+  + Traslado(Producto p,Ubicacion o,Ubicacion d,int n,Administrador a) throws ClubException
+  + void aplicar(Inventario inv) throws ClubException
+  - static void validar(boolean condicion,String mensaje) throws ClubException
 }
 class Ubicacion {
-  - static final long serialVersionUID
-  - String codigo,nombre
+  - String codigo
+  - String nombre
   - TipoUbicacion tipo
-  + Ubicacion(String c,String n,TipoUbicacion t)
+  + Ubicacion(String c,String n,TipoUbicacion t) throws ClubException
   + String getCodigo()
   + String getNombre()
   + TipoUbicacion getTipo()
-  - static String textoRequerido(String valor)
+  - static String textoRequerido(String valor) throws ClubException
 }
 }
 package "modelo.personal" {
 class SolicitudCambioTurno {
-  - static final long serialVersionUID
   - LocalDate fechaSolicitud
-  - String motivo,observacion
+  - String motivo
+  - String observacion
   - EstadoSolicitud estado
   - Empleado solicitante
   - Turno turnoActual,turnoPropuesto
   - Administrador revisadaPor
-  + SolicitudCambioTurno(Empleado e,Turno a,Turno p,String motivo)
-  + void aprobar(Administrador a,LocalDate f)
-  + void rechazar(Administrador a,String obs,LocalDate f)
-  - void responder(Administrador a,LocalDate f,EstadoSolicitud e,String obs)
+  + SolicitudCambioTurno(Empleado e,Turno a,Turno p,String motivo) throws ClubException
+  + void aprobar(Administrador a,LocalDate f) throws ClubException
+  + void rechazar(Administrador a,String obs,LocalDate f) throws ClubException
+  - void responder(Administrador a,LocalDate f,EstadoSolicitud e,String obs) throws ClubException
   + Turno getTurnoActual()
   + Turno getTurnoPropuesto()
   + Empleado getSolicitante()
   + EstadoSolicitud getEstado()
-  - static void validar(boolean condicion,String mensaje)
-  - static String textoRequerido(String valor)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
+  - static String textoRequerido(String valor) throws ClubException
 }
 class Turno {
-  - static final long serialVersionUID
   - String id
   - LocalDate fecha
-  - LocalTime horaInicio,horaFin
+  - LocalTime horaInicio
+  - LocalTime horaFin
   - Empleado empleado
-  + Turno(String id,LocalDate f,LocalTime ini,LocalTime fin,Empleado e)
+  + Turno(String id,LocalDate f,LocalTime ini,LocalTime fin,Empleado e) throws ClubException
   + boolean cubre(LocalDate f,LocalTime h)
   + boolean seTraslapaCon(Turno otro)
   + LocalDate getFecha()
@@ -870,67 +861,65 @@ class Turno {
   + LocalTime getHoraFin()
   + Empleado getEmpleado()
   + String getId()
-  - static void validar(boolean condicion,String mensaje)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
 }
 }
 package "modelo.personas" {
 class Administrador {
-  - static final long serialVersionUID
   - String cargo
-  + Administrador(String doc,String nom,LocalDate nac,String login,String clave,String codigo,String dato)
+  + Administrador(String doc,String nom,LocalDate nac,String login,String clave,String codigo,String dato) throws ClubException
   + String getTipo()
   + String getCargo()
-  - static String textoRequerido(String valor)
+  - static String textoRequerido(String valor) throws ClubException
 }
 abstract class Empleado {
-  - static final long serialVersionUID
   - String codigoEmpleado
   - LocalDate fechaContratacion
-  # Empleado(String doc,String nom,LocalDate nac,String login,String clave,String codigo)
+  # Empleado(String doc,String nom,LocalDate nac,String login,String clave,String codigo) throws ClubException
   + String getTipo()
   + String getCodigoEmpleado()
   + LocalDate getFechaContratacion()
-  - static String textoRequerido(String valor)
+  - static String textoRequerido(String valor) throws ClubException
 }
 class Entrenador {
-  - static final long serialVersionUID
   - String licencia
   - List<Deporte> especialidades
-  + Entrenador(String doc,String nom,LocalDate nac,String login,String clave,String codigo,String dato)
+  + Entrenador(String doc,String nom,LocalDate nac,String login,String clave,String codigo,String dato) throws ClubException
   + String getTipo()
   + String getLicencia()
   + void agregarEspecialidad(Deporte d)
   + boolean puedeEntrenar(Deporte d)
   + List<Deporte> getEspecialidades()
-  - static String textoRequerido(String valor)
+  - static String textoRequerido(String valor) throws ClubException
   - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class Fisioterapeuta {
-  - static final long serialVersionUID
   - String tarjetaProfesional
-  + Fisioterapeuta(String doc,String nom,LocalDate nac,String login,String clave,String codigo,String dato)
+  + Fisioterapeuta(String doc,String nom,LocalDate nac,String login,String clave,String codigo,String dato) throws ClubException
   + String getTipo()
   + String getTarjetaProfesional()
-  - static String textoRequerido(String valor)
+  - static String textoRequerido(String valor) throws ClubException
 }
 class NivelDeportivo {
-  - static final long serialVersionUID
   - Socio socio
   - Deporte deporte
   - int nivel
   - LocalDate fechaActualizacion
-  + NivelDeportivo(Socio s,Deporte d,int n)
-  + int diferenciaCon(NivelDeportivo otro)
+  + NivelDeportivo(Socio s,Deporte d,int n) throws ClubException
+  + int diferenciaCon(NivelDeportivo otro) throws ClubException
   + int getNivel()
   + LocalDate getFechaActualizacion()
-  - static void validar(boolean condicion,String mensaje)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
 }
 abstract class Persona {
-  - static final long serialVersionUID
-  - String documento,nombre,telefono,correo,login,contrasena
+  - String documento
+  - String nombre
+  - String telefono
+  - String correo
+  - String login
+  - String contrasena
   - LocalDate fechaNacimiento
-  # Persona(String doc,String nom,LocalDate nacimiento,String login,String clave)
-  - static String hash(String s)
+  # Persona(String doc,String nom,LocalDate nacimiento,String login,String clave) throws ClubException
   + int getEdad(LocalDate fecha)
   + boolean verificarContrasena(String clave)
   + abstract String getTipo()
@@ -940,38 +929,37 @@ abstract class Persona {
   + LocalDate getFechaNacimiento()
   + String getTelefono()
   + String getCorreo()
-  + void actualizarContacto(String tel,String mail)
-  - static void validar(boolean condicion,String mensaje)
-  - static String textoRequerido(String valor)
+  + void actualizarContacto(String tel,String mail) throws ClubException
+  - static void validar(boolean condicion,String mensaje) throws ClubException
+  - static String textoRequerido(String valor) throws ClubException
 }
 class Sancion {
-  - static final long serialVersionUID
   - Socio socio
   - String motivo
   - TipoSancion tipo
-  - LocalDate fechaInicio,fechaFin
+  - LocalDate fechaInicio
+  - LocalDate fechaFin
   - Deporte deporte
-  + Sancion(Socio s,String m,TipoSancion t,LocalDate ini,LocalDate fin,Deporte d)
+  + Sancion(Socio s,String m,TipoSancion t,LocalDate ini,LocalDate fin,Deporte d) throws ClubException
   + boolean estaVigente(LocalDate f)
   + boolean aplicaA(Deporte d)
   + Socio getSocio()
   + String getMotivo()
-  - static void validar(boolean condicion,String mensaje)
-  - static String textoRequerido(String valor)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
+  - static String textoRequerido(String valor) throws ClubException
 }
 class Socio {
-  - static final long serialVersionUID
   - String numeroSocio
   - LocalDate fechaAfiliacion
   - boolean activo
   - Map<Deporte,NivelDeportivo> niveles
   - List<Sancion> sanciones
   - CuentaFidelizacion cuenta
-  + Socio(String doc,String nom,LocalDate nac,String login,String clave,String numero)
-  + int getNivel(Deporte d)
-  + void asignarNivel(Deporte d,int nivel)
+  + Socio(String doc,String nom,LocalDate nac,String login,String clave,String numero) throws ClubException
+  + int getNivel(Deporte d) throws ClubException
+  + void asignarNivel(Deporte d,int nivel) throws ClubException
   + boolean estaSuspendido(Deporte d,LocalDate fecha)
-  + void agregarSancion(Sancion s)
+  + void agregarSancion(Sancion s) throws ClubException
   + CuentaFidelizacion getCuenta()
   + String getTipo()
   + boolean isActivo()
@@ -979,8 +967,8 @@ class Socio {
   + String getNumeroSocio()
   + LocalDate getFechaAfiliacion()
   + List<Sancion> getSanciones()
-  - static void validar(boolean condicion,String mensaje)
-  - static String textoRequerido(String valor)
+  - static void validar(boolean condicion,String mensaje) throws ClubException
+  - static String textoRequerido(String valor) throws ClubException
   - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 }
@@ -994,7 +982,7 @@ enum Categoria {
   - final int edadMinima, edadMaxima
   + int getEdadMinima()
   + int getEdadMaxima()
-  + static Categoria paraEdad(int edad)
+  + static Categoria paraEdad(int edad) throws ClubException
 }
 enum ConceptoMensualidad {
   AFILIACION
@@ -1079,21 +1067,8 @@ package "persistencia" {
 interface IPersistenciaClub {
 }
 class PersistenciaJson {
-  + void salvar(ClubDeportivo club,String ruta)
-  + ClubDeportivo cargar(String ruta)
-}
-}
-package "pruebas" {
-class DatosPrueba {
-  - DatosPrueba()
-  + static ClubDeportivo crear()
-  + static void main(String[] args)
-}
-class PruebasSistema {
-  - static int correctas
-  - static void verificar(boolean condicion,String caso)
-  - static void rechazar(Runnable operacion,String caso)
-  + static void main(String[] args)
+  + void salvar(ClubDeportivo club, String ruta) throws ClubException
+  + ClubDeportivo cargar(String ruta) throws ClubException
 }
 }
 Academia --> Deporte

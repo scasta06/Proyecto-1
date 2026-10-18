@@ -1,74 +1,78 @@
 package modelo.personas;
-import java.io.*;
-import java.time.*;
-import java.util.*;
-import java.util.stream.*;
-import modelo.personas.*;
-import modelo.deportes.*;
-import modelo.actividades.*;
-import modelo.competencias.*;
-import modelo.personal.*;
-import modelo.inventario.*;
-import modelo.comercio.*;
-import modelo.tipos.*;
-import logica.*;
-import excepciones.*;
-public abstract class Persona implements Serializable {
+
+import excepciones.ClubException;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.Objects;
+
+/** Reune los atributos privados y comportamientos comunes de las personas. */
+public abstract class Persona implements Serializable
+{
     private static final long serialVersionUID = 1L;
-    private String documento,nombre,telefono,correo,login,contrasena;
+    private String documento;
+    private String nombre;
+    private String telefono;
+    private String correo;
+    private String login;
+    private String contrasena;
     private LocalDate fechaNacimiento;
-    protected Persona(String doc,String nom,LocalDate nacimiento,String login,String clave) {
+    protected Persona(String doc,String nom,LocalDate nacimiento,String login,String clave) throws ClubException
+    {
         documento=textoRequerido(doc);
         nombre=textoRequerido(nom);
         fechaNacimiento=Objects.requireNonNull(nacimiento);
         validar(!nacimiento.isAfter(LocalDate.now()),"Nacimiento futuro");
         this.login=textoRequerido(login);
-        contrasena=hash(textoRequerido(clave));
+        contrasena=textoRequerido(clave);
         telefono="";
         correo="";
     }
-    private static String hash(String s) {
-        try {
-            return HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(s.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
-        }
-        catch(java.security.NoSuchAlgorithmException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-    public int getEdad(LocalDate fecha) {
+    public int getEdad(LocalDate fecha)
+    {
         return Period.between(fechaNacimiento,fecha).getYears();
     }
-    public boolean verificarContrasena(String clave) {
-        return clave!=null&&java.security.MessageDigest.isEqual(contrasena.getBytes(java.nio.charset.StandardCharsets.UTF_8),hash(clave).getBytes(java.nio.charset.StandardCharsets.UTF_8));
+    public boolean verificarContrasena(String clave)
+    {
+        return clave!=null&&contrasena.equals(clave);
     }
     public abstract String getTipo();
-    public String getDocumento() {
+    public String getDocumento()
+    {
         return documento;
     }
-    public String getNombre() {
+    public String getNombre()
+    {
         return nombre;
     }
-    public String getLogin() {
+    public String getLogin()
+    {
         return login;
     }
-    public LocalDate getFechaNacimiento() {
+    public LocalDate getFechaNacimiento()
+    {
         return fechaNacimiento;
     }
-    public String getTelefono() {
+    public String getTelefono()
+    {
         return telefono;
     }
-    public String getCorreo() {
+    public String getCorreo()
+    {
         return correo;
     }
-    public void actualizarContacto(String tel,String mail) {
+    public void actualizarContacto(String tel,String mail) throws ClubException
+    {
         telefono=textoRequerido(tel);
         correo=textoRequerido(mail);
     }
-    private static void validar(boolean condicion,String mensaje) {
+    private static void validar(boolean condicion,String mensaje) throws ClubException
+    {
         if(!condicion)throw new ClubException(mensaje);
     }
-    private static String textoRequerido(String valor) {
-        if(valor==null||valor.isBlank())throw new ClubException("Texto obligatorio");
+    private static String textoRequerido(String valor) throws ClubException
+    {
+        if(valor==null||valor.trim().isEmpty())throw new ClubException("Texto obligatorio");
         return valor.trim();
     }
 }

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1900" viewBox="0 0 1500 1900">
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1540" viewBox="0 0 1500 1540">
 <rect width="100%" height="100%" fill="#f4f7fb"/>
 <text x="30" y="40" font-family="Arial" font-size="26" fill="#152e4b">Club Deportivo Séneca · paquetes y clases</text>
 <rect x="25" y="70" width="475" height="340" rx="12" fill="white" stroke="#c2cfdf"/>
@@ -113,8 +113,4 @@
 <text x="1033" y="1180" font-family="Arial" font-size="20" font-weight="bold" fill="#244a78">persistencia</text>
 <text x="1033" y="1208" font-family="Arial" font-size="16" fill="#26384d">IPersistenciaClub</text>
 <text x="1033" y="1228" font-family="Arial" font-size="16" fill="#26384d">PersistenciaJson</text>
-<rect x="25" y="1510" width="475" height="340" rx="12" fill="white" stroke="#c2cfdf"/>
-<text x="43" y="1540" font-family="Arial" font-size="20" font-weight="bold" fill="#244a78">pruebas</text>
-<text x="43" y="1568" font-family="Arial" font-size="16" fill="#26384d">DatosPrueba</text>
-<text x="43" y="1588" font-family="Arial" font-size="16" fill="#26384d">PruebasSistema</text>
 </svg>

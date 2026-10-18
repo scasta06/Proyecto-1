@@ -5,6 +5,7 @@ participant GestorCompetencias as G
 participant Competencia as C
 participant GestorDeportivo as D
 participant PartidoOficial as P
+participant InscripcionCompetencia as I
 Entrenador -> G: programarPartido(c, inscripcion, rival, fecha, hora, local)
 G -> C: validar inscripción, fechas y eliminación
 G -> G: comprobar mínimo habilitado
@@ -14,7 +15,8 @@ G -> P: agregarParticipante(socio habilitado)
 G -> C: agregarPartido(p)
 Entrenador -> G: registrarResultado(p, propio, rival)
 G -> P: registrarResultado(propio, rival)
-G -> C: inscripcion.sumarPuntos(p.getPuntosObtenidos())
+G -> P: getPuntosObtenidos()
+G -> I: sumarPuntos(puntos)
 Entrenador -> D: registrarEstadistica(entrenador, p, jugador, valores)
 D -> P: agregarEstadistica(e)
 D -> D: Ranking.actualizar(e)

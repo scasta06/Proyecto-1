@@ -9,11 +9,11 @@ Programa -> P: salvar(club, ruta)
 P -> O: writeObject(club)
 O --> P: instantánea binaria del grafo
 P -> P: codificar Base64 en envoltura JSON CDS-1
-P -> A: escribir temporal y reemplazar atómicamente
+P -> A: escribir con PrintWriter en UTF-8
 Programa -> P: cargar(ruta)
-P -> A: leer texto y validar formato
+P -> A: leer con BufferedReader y validar formato
 P -> P: decodificar Base64
-P -> I: filtro de clases, límites y readObject()
+P -> I: readObject()
 I --> P: ClubDeportivo con referencias compartidas
 P --> Programa: club recuperado
 @enduml

@@ -1,21 +1,15 @@
 package excepciones;
-import java.io.*;
-import java.time.*;
-import java.util.*;
-import java.util.stream.*;
-import modelo.personas.*;
-import modelo.deportes.*;
-import modelo.actividades.*;
-import modelo.competencias.*;
-import modelo.personal.*;
-import modelo.inventario.*;
-import modelo.comercio.*;
-import modelo.tipos.*;
-import logica.*;
-import excepciones.*;
-public class ClubException extends RuntimeException {
+
+/** Excepcion verificada del club. Se captura o se propaga con throws. */
+public class ClubException extends Exception
+{
     private static final long serialVersionUID=1L;
-    public ClubException(String msg) {
+    public ClubException(String msg)
+    {
         super(msg);
+    }
+    public ClubException(String mensaje, Throwable causa)
+    {
+        super(mensaje, causa);
     }
 }

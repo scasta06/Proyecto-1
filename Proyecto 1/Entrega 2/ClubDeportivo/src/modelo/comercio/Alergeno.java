@@ -1,33 +1,29 @@
 package modelo.comercio;
-import java.io.*;
-import java.time.*;
-import java.util.*;
-import java.util.stream.*;
-import modelo.personas.*;
-import modelo.deportes.*;
-import modelo.actividades.*;
-import modelo.competencias.*;
-import modelo.personal.*;
-import modelo.inventario.*;
-import modelo.comercio.*;
-import modelo.tipos.*;
-import logica.*;
-import excepciones.*;
-public class Alergeno implements Serializable {
+
+import excepciones.ClubException;
+import java.io.Serializable;
+
+public class Alergeno implements Serializable
+{
     private static final long serialVersionUID = 1L;
-    private String nombre,descripcion;
-    public Alergeno(String n,String d) {
+    private String nombre;
+    private String descripcion;
+    public Alergeno(String n,String d) throws ClubException
+    {
         nombre=textoRequerido(n);
         descripcion=d;
     }
-    public String getNombre() {
+    public String getNombre()
+    {
         return nombre;
     }
-    public String getDescripcion() {
+    public String getDescripcion()
+    {
         return descripcion;
     }
-    private static String textoRequerido(String valor) {
-        if(valor==null||valor.isBlank())throw new ClubException("Texto obligatorio");
+    private static String textoRequerido(String valor) throws ClubException
+    {
+        if(valor==null||valor.trim().isEmpty())throw new ClubException("Texto obligatorio");
         return valor.trim();
     }
 }

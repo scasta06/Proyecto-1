@@ -1,27 +1,24 @@
 package modelo.actividades;
-import java.io.*;
-import java.time.*;
-import java.util.*;
-import java.util.stream.*;
-import modelo.personas.*;
-import modelo.deportes.*;
-import modelo.actividades.*;
-import modelo.competencias.*;
-import modelo.personal.*;
-import modelo.inventario.*;
-import modelo.comercio.*;
-import modelo.tipos.*;
-import logica.*;
-import excepciones.*;
-public class EstadisticaVoleibol extends Estadistica implements Serializable {
+
+import excepciones.ClubException;
+import java.io.Serializable;
+import java.util.Map;
+import modelo.personas.Socio;
+
+public class EstadisticaVoleibol extends Estadistica implements Serializable
+{
     private static final long serialVersionUID = 1L;
-    private int aces,bloqueos;
-    public EstadisticaVoleibol(Socio j,Partido p,Map<String,Integer> v) {
+    private int aces;
+    private int bloqueos;
+    public EstadisticaVoleibol(Socio j,Partido p,Map<String,Integer> v) throws ClubException
+    {
         super(j,p,v);
         aces=valor("aces");
         bloqueos=valor("bloqueos");
     }
-    public int calcularPuntosRanking() {
+    @Override
+    public int calcularPuntosRanking()
+    {
         return valor("aces")*2+valor("bloqueos");
     }
 }

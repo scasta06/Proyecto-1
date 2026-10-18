@@ -1,25 +1,21 @@
 package modelo.personal;
-import java.io.*;
-import java.time.*;
-import java.util.*;
-import java.util.stream.*;
-import modelo.personas.*;
-import modelo.deportes.*;
-import modelo.actividades.*;
-import modelo.competencias.*;
-import modelo.personal.*;
-import modelo.inventario.*;
-import modelo.comercio.*;
-import modelo.tipos.*;
-import logica.*;
-import excepciones.*;
-public class Turno implements Serializable {
+
+import excepciones.ClubException;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import modelo.personas.Empleado;
+
+public class Turno implements Serializable
+{
     private static final long serialVersionUID = 1L;
     private String id;
     private LocalDate fecha;
-    private LocalTime horaInicio,horaFin;
+    private LocalTime horaInicio;
+    private LocalTime horaFin;
     private Empleado empleado;
-    public Turno(String id,LocalDate f,LocalTime ini,LocalTime fin,Empleado e) {
+    public Turno(String id,LocalDate f,LocalTime ini,LocalTime fin,Empleado e) throws ClubException
+    {
         validar(ini.isBefore(fin),"Horario de turno inválido");
         this.id=id;
         fecha=f;
@@ -27,28 +23,36 @@ public class Turno implements Serializable {
         horaFin=fin;
         empleado=e;
     }
-    public boolean cubre(LocalDate f,LocalTime h) {
+    public boolean cubre(LocalDate f,LocalTime h)
+    {
         return fecha.equals(f)&&!h.isBefore(horaInicio)&&h.isBefore(horaFin);
     }
-    public boolean seTraslapaCon(Turno otro) {
+    public boolean seTraslapaCon(Turno otro)
+    {
         return fecha.equals(otro.fecha)&&horaInicio.isBefore(otro.horaFin)&&otro.horaInicio.isBefore(horaFin);
     }
-    public LocalDate getFecha() {
+    public LocalDate getFecha()
+    {
         return fecha;
     }
-    public LocalTime getHoraInicio() {
+    public LocalTime getHoraInicio()
+    {
         return horaInicio;
     }
-    public LocalTime getHoraFin() {
+    public LocalTime getHoraFin()
+    {
         return horaFin;
     }
-    public Empleado getEmpleado() {
+    public Empleado getEmpleado()
+    {
         return empleado;
     }
-    public String getId() {
+    public String getId()
+    {
         return id;
     }
-    private static void validar(boolean condicion,String mensaje) {
+    private static void validar(boolean condicion,String mensaje) throws ClubException
+    {
         if(!condicion)throw new ClubException(mensaje);
     }
 }

@@ -1,30 +1,39 @@
 package modelo.competencias;
-import java.io.*;
-import java.time.*;
-import java.util.*;
-import java.util.stream.*;
-import modelo.personas.*;
-import modelo.deportes.*;
-import modelo.actividades.*;
-import modelo.competencias.*;
-import modelo.personal.*;
-import modelo.inventario.*;
-import modelo.comercio.*;
-import modelo.tipos.*;
-import logica.*;
-import excepciones.*;
-public class Competencia implements Serializable {
+
+import excepciones.ClubException;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import modelo.actividades.PartidoOficial;
+import modelo.deportes.Deporte;
+import modelo.tipos.Categoria;
+import modelo.tipos.EstadoCompetencia;
+import modelo.tipos.EstadoPartido;
+import modelo.tipos.FormatoCompetencia;
+import modelo.tipos.Resultado;
+
+public class Competencia implements Serializable
+{
     private static final long serialVersionUID = 1L;
-    private String codigo,nombre,organizador;
+    private String codigo;
+    private String nombre;
+    private String organizador;
     private Categoria categoria;
     private FormatoCompetencia formato;
     private EstadoCompetencia estado=EstadoCompetencia.INSCRIPCIONES_ABIERTAS;
-    private LocalDate fechaInicio,fechaFin,cierreInscripciones;
+    private LocalDate fechaInicio;
+    private LocalDate fechaFin;
+    private LocalDate cierreInscripciones;
     private int puntosVictoria=3,puntosEmpate=1,puntosDerrota=0;
     private Deporte deporte;
     private List<InscripcionCompetencia> inscripciones=new ArrayList<>();
     private List<PartidoOficial> partidos=new ArrayList<>();
-    public Competencia(String cod,String nom,String org,Deporte d,Categoria cat,FormatoCompetencia formato,LocalDate ini,LocalDate fin,LocalDate cierre) {
+    public Competencia(String cod,String nom,String org,Deporte d,Categoria cat,FormatoCompetencia formato,LocalDate ini,LocalDate fin,LocalDate cierre) throws ClubException
+    {
         validar(!fin.isBefore(ini)&&!cierre.isAfter(ini),"Fechas inválidas");
         codigo=textoRequerido(cod);
         nombre=textoRequerido(nom);
@@ -36,62 +45,100 @@ public class Competencia implements Serializable {
         fechaFin=fin;
         cierreInscripciones=cierre;
     }
-    public boolean inscripcionesAbiertas(LocalDate f) {
+    public boolean inscripcionesAbiertas(LocalDate f)
+    {
         return estado==EstadoCompetencia.INSCRIPCIONES_ABIERTAS&&!f.isAfter(cierreInscripciones);
     }
-    public int puntosPor(Resultado r) {
+    public int puntosPor(Resultado r)
+    {
         return r==Resultado.VICTORIA?puntosVictoria:r==Resultado.EMPATE?puntosEmpate:puntosDerrota;
     }
-    public void agregarInscripcion(InscripcionCompetencia i) {
+    public void agregarInscripcion(InscripcionCompetencia i) throws ClubException
+    {
         validar(i.getCompetencia()==this&&!inscripciones.contains(i),"Inscripción inválida");
         inscripciones.add(i);
     }
-    public void agregarPartido(PartidoOficial p) {
+    public void agregarPartido(PartidoOficial p)
+    {
         partidos.add(p);
         estado=EstadoCompetencia.EN_CURSO;
     }
-    public List<InscripcionCompetencia> getTablaPosiciones() {
-        return inscripciones.stream().sorted(Comparator.comparingInt(InscripcionCompetencia::getPuntosAcumulados).reversed().thenComparing(i->i.getEquipo()!=null?i.getEquipo().getNombre():i.getJugador().getNombre())).collect(Collectors.toUnmodifiableList());
+    public List<InscripcionCompetencia> getTablaPosiciones()
+    {
+        List<InscripcionCompetencia> posiciones = new ArrayList<InscripcionCompetencia>(inscripciones);
+        Collections.sort(posiciones, new Comparator<InscripcionCompetencia>()
+        {
+            @Override
+            public int compare(InscripcionCompetencia primera, InscripcionCompetencia segunda)
+            {
+                int diferencia = Integer.compare(segunda.getPuntosAcumulados(), primera.getPuntosAcumulados());
+                if (diferencia == 0)
+                {
+                    String nombrePrimera = primera.getEquipo() != null ? primera.getEquipo().getNombre() : primera.getJugador().getNombre();
+                    String nombreSegunda = segunda.getEquipo() != null ? segunda.getEquipo().getNombre() : segunda.getJugador().getNombre();
+                    diferencia = nombrePrimera.compareTo(nombreSegunda);
+                }
+                return diferencia;
+            }
+        }
+        );
+        return posiciones;
     }
-    public Deporte getDeporte() {
+    public Deporte getDeporte()
+    {
         return deporte;
     }
-    public Categoria getCategoria() {
+    public Categoria getCategoria()
+    {
         return categoria;
     }
-    public FormatoCompetencia getFormato() {
+    public FormatoCompetencia getFormato()
+    {
         return formato;
     }
-    public LocalDate getFechaInicio() {
+    public LocalDate getFechaInicio()
+    {
         return fechaInicio;
     }
-    public LocalDate getFechaFin() {
+    public LocalDate getFechaFin()
+    {
         return fechaFin;
     }
-    public List<InscripcionCompetencia> getInscripciones() {
+    public List<InscripcionCompetencia> getInscripciones()
+    {
         return copiaLectura(inscripciones);
     }
-    public List<PartidoOficial> getPartidos() {
+    public List<PartidoOficial> getPartidos()
+    {
         return copiaLectura(partidos);
     }
-    public EstadoCompetencia getEstado() {
+    public EstadoCompetencia getEstado()
+    {
         return estado;
     }
-    public String getCodigo() {
+    public String getCodigo()
+    {
         return codigo;
     }
-    public void finalizar() {
-        validar(partidos.stream().allMatch(p->p.getEstado()!=EstadoPartido.PROGRAMADO),"Hay partidos pendientes");
-        estado=EstadoCompetencia.FINALIZADA;
+    public void finalizar() throws ClubException
+    {
+        for (PartidoOficial partido : partidos)
+        {
+            validar(partido.getEstado() != EstadoPartido.PROGRAMADO, "Hay partidos pendientes");
+        }
+        estado = EstadoCompetencia.FINALIZADA;
     }
-    private static void validar(boolean condicion,String mensaje) {
+    private static void validar(boolean condicion,String mensaje) throws ClubException
+    {
         if(!condicion)throw new ClubException(mensaje);
     }
-    private static String textoRequerido(String valor) {
-        if(valor==null||valor.isBlank())throw new ClubException("Texto obligatorio");
+    private static String textoRequerido(String valor) throws ClubException
+    {
+        if(valor==null||valor.trim().isEmpty())throw new ClubException("Texto obligatorio");
         return valor.trim();
     }
-    private static <T> List<T> copiaLectura(Collection<T> valores) {
-        return Collections.unmodifiableList(new ArrayList<>(valores));
+    private static <T> List<T> copiaLectura(Collection<T> valores)
+    {
+        return new ArrayList<T>(valores);
     }
 }

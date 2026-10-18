@@ -1,35 +1,52 @@
 package modelo.inventario;
-import java.io.*;
-import java.time.*;
-import java.util.*;
-import java.util.stream.*;
-import modelo.personas.*;
-import modelo.deportes.*;
-import modelo.actividades.*;
-import modelo.competencias.*;
-import modelo.personal.*;
-import modelo.inventario.*;
-import modelo.comercio.*;
-import modelo.tipos.*;
-import logica.*;
-import excepciones.*;
-public abstract class MovimientoInventario implements Serializable {
+
+import excepciones.ClubException;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Objects;
+import modelo.comercio.Producto;
+import modelo.personas.Administrador;
+
+public abstract class MovimientoInventario implements Serializable
+{
     private static final long serialVersionUID = 1L;
     protected LocalDateTime fechaHora=LocalDateTime.now();
-    protected int cantidad;
-    protected Producto producto;
-    protected Ubicacion destino;
-    protected Administrador realizadoPor;
-    protected boolean aplicado;
-    protected MovimientoInventario(Producto p,Ubicacion d,int n,Administrador a) {
+    private int cantidad;
+    private Producto producto;
+    private Ubicacion destino;
+    private Administrador realizadoPor;
+    private boolean aplicado;
+    protected MovimientoInventario(Producto p,Ubicacion d,int n,Administrador a) throws ClubException
+    {
         producto=p;
         destino=d;
         cantidad=enteroPositivo(n);
         realizadoPor=Objects.requireNonNull(a);
     }
-    public abstract void aplicar(Inventario inv);
-    private static int enteroPositivo(int valor) {
+    public abstract void aplicar(Inventario inv) throws ClubException ;
+    private static int enteroPositivo(int valor) throws ClubException
+    {
         if(valor<=0)throw new ClubException("Debe ser positivo");
         return valor;
+    }
+    protected Producto getProducto()
+    {
+        return producto;
+    }
+    protected Ubicacion getDestino()
+    {
+        return destino;
+    }
+    protected int getCantidad()
+    {
+        return cantidad;
+    }
+    protected boolean isAplicado()
+    {
+        return aplicado;
+    }
+    protected void marcarAplicado()
+    {
+        aplicado = true;
     }
 }

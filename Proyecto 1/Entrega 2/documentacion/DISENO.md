@@ -27,7 +27,7 @@ El paquete `pruebas` contiene dos programas de demostración para la entrega.
 `ClubDeportivo` compone los gestores. Las entidades conservan su estado y aplican
 reglas locales; los gestores coordinan operaciones que afectan a varios objetos.
 Las clases abstractas e interfaces conservan la jerarquía del PDF. Las consultas
-devuelven colecciones de sólo lectura para proteger las relaciones almacenadas.
+devuelven copias de las colecciones para evitar modificar su estructura interna.
 
 ## Criterios de implementación
 
@@ -77,8 +77,10 @@ crear las entidades. Los valores de `DatosPrueba` son datos de ejemplo.
 `IPersistenciaClub` contiene `cargar` y `salvar`. `PersistenciaJson` escribe una
 envoltura JSON versionada, con el grafo de objetos Java serializado en Base64 en
 el campo `datos`. Esto conserva las referencias compartidas y las relaciones
-bidireccionales. La carga valida el formato y filtra los tipos admitidos; la
-escritura reemplaza el archivo mediante un temporal. El formato del archivo es una
+bidireccionales. La carga valida la cabecera y el tipo del objeto recuperado. Se utilizan
+BufferedReader y PrintWriter con UTF-8, ObjectInputStream y ObjectOutputStream,
+y try-with-resources para cerrar los archivos. El lector reconoce el formato de
+cuatro líneas que escribe esta aplicación; no es un lector de JSON general. El formato del archivo es una
 decisión de implementación, ya que el PDF no fija un esquema de persistencia.
 
 Los datos están en `ClubDeportivo/datos`, separados de `src`. Las consolas del
@@ -114,6 +116,41 @@ Los diagramas se obtuvieron de esta implementación y se entregan con sus fuente
 
 ![Persistencia](diagramas/secuencia-05-persistencia.svg)
 
-Implementación y documentación elaboradas con asistencia de IA a partir del PDF.
-Solicitudes que guiaron esta versión: «solo necesito la implementacion del pdf no
-lo otro» y «subelo con las mismas intrscciones de entrega y borrar lo que ya me diste».
+## Correspondencia con el material del curso
+
+Se revisaron los nueve PDF entregados por el usuario y se aplicaron estos criterios:
+
+| Diapositivas | Aplicación en el código |
+|---|---|
+| 2. POO en Java-1 | Atributos privados, constructores, getters y paso de mensajes entre objetos |
+| 2. UML | Diagramas de clases de diseño y de alto nivel, más una secuencia por escenario |
+| 2. Extra convenciones Java | Nombres de clases y métodos, constantes en mayúsculas, imports explícitos, carpetas src/srctest/datos/bin |
+| 2. Extra Preguntas_OO | Constructores con los datos necesarios, firmas claras y accesores para atributos consultables |
+| 3. Herencia y polimorfismo | extends, super, clases abstractas, interfaces y anotaciones @Override |
+| 3. Genericidad | List<T>, Map<K,V>, ArrayList, mapas tipados, get/put y recorridos con for/for-each |
+| 3. Clases internas anónimas | Comparator anónimo para ordenar rankings y tablas; contrato privado anónimo en las pruebas |
+| 4. Excepciones | ClubException extiende Exception; throws, propagación, try/catch y conservación de la causa de errores de archivos |
+| 5. Persistencia | Archivos de texto UTF-8 y serialización del grafo de objetos con las clases de java.io |
+
+Los recorridos de dominio se implementan con ciclos. Los comparadores anónimos
+mantienen el criterio de orden de las tablas. Las validaciones que pueden fallar
+lanzan excepciones verificadas y los llamadores deben capturarlas o propagarlas.
+Las subclases consultan el estado privado de sus superclases mediante accesores.
+
+El nombre `PersistenciaJson` se mantiene porque forma parte del modelo final.
+Su archivo es una envoltura JSON de cuatro líneas que incluye la instantánea Java
+serializada en el campo `datos`. Base64 convierte los bytes a texto para poder
+colocarlos en ese campo y recuperarlos después. Así se conservan las referencias
+compartidas entre socios, equipos, productos, ventas e instalaciones. No requiere
+una biblioteca externa. Los archivos se generan y consumen por esta aplicación.
+
+Los archivos fuente de prueba están separados en `srctest`. El código de la
+aplicación no depende de ellos. Las dos carpetas están declaradas como fuentes en
+el proyecto de Eclipse. Los datos persistentes permanecen separados de las fuentes.
+
+Implementación y documentación elaboradas con asistencia de IA. Solicitudes:
+«solo necesito la implementacion del pdf no lo otro»; «subelo con las mismas
+intrscciones de entrega y borrar lo que ya me diste»; y revisar y corregir el código
+según las nueve diapositivas del curso, manteniendo las instrucciones de entrega.
+La asistencia incluyó refactorización del código funcional y generación de pruebas,
+datos y documentación; este registro describe el uso real de la herramienta.

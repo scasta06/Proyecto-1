@@ -1,39 +1,38 @@
 package consola;
-import java.io.*;
-import java.time.*;
-import java.util.*;
-import java.util.stream.*;
-import modelo.personas.*;
-import modelo.deportes.*;
-import modelo.actividades.*;
-import modelo.competencias.*;
-import modelo.personal.*;
-import modelo.inventario.*;
-import modelo.comercio.*;
-import modelo.tipos.*;
-import logica.*;
-import excepciones.*;
-public class ConsolaPrincipal {
+
+import excepciones.ClubException;
+import java.util.Scanner;
+import logica.ClubDeportivo;
+import modelo.personas.Administrador;
+import modelo.personas.Entrenador;
+import modelo.personas.Fisioterapeuta;
+import modelo.personas.Persona;
+import modelo.personas.Socio;
+import persistencia.IPersistenciaClub;
+import persistencia.PersistenciaJson;
+
+public class ConsolaPrincipal
+{
     private ClubDeportivo club;
-    public static void main(String[] args) {
-        if(args.length>0&&args[0].equals("--demostracion")) {
-            pruebas.PruebasSistema.main(new String[0]);
-            return;
-        }
+    public static void main(String[] args)
+    {
         String ruta=args.length>0?args[0]:"datos/club-ejemplo.json";
         persistencia.IPersistenciaClub p=new persistencia.PersistenciaJson();
-        try {
+        try
+        {
             ConsolaPrincipal c=new ConsolaPrincipal();
             c.club=p.cargar(ruta);
             c.iniciarSesion();
             p.salvar(c.club,ruta);
         }
-        catch(ClubException e) {
+        catch(ClubException e)
+        {
             System.err.println(e.getMessage());
             System.exit(1);
         }
     }
-    private void iniciarSesion() {
+    private void iniciarSesion() throws ClubException
+    {
         Scanner s=ConsolaBase.ENTRADA;
         System.out.println("Club Deportivo Séneca. Datos demo: admin / demo123");
         System.out.print("Login: ");
@@ -43,7 +42,8 @@ public class ConsolaPrincipal {
         if(!s.hasNextLine())return;
         abrirConsola(club.iniciarSesion(login,s.nextLine()));
     }
-    private void abrirConsola(Persona p) {
+    private void abrirConsola(Persona p) throws ClubException
+    {
         ConsolaBase c;
         if(p instanceof Socio)c=new ConsolaSocio(club,(Socio)p);
         else if(p instanceof Entrenador)c=new ConsolaEntrenador(club,(Entrenador)p);

@@ -1,32 +1,56 @@
 package modelo.inventario;
-import java.io.*;
-import java.time.*;
-import java.util.*;
-import java.util.stream.*;
-import modelo.personas.*;
-import modelo.deportes.*;
-import modelo.actividades.*;
-import modelo.competencias.*;
-import modelo.personal.*;
-import modelo.inventario.*;
-import modelo.comercio.*;
-import modelo.tipos.*;
-import logica.*;
-import excepciones.*;
-public class Inventario implements Serializable {
+
+import excepciones.ClubException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import modelo.comercio.Producto;
+import modelo.personas.Administrador;
+
+public class Inventario implements Serializable
+{
     private static final long serialVersionUID = 1L;
     private List<Existencia> existencias=new ArrayList<>();
     private List<MovimientoInventario> movimientos=new ArrayList<>();
-    public boolean estaRegistrado(Producto p) {
-        return existencias.stream().anyMatch(e->e.getProducto()==p);
+    public boolean estaRegistrado(Producto p)
+    {
+        for (Existencia existencia : existencias)
+        {
+            if (existencia.getProducto() == p)
+            {
+                return true;
+            }
+        }
+        return false;
     }
-    public int getCantidad(Producto p,Ubicacion u) {
-        return existencias.stream().filter(e->e.getProducto()==p&&e.getUbicacion()==u).mapToInt(Existencia::getCantidad).sum();
+    public int getCantidad(Producto p,Ubicacion u)
+    {
+        int cantidad = 0;
+        for (Existencia existencia : existencias)
+        {
+            if (existencia.getProducto() == p && existencia.getUbicacion() == u)
+            {
+                cantidad += existencia.getCantidad();
+            }
+        }
+        return cantidad;
     }
-    public List<Existencia> consultar(Ubicacion u) {
-        return existencias.stream().filter(e->e.getUbicacion()==u).collect(Collectors.toUnmodifiableList());
+    public List<Existencia> consultar(Ubicacion u)
+    {
+        List<Existencia> resultado = new ArrayList<Existencia>();
+        for (Existencia existencia : existencias)
+        {
+            if (existencia.getUbicacion() == u)
+            {
+                resultado.add(existencia);
+            }
+        }
+        return resultado;
     }
-    public Existencia obtenerExistencia(Producto p,Ubicacion u) {
+    public Existencia obtenerExistencia(Producto p,Ubicacion u)
+    {
         Objects.requireNonNull(p);
         Objects.requireNonNull(u);
         for(Existencia e:existencias)if(e.getProducto()==p&&e.getUbicacion()==u)return e;
@@ -34,25 +58,30 @@ public class Inventario implements Serializable {
         existencias.add(e);
         return e;
     }
-    public Reabastecimiento reabastecer(Producto p,Ubicacion u,int n,Administrador a) {
+    public Reabastecimiento reabastecer(Producto p,Ubicacion u,int n,Administrador a) throws ClubException
+    {
         Reabastecimiento r=new Reabastecimiento(p,u,n,a);
         r.aplicar(this);
         movimientos.add(r);
         return r;
     }
-    public Traslado trasladar(Producto p,Ubicacion o,Ubicacion d,int n,Administrador a) {
+    public Traslado trasladar(Producto p,Ubicacion o,Ubicacion d,int n,Administrador a) throws ClubException
+    {
         Traslado t=new Traslado(p,o,d,n,a);
         t.aplicar(this);
         movimientos.add(t);
         return t;
     }
-    public void descontar(Producto p,Ubicacion u,int n) {
+    public void descontar(Producto p,Ubicacion u,int n) throws ClubException
+    {
         obtenerExistencia(p,u).disminuir(n);
     }
-    public List<MovimientoInventario> getMovimientos() {
+    public List<MovimientoInventario> getMovimientos()
+    {
         return copiaLectura(movimientos);
     }
-    private static <T> List<T> copiaLectura(Collection<T> valores) {
-        return Collections.unmodifiableList(new ArrayList<>(valores));
+    private static <T> List<T> copiaLectura(Collection<T> valores)
+    {
+        return new ArrayList<T>(valores);
     }
 }

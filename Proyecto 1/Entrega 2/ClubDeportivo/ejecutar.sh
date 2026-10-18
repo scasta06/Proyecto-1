@@ -2,7 +2,7 @@
 set -eu
 cd "$(dirname "$0")"
 mkdir -p bin
-find src -name '*.java' -print > fuentes.txt
+find src srctest -name '*.java' -print > fuentes.txt
 javac -encoding UTF-8 -Xlint:all -d bin @fuentes.txt
 rm fuentes.txt
 case "${1:-pruebas}" in

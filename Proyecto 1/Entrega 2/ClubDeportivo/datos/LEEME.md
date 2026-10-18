@@ -1,12 +1,14 @@
-# Datos reproducibles
+# Datos de ejemplo
 
-`club-ejemplo.json` contiene el club inicial de demostración. Se genera ejecutando
-`pruebas.DatosPrueba` o `sh ejecutar.sh datos`. No modifica la Entrega 1.
+`club-ejemplo.json` se genera ejecutando `pruebas.DatosPrueba`, en `srctest`.
+Todos los datos son ficticios. Los turnos se crean para el día siguiente a la generación.
+Regenerar los datos con `sh ejecutar.sh datos` si se trabaja en otra fecha.
 
-El archivo JSON usa el formato CDS-1: una cabecera y una instantánea Java serializada
-en Base64. No es un JSON tabular editable manualmente. El enunciado permite binarios.
-Todos los datos son ficticios. Fechas de partidos y turnos: mañana respecto a la generación.
-Para trabajar en otra fecha, regenere los datos desde la clase DatosPrueba.
+La clase `PersistenciaJson` conserva el nombre del modelo. Usa una envoltura JSON
+CDS-1 de cuatro líneas cuyo campo `datos` contiene el grafo Java serializado en
+Base64. La serialización permite recuperar las mismas relaciones entre objetos.
+Se usan BufferedReader, PrintWriter, ObjectInputStream y ObjectOutputStream.
+El archivo está diseñado para ser escrito y leído por esta aplicación.
 
-Credenciales de demostración (clave común `demo123`): `admin`, `entrenador`,
-`entrenador2`, `fisio`, `socio1` hasta `socio16`.
+La clave de ejemplo es `demo123`. Los usuarios son `admin`, `entrenador`,
+`entrenador2`, `fisio` y `socio1` a `socio16`.

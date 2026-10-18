@@ -1,48 +1,51 @@
 package modelo.comercio;
-import java.io.*;
-import java.time.*;
-import java.util.*;
-import java.util.stream.*;
-import modelo.personas.*;
-import modelo.deportes.*;
-import modelo.actividades.*;
-import modelo.competencias.*;
-import modelo.personal.*;
-import modelo.inventario.*;
-import modelo.comercio.*;
-import modelo.tipos.*;
-import logica.*;
-import excepciones.*;
-public abstract class PuntoVenta implements Serializable {
+
+import excepciones.ClubException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import modelo.inventario.Ubicacion;
+import modelo.personas.Persona;
+
+public abstract class PuntoVenta implements Serializable
+{
     private static final long serialVersionUID = 1L;
-    protected String nombre;
-    protected Ubicacion ubicacion;
+    private String nombre;
+    private Ubicacion ubicacion;
     protected List<Venta> ventas=new ArrayList<>();
-    protected PuntoVenta(String n,Ubicacion u) {
+    protected PuntoVenta(String n,Ubicacion u)
+    {
         nombre=n;
         ubicacion=u;
     }
     public abstract boolean admiteProducto(Producto p);
-    public abstract double calcularDescuento(Persona c,double subtotal);
-    public abstract double calcularImpuesto(double base);
+    public abstract double calcularDescuento(Persona c,double subtotal) throws ClubException ;
+    public abstract double calcularImpuesto(double base) throws ClubException ;
     public abstract boolean admitePropina();
-    public void registrarVenta(Venta v) {
+    public void registrarVenta(Venta v) throws ClubException
+    {
         validar(v.isCerrada()&&v.getPuntoVenta()==this&&!ventas.contains(v),"Venta no registrable");
         ventas.add(v);
     }
-    public Ubicacion getUbicacion() {
+    public Ubicacion getUbicacion()
+    {
         return ubicacion;
     }
-    public List<Venta> getVentas() {
+    public List<Venta> getVentas()
+    {
         return copiaLectura(ventas);
     }
-    public String getNombre() {
+    public String getNombre()
+    {
         return nombre;
     }
-    private static void validar(boolean condicion,String mensaje) {
+    private static void validar(boolean condicion,String mensaje) throws ClubException
+    {
         if(!condicion)throw new ClubException(mensaje);
     }
-    private static <T> List<T> copiaLectura(Collection<T> valores) {
-        return Collections.unmodifiableList(new ArrayList<>(valores));
+    private static <T> List<T> copiaLectura(Collection<T> valores)
+    {
+        return new ArrayList<T>(valores);
     }
 }

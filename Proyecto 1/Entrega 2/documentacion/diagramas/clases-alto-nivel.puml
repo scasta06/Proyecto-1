@@ -1,5 +1,7 @@
 @startuml
 title Club Deportivo Séneca - clases de alto nivel
+class Exception <<Java>>
+Exception <|-- ClubException
 skinparam classAttributeIconSize 0
 hide empty members
 left to right direction
@@ -201,12 +203,6 @@ package "persistencia" {
 interface IPersistenciaClub {
 }
 class PersistenciaJson {
-}
-}
-package "pruebas" {
-class DatosPrueba {
-}
-class PruebasSistema {
 }
 }
 Academia --> Deporte

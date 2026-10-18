@@ -7,10 +7,13 @@ participant Inventario as I
 participant CuentaFidelizacion as C
 participant PuntoVenta as P
 Comprador -> G: finalizarVenta(v, propina, puntos)
-G -> V: validar estado, items y alérgenos informados
+G -> V: isCerrada() / getItems() / requiereInfoAlergenos()
+G -> V: isAlergenosInformados()
 G -> I: getCantidad(producto, ubicacion)
 G -> V: aplicarPropina(propina)
 G -> V: calcularTotales(puntoVenta)
+V -> P: calcularDescuento(comprador, subtotal)
+V -> P: calcularImpuesto(baseGravable)
 G -> C: puedeRedimir(puntos)
 alt todas las validaciones pasan
 G -> V: redimirPuntos(puntos, valor)
