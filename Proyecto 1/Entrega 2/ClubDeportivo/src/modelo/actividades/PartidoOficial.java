@@ -23,7 +23,7 @@ public class PartidoOficial extends Partido implements Serializable {
         super(id,f,h,c.getDeporte().getDuracionPartidoMin(),inst);
         competencia=c;
         inscripcion=i;
-        this.rival=Validacion.texto(rival);
+        this.rival=textoRequerido(rival);
         esLocal=local;
         fase=c.getFormato()==FormatoCompetencia.GRUPOS_Y_ELIMINACION?"GRUPOS":c.getFormato().name();
     }
@@ -47,10 +47,17 @@ public class PartidoOficial extends Partido implements Serializable {
         return fase;
     }
     public void setFase(String f) {
-        Validacion.exigir(estado==EstadoPartido.PROGRAMADO&&Set.of("LIGA","GRUPOS","ELIMINACION_DIRECTA").contains(f),"Fase inválida");
+        validar(estado==EstadoPartido.PROGRAMADO&&Set.of("LIGA","GRUPOS","ELIMINACION_DIRECTA").contains(f),"Fase inválida");
         fase=f;
     }
     public String getRival() {
         return rival;
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
+    }
+    private static String textoRequerido(String valor) {
+        if(valor==null||valor.isBlank())throw new ClubException("Texto obligatorio");
+        return valor.trim();
     }
 }

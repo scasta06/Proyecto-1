@@ -20,7 +20,7 @@ public class Turno implements Serializable {
     private LocalTime horaInicio,horaFin;
     private Empleado empleado;
     public Turno(String id,LocalDate f,LocalTime ini,LocalTime fin,Empleado e) {
-        Validacion.exigir(ini.isBefore(fin),"Horario de turno inválido");
+        validar(ini.isBefore(fin),"Horario de turno inválido");
         this.id=id;
         fecha=f;
         horaInicio=ini;
@@ -47,5 +47,8 @@ public class Turno implements Serializable {
     }
     public String getId() {
         return id;
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
     }
 }

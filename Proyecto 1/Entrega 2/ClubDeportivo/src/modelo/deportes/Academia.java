@@ -22,15 +22,15 @@ public class Academia implements Serializable {
     private Entrenador entrenador;
     private List<InscripcionAcademia> inscripciones=new ArrayList<>();
     public Academia(String n,Deporte d,Entrenador en,int min,int max,int cupo,String h,double valor) {
-        Validacion.exigir(!d.isEsDeConjunto()&&en.puedeEntrenar(d)&&min>=1&&max<=10&&max>=min,"Academia inválida");
+        validar(!d.isEsDeConjunto()&&en.puedeEntrenar(d)&&min>=1&&max<=10&&max>=min,"Academia inválida");
         nombre=n;
         deporte=d;
         entrenador=en;
         nivelMinimo=min;
         nivelMaximo=max;
-        cupoMaximo=Validacion.positivo(cupo);
+        cupoMaximo=enteroPositivo(cupo);
         horario=h;
-        valorMensualidad=Validacion.dinero(valor);
+        valorMensualidad=redondearDinero(valor);
     }
     public boolean tieneCupo() {
         return inscripciones.stream().filter(i->i.isActiva()&&i.getAlumno().isActivo()).count()<cupoMaximo;
@@ -55,5 +55,16 @@ public class Academia implements Serializable {
     }
     public Entrenador getEntrenador() {
         return entrenador;
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
+    }
+    private static int enteroPositivo(int valor) {
+        if(valor<=0)throw new ClubException("Debe ser positivo");
+        return valor;
+    }
+    private static double redondearDinero(double valor) {
+        if(!Double.isFinite(valor)||valor<0)throw new ClubException("Valor monetario inválido");
+        return Math.round(valor*100.0)/100.0;
     }
 }

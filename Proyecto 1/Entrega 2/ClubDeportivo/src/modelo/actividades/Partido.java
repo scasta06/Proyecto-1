@@ -36,11 +36,11 @@ public abstract class Partido extends Evento implements Serializable {
         estado=EstadoPartido.FINALIZADO;
     }
     public Resultado getResultado() {
-        Validacion.exigir(estado==EstadoPartido.FINALIZADO,"Partido sin resultado");
+        validar(estado==EstadoPartido.FINALIZADO,"Partido sin resultado");
         return marcadorPropio>marcadorRival?Resultado.VICTORIA:marcadorPropio==marcadorRival?Resultado.EMPATE:Resultado.DERROTA;
     }
     public void agregarEstadistica(Estadistica e) {
-        Validacion.exigir(e.getPartido()==this&&participo(e.getJugador())&&estadisticas.stream().noneMatch(x->x.getJugador()==e.getJugador()),"Estadística duplicada o de otro partido/jugador");
+        validar(e.getPartido()==this&&participo(e.getJugador())&&estadisticas.stream().noneMatch(x->x.getJugador()==e.getJugador()),"Estadística duplicada o de otro partido/jugador");
         estadisticas.add(e);
     }
     public abstract Deporte getDeporte();
@@ -51,10 +51,10 @@ public abstract class Partido extends Evento implements Serializable {
         return estado;
     }
     public List<Socio> getParticipantes() {
-        return Validacion.copia(participantes);
+        return copiaLectura(participantes);
     }
     public List<Estadistica> getEstadisticas() {
-        return Validacion.copia(estadisticas);
+        return copiaLectura(estadisticas);
     }
     public int getMarcadorPropio() {
         return marcadorPropio;
@@ -63,8 +63,14 @@ public abstract class Partido extends Evento implements Serializable {
         return marcadorRival;
     }
     public void cancelar() {
-        Validacion.exigir(estado==EstadoPartido.PROGRAMADO,"Partido finalizado");
+        validar(estado==EstadoPartido.PROGRAMADO,"Partido finalizado");
         estado=EstadoPartido.CANCELADO;
         if(instalacion!=null)instalacion.liberar(this);
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
+    }
+    private static <T> List<T> copiaLectura(Collection<T> valores) {
+        return Collections.unmodifiableList(new ArrayList<>(valores));
     }
 }

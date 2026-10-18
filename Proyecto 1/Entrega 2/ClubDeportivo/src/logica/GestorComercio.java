@@ -15,24 +15,6 @@ import logica.*;
 import excepciones.*;
 public class GestorComercio implements Serializable {
     private static final long serialVersionUID = 1L;
-    private GestorInstalaciones instalaciones;
-    private List<SugerenciaProducto> sugerencias=new ArrayList<>();
-    public void configurarInstalaciones(GestorInstalaciones i) {
-        instalaciones=i;
-    }
-    public SugerenciaProducto sugerirProducto(Empleado e,Producto p) {
-        SugerenciaProducto s=new SugerenciaProducto(e,p);
-        sugerencias.add(s);
-        return s;
-    }
-    public void responderSugerencia(SugerenciaProducto s,Administrador a,boolean aprobar) {
-        Validacion.exigir(sugerencias.contains(s)&&s.getEstado()==EstadoSolicitud.PENDIENTE,"Sugerencia desconocida o respondida");
-        if(aprobar) {
-            Validacion.exigir(!productos.containsKey(s.getProducto().getCodigo()),"Producto duplicado");
-        }
-        s.responder(a,aprobar);
-        if(aprobar)registrarProducto(s.getProducto());
-    }
     private Tienda tienda;
     private Cafeteria cafeteria;
     private Inventario inventario=new Inventario();
@@ -54,43 +36,37 @@ public class GestorComercio implements Serializable {
         return cafeteria;
     }
     public List<Producto> getProductos() {
-        return Validacion.copia(productos.values());
+        return copiaLectura(productos.values());
     }
     public void registrarProducto(Producto p) {
-        Validacion.exigir(!productos.containsKey(p.getCodigo()),"Producto duplicado");
+        validar(!productos.containsKey(p.getCodigo()),"Producto duplicado");
         productos.put(p.getCodigo(),p);
     }
     public Venta iniciarVenta(PuntoVenta pv,Persona comprador) {
-        Validacion.exigir((pv==tienda||pv==cafeteria)&&(comprador instanceof Empleado||(comprador instanceof Socio&&((Socio)comprador).isActivo())),"Comprador o punto de venta inválido");
+        validar((pv==tienda||pv==cafeteria)&&(comprador instanceof Empleado||(comprador instanceof Socio&&((Socio)comprador).isActivo())),"Comprador o punto de venta inválido");
         Venta v=new Venta(String.format("V%06d",++consecutivoVentas),comprador,pv);
         pendientes.add(v);
         return v;
     }
     public void agregarProducto(Venta v,Producto p,int cant) {
-        Validacion.exigir(pendientes.contains(v)&&productos.get(p.getCodigo())==p&&cant>0,"Producto, venta o cantidad inválidos");
+        validar(pendientes.contains(v)&&productos.get(p.getCodigo())==p&&cant>0,"Producto, venta o cantidad inválidos");
         int ya=v.getItems().stream().filter(i->i.getProducto()==p).mapToInt(ItemVenta::getCantidad).sum();
         if(inventario.getCantidad(p,v.getPuntoVenta().getUbicacion())<(long)ya+cant)throw new InventarioException("Stock insuficiente");
         v.agregarItem(p,cant);
-    }
-    public void aplicarCodigo(Venta v,String codigo) {
-        Validacion.exigir(pendientes.contains(v)&&usuarios.getPersonas().stream().anyMatch(p->p instanceof Empleado&&((Empleado)p).getCodigoDescuento().equals(codigo)),"Código de empleado inválido");
-        v.aplicarCodigoCompartido();
     }
     public List<Ingrediente> consultarIngredientes(Snack s) {
         return s.getIngredientes();
     }
     public synchronized Venta finalizarVenta(Venta v,double propina,int puntos) {
-        Validacion.exigir(pendientes.contains(v)&&!v.isCerrada()&&!v.getItems().isEmpty()&&(!v.requiereInfoAlergenos()||alergenosInformados(v)),"Venta vacía, desconocida o alérgenos no informados");
-        Validacion.exigir(puntos>=0&&(v.getComprador() instanceof Socio||puntos==0),"Redención no permitida");
+        validar(pendientes.contains(v)&&!v.isCerrada()&&!v.getItems().isEmpty()&&(!v.requiereInfoAlergenos()||alergenosInformados(v)),"Venta vacía, desconocida o alérgenos no informados");
+        validar(puntos>=0&&(v.getComprador() instanceof Socio||puntos==0),"Redención no permitida");
         Map<Producto,Integer> cantidades=new LinkedHashMap<>();
         v.getItems().forEach(i->cantidades.merge(i.getProducto(),i.getCantidad(),Integer::sum));
         for(Map.Entry<Producto,Integer> e:cantidades.entrySet())if(inventario.getCantidad(e.getKey(),v.getPuntoVenta().getUbicacion())<e.getValue())throw new InventarioException("Stock cambió antes de pagar");
-        boolean bebida=v.getItems().stream().anyMatch(i->i.getProducto() instanceof Bebida&&((Bebida)i.getProducto()).isCaliente());
-        if(bebida&&v.getComprador() instanceof Socio)Validacion.exigir(instalaciones!=null&&instalaciones.admiteBebidaCaliente((Socio)v.getComprador()),"Bebida caliente prohibida en instalación actual");
         v.aplicarPropina(propina);
         v.calcularTotales(v.getPuntoVenta());
         Socio s=v.getComprador() instanceof Socio?(Socio)v.getComprador():null;
-        Validacion.exigir(s==null||s.getCuenta().puedeRedimir(puntos),"Puntos insuficientes");
+        validar(s==null||s.getCuenta().puedeRedimir(puntos),"Puntos insuficientes");
         v.redimirPuntos(puntos,(double)puntos*CuentaFidelizacion.VALOR_PUNTO);
         v.calcularTotales(v.getPuntoVenta());
         v.cerrar();
@@ -99,7 +75,6 @@ public class GestorComercio implements Serializable {
             v.setPuntosGanados(s.getCuenta().acumular(v.getBaseFidelizacion()));
         }
         cantidades.forEach((p,n)->inventario.descontar(p,v.getPuntoVenta().getUbicacion(),n));
-        if(bebida&&s!=null)s.recibirBebidaCaliente();
         v.getPuntoVenta().registrarVenta(v);
         pendientes.remove(v);
         return v;
@@ -108,7 +83,7 @@ public class GestorComercio implements Serializable {
         return v.isAlergenosInformados();
     }
     public Mensualidad registrarMensualidad(Socio s,YearMonth periodo,ConceptoMensualidad c,double valor) {
-        Validacion.exigir(s.isActivo()&&mensualidades.stream().noneMatch(m->m.getSocio()==s&&m.getPeriodo().equals(periodo)&&m.getConcepto()==c),"Mensualidad duplicada o socio inactivo");
+        validar(s.isActivo()&&mensualidades.stream().noneMatch(m->m.getSocio()==s&&m.getPeriodo().equals(periodo)&&m.getConcepto()==c),"Mensualidad duplicada o socio inactivo");
         Mensualidad m=new Mensualidad(s,periodo,c,valor);
         mensualidades.add(m);
         return m;
@@ -124,5 +99,11 @@ public class GestorComercio implements Serializable {
     }
     public Inventario getInventario() {
         return inventario;
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
+    }
+    private static <T> List<T> copiaLectura(Collection<T> valores) {
+        return Collections.unmodifiableList(new ArrayList<>(valores));
     }
 }

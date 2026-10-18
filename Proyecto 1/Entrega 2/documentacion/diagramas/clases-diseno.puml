@@ -11,7 +11,7 @@ class ConsolaAdministrador {
 }
 abstract class ConsolaBase {
   # ClubDeportivo club
-  # static final Scanner ENTRADA=new Scanner(System.in)
+  # static final Scanner ENTRADA
   # ConsolaBase(ClubDeportivo c)
   # String pedirCadena(String msg)
   # int pedirEntero(String msg)
@@ -92,22 +92,18 @@ class ClubDeportivo {
   + GestorPersonal getGestorPersonal()
   + GestorReportes getGestorReportes()
   + String getNombre()
+  - static void validar(boolean condicion,String mensaje)
 }
 class GestorComercio {
   - static final long serialVersionUID
-  - GestorInstalaciones instalaciones
-  - List<SugerenciaProducto> sugerencias=new ArrayList<>()
-  + void configurarInstalaciones(GestorInstalaciones i)
-  + SugerenciaProducto sugerirProducto(Empleado e,Producto p)
-  + void responderSugerencia(SugerenciaProducto s,Administrador a,boolean aprobar)
   - Tienda tienda
   - Cafeteria cafeteria
-  - Inventario inventario=new Inventario()
-  - Map<String,Producto> productos=new LinkedHashMap<>()
-  - List<Alergeno> alergenos=new ArrayList<>()
-  - List<Mensualidad> mensualidades=new ArrayList<>()
+  - Inventario inventario
+  - Map<String,Producto> productos
+  - List<Alergeno> alergenos
+  - List<Mensualidad> mensualidades
   - int consecutivoVentas
-  - List<Venta> pendientes=new ArrayList<>()
+  - List<Venta> pendientes
   - GestorUsuarios usuarios
   + GestorComercio(Tienda t,Cafeteria c,GestorUsuarios u)
   + Tienda getTienda()
@@ -116,7 +112,6 @@ class GestorComercio {
   + void registrarProducto(Producto p)
   + Venta iniciarVenta(PuntoVenta pv,Persona comprador)
   + void agregarProducto(Venta v,Producto p,int cant)
-  + void aplicarCodigo(Venta v,String codigo)
   + List<Ingrediente> consultarIngredientes(Snack s)
   + synchronized Venta finalizarVenta(Venta v,double propina,int puntos)
   - boolean alergenosInformados(Venta v)
@@ -125,12 +120,12 @@ class GestorComercio {
   + List<Venta> getVentas(LocalDate ini,LocalDate fin)
   + List<Mensualidad> getMensualidades(LocalDate ini,LocalDate fin)
   + Inventario getInventario()
+  - static void validar(boolean condicion,String mensaje)
+  - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class GestorCompetencias {
   - static final long serialVersionUID
-  - GestorDeportivo deportivo
-  + void configurarDeportivo(GestorDeportivo g)
-  - List<Competencia> competencias=new ArrayList<>()
+  - List<Competencia> competencias
   - GestorInstalaciones instalaciones
   + GestorCompetencias(GestorInstalaciones i)
   + void registrarCompetencia(Competencia c)
@@ -141,26 +136,17 @@ class GestorCompetencias {
   + PartidoOficial programarPartido(Competencia c,InscripcionCompetencia i,String rival,LocalDate f,LocalTime ini,boolean local)
   + void registrarResultado(PartidoOficial p,int propio,int rival)
   + List<InscripcionCompetencia> consultarTabla(Competencia c)
+  - static void validar(boolean condicion,String mensaje)
+  - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class GestorDeportivo {
   - static final long serialVersionUID
-  - List<PartidoInterno> partidosInternos=new ArrayList<>()
-  - Map<String,Map<Socio,Integer>> amarillas=new LinkedHashMap<>()
-  - Map<String,Set<Socio>> suspendidos=new LinkedHashMap<>()
-  - Map<Partido,Set<Socio>> cumplen=new LinkedHashMap<>()
-  - String contexto(Partido p,Socio s)
-  + boolean habilitadoOficial(Competencia c,Socio s)
-  + void prepararSanciones(Partido p,List<Socio> nomina)
-  + void cumplirSanciones(Partido p)
-  + PartidoInterno programarPartidoInterno(Equipo a,Equipo b,LocalDate f,LocalTime h)
-  + void registrarResultadoInterno(PartidoInterno p,int a,int b)
-  + List<PartidoInterno> getPartidosInternos()
-  - List<Deporte> deportes=new ArrayList<>()
-  - List<Equipo> equipos=new ArrayList<>()
-  - List<Academia> academias=new ArrayList<>()
-  - List<SesionEntrenamiento> sesiones=new ArrayList<>()
-  - List<PartidoPractica> partidosPractica=new ArrayList<>()
-  - Map<Deporte,Ranking> rankings=new LinkedHashMap<>()
+  - List<Deporte> deportes
+  - List<Equipo> equipos
+  - List<Academia> academias
+  - List<SesionEntrenamiento> sesiones
+  - List<PartidoPractica> partidosPractica
+  - Map<Deporte,Ranking> rankings
   - GestorInstalaciones instalaciones
   + GestorDeportivo(GestorInstalaciones i)
   + void registrarDeporte(Deporte d)
@@ -179,15 +165,13 @@ class GestorDeportivo {
   + PartidoPractica programarPartidoPractica(Socio sol,Persona rival,Deporte d,LocalDate f,LocalTime ini)
   + Estadistica registrarEstadistica(Entrenador en,Partido p,Socio j,Map<String,Integer> v)
   + List<EntradaRanking> consultarRanking(Deporte d)
+  - static void validar(boolean condicion,String mensaje)
+  - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class GestorInstalaciones {
   - static final long serialVersionUID
-  - Map<Socio,Instalacion> presentes=new LinkedHashMap<>()
-  + void ingresar(Socio s,Instalacion i,LocalDate fecha,LocalTime hora)
-  + void salir(Socio s)
-  + boolean admiteBebidaCaliente(Socio s)
-  - List<Instalacion> instalaciones=new ArrayList<>()
-  - List<Reserva> reservas=new ArrayList<>()
+  - List<Instalacion> instalaciones
+  - List<Reserva> reservas
   + void registrarInstalacion(Instalacion i)
   + List<Instalacion> getInstalaciones()
   + List<Reserva> getReservas()
@@ -195,11 +179,13 @@ class GestorInstalaciones {
   + Reserva reservar(Socio s,Deporte d,LocalDate f,LocalTime ini,int dur,int n,ModalidadReserva m)
   + void cancelarReserva(Reserva r)
   + Map<Instalacion,List<LocalTime>> consultarDisponibilidad(Deporte d,LocalDate f)
+  - static void validar(boolean condicion,String mensaje)
+  - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class GestorPersonal {
   - static final long serialVersionUID
-  - List<Turno> turnos=new ArrayList<>()
-  - List<SolicitudCambioTurno> solicitudes=new ArrayList<>()
+  - List<Turno> turnos
+  - List<SolicitudCambioTurno> solicitudes
   + static final int MIN_ENTRENADORES
   - LocalTime horaApertura,horaCierre
   + GestorPersonal(LocalTime ini,LocalTime fin)
@@ -211,6 +197,8 @@ class GestorPersonal {
   - int contarDisponibles(List<Turno> lista,LocalDate f,LocalTime h,Class<?> tipo)
   + List<Turno> getTurnos()
   + List<SolicitudCambioTurno> getSolicitudes()
+  - static void validar(boolean condicion,String mensaje)
+  - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class GestorReportes {
   - static final long serialVersionUID
@@ -220,7 +208,7 @@ class GestorReportes {
 }
 class GestorUsuarios {
   - static final long serialVersionUID
-  - Map<String,Persona> personas=new LinkedHashMap<>()
+  - Map<String,Persona> personas
   + Persona autenticar(String login,String clave)
   - void registrar(Persona p)
   + void registrarSocio(Socio s)
@@ -230,12 +218,14 @@ class GestorUsuarios {
   + List<Fisioterapeuta> getFisioterapeutas()
   + Sancion sancionar(Socio s,String motivo,TipoSancion t,LocalDate ini,LocalDate fin,Deporte d)
   + List<Persona> getPersonas()
+  - static void validar(boolean condicion,String mensaje)
+  - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class ReporteVentas {
   - static final long serialVersionUID
   - LocalDate fechaInicio,fechaFin
-  - Map<Rubro,Double> totalesPorRubro=new EnumMap<>(Rubro.class)
-  - Map<YearMonth,Map<Rubro,Double>> totalesPorMes=new TreeMap<>()
+  - Map<Rubro,Double> totalesPorRubro
+  - Map<YearMonth,Map<Rubro,Double>> totalesPorMes
   - int transacciones
   + ReporteVentas(LocalDate ini,LocalDate fin)
   + void agregar(Rubro r,YearMonth mes,double valor)
@@ -244,20 +234,14 @@ class ReporteVentas {
   + Map<Rubro,Double> getTotalesPorRubro()
   + Map<YearMonth,Map<Rubro,Double>> getTotalesPorMes()
   + int getTransacciones()
-}
-class Validacion {
-  - Validacion()
-  + static void exigir(boolean condicion,String mensaje)
-  + static String texto(String v)
-  + static int positivo(int v)
-  + static double dinero(double v)
-  + static <T> List<T> copia(Collection<T> c)
+  - static void validar(boolean condicion,String mensaje)
+  - static double redondearDinero(double valor)
 }
 }
 package "modelo.actividades" {
 abstract class Estadistica {
   - static final long serialVersionUID
-  # LocalDate fechaRegistro=LocalDate.now()
+  # LocalDate fechaRegistro
   # Socio jugador
   # Partido partido
   # Map<String,Integer> valores
@@ -267,6 +251,7 @@ abstract class Estadistica {
   + Socio getJugador()
   + Partido getPartido()
   # int valor(String k)
+  - static void validar(boolean condicion,String mensaje)
 }
 class EstadisticaBaloncesto {
   - static final long serialVersionUID
@@ -308,19 +293,18 @@ abstract class Evento {
   + LocalDate getFecha()
   + LocalTime getHoraInicio()
   + Instalacion getInstalacion()
+  - static void validar(boolean condicion,String mensaje)
+  - static String textoRequerido(String valor)
+  - static int enteroPositivo(int valor)
 }
 class Instalacion {
   - static final long serialVersionUID
-  - boolean techada
-  + boolean isTechada()
-  + void setTechada(boolean t)
-  + boolean restringeBebidaCaliente()
   - String codigo,nombre
   - int capacidadMaxima
   - LocalTime horaApertura,horaCierre
   - boolean enMantenimiento
   - Deporte deporte
-  - List<Evento> ocupaciones=new ArrayList<>()
+  - List<Evento> ocupaciones
   + Instalacion(String c,String n,int capacidad,LocalTime abre,LocalTime cierra,Deporte d)
   + boolean estaDisponible(LocalDate f,LocalTime ini,LocalTime fin)
   + boolean admiteCantidad(int n)
@@ -334,13 +318,17 @@ class Instalacion {
   + LocalTime getHoraApertura()
   + LocalTime getHoraCierre()
   + List<Evento> getOcupaciones()
+  - static void validar(boolean condicion,String mensaje)
+  - static String textoRequerido(String valor)
+  - static int enteroPositivo(int valor)
+  - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 abstract class Partido {
   - static final long serialVersionUID
   # EstadoPartido estado
   # int marcadorPropio,marcadorRival
-  # List<Socio> participantes=new ArrayList<>()
-  # List<Estadistica> estadisticas=new ArrayList<>()
+  # List<Socio> participantes
+  # List<Estadistica> estadisticas
   # Partido(String id,LocalDate f,LocalTime h,int dur,Instalacion i)
   + void agregarParticipante(Socio s)
   + boolean participo(Socio s)
@@ -355,16 +343,8 @@ abstract class Partido {
   + int getMarcadorPropio()
   + int getMarcadorRival()
   + void cancelar()
-}
-class PartidoInterno {
-  - static final long serialVersionUID
-  - Equipo equipo,rival
-  + PartidoInterno(String id,Equipo e,Equipo r,LocalDate f,LocalTime h,Instalacion i)
-  + void agregarParticipante(Socio s)
-  + Deporte getDeporte()
-  + Equipo getEquipo()
-  + Equipo getRival()
-  + void registrarResultado(int propio,int otro)
+  - static void validar(boolean condicion,String mensaje)
+  - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class PartidoOficial {
   - static final long serialVersionUID
@@ -381,6 +361,8 @@ class PartidoOficial {
   + String getFase()
   + void setFase(String f)
   + String getRival()
+  - static void validar(boolean condicion,String mensaje)
+  - static String textoRequerido(String valor)
 }
 class PartidoPractica {
   - static final long serialVersionUID
@@ -391,6 +373,7 @@ class PartidoPractica {
   + boolean incluyeEntrenador()
   + Deporte getDeporte()
   + boolean isNivelesVerificados()
+  - static void validar(boolean condicion,String mensaje)
 }
 class RegistroAsistencia {
   - static final long serialVersionUID
@@ -404,6 +387,7 @@ class RegistroAsistencia {
   + EstadoAsistencia getEstado()
   + Integer getNotaDesempeno()
   + String getComentario()
+  - static void validar(boolean condicion,String mensaje)
 }
 class Reserva {
   - static final long serialVersionUID
@@ -425,7 +409,7 @@ class SesionEntrenamiento {
   - boolean cancelada
   - Entrenador entrenador
   - List<Socio> convocados
-  - Map<Socio,RegistroAsistencia> registros=new LinkedHashMap<>()
+  - Map<Socio,RegistroAsistencia> registros
   + SesionEntrenamiento(String id,LocalDate f,LocalTime h,int dur,Instalacion i,Entrenador en,List<Socio> socios)
   + boolean estaConvocado(Socio s)
   + RegistroAsistencia registrarAsistencia(Socio s,EstadoAsistencia e,Integer nota,String com)
@@ -435,6 +419,9 @@ class SesionEntrenamiento {
   + List<RegistroAsistencia> getRegistros()
   + void cancelar()
   + void setObjetivo(String o)
+  - static void validar(boolean condicion,String mensaje)
+  - static String textoRequerido(String valor)
+  - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 }
 package "modelo.comercio" {
@@ -444,6 +431,7 @@ class Alergeno {
   + Alergeno(String n,String d)
   + String getNombre()
   + String getDescripcion()
+  - static String textoRequerido(String valor)
 }
 class ArticuloDeportivo {
   - static final long serialVersionUID
@@ -452,13 +440,6 @@ class ArticuloDeportivo {
   + Rubro getRubro()
   + String getMarca()
   + String getTalla()
-}
-class Bebida {
-  - static final long serialVersionUID
-  - boolean caliente
-  + Bebida(String c,String n,double precio,boolean caliente)
-  + boolean isCaliente()
-  + Rubro getRubro()
 }
 class Cafeteria {
   - static final long serialVersionUID
@@ -469,6 +450,8 @@ class Cafeteria {
   + double calcularImpuesto(double b)
   + boolean admitePropina()
   + double sugerirPropina(double s)
+  - static void validar(boolean condicion,String mensaje)
+  - static double redondearDinero(double valor)
 }
 class CuentaFidelizacion {
   - static final long serialVersionUID
@@ -478,6 +461,7 @@ class CuentaFidelizacion {
   + boolean puedeRedimir(int p)
   + double redimir(int p)
   + int getPuntos()
+  - static double redondearDinero(double valor)
 }
 class Ingrediente {
   - static final long serialVersionUID
@@ -486,6 +470,8 @@ class Ingrediente {
   + Ingrediente(String n,List<Alergeno> a)
   + String getNombre()
   + List<Alergeno> getAlergenos()
+  - static String textoRequerido(String valor)
+  - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class ItemVenta {
   - static final long serialVersionUID
@@ -496,6 +482,8 @@ class ItemVenta {
   + double getSubtotal()
   + Producto getProducto()
   + int getCantidad()
+  - static int enteroPositivo(int valor)
+  - static double redondearDinero(double valor)
 }
 class Mensualidad {
   - static final long serialVersionUID
@@ -504,7 +492,7 @@ class Mensualidad {
   - YearMonth periodo
   - ConceptoMensualidad concepto
   - double valor
-  - LocalDate fechaPago=LocalDate.now()
+  - LocalDate fechaPago
   + Mensualidad(Socio s,YearMonth p,ConceptoMensualidad c,double v)
   + Rubro getRubro()
   + Socio getSocio()
@@ -512,6 +500,7 @@ class Mensualidad {
   + ConceptoMensualidad getConcepto()
   + double getValor()
   + LocalDate getFechaPago()
+  - static double redondearDinero(double valor)
 }
 abstract class Producto {
   - static final long serialVersionUID
@@ -522,12 +511,14 @@ abstract class Producto {
   + String getCodigo()
   + String getNombre()
   + double getPrecio()
+  - static String textoRequerido(String valor)
+  - static double redondearDinero(double valor)
 }
 abstract class PuntoVenta {
   - static final long serialVersionUID
   # String nombre
   # Ubicacion ubicacion
-  # List<Venta> ventas=new ArrayList<>()
+  # List<Venta> ventas
   # PuntoVenta(String n,Ubicacion u)
   + abstract boolean admiteProducto(Producto p)
   + abstract double calcularDescuento(Persona c,double subtotal)
@@ -537,6 +528,8 @@ abstract class PuntoVenta {
   + Ubicacion getUbicacion()
   + List<Venta> getVentas()
   + String getNombre()
+  - static void validar(boolean condicion,String mensaje)
+  - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class Snack {
   - static final long serialVersionUID
@@ -547,17 +540,8 @@ class Snack {
   + List<Ingrediente> getIngredientes()
   + List<Alergeno> getAlergenos()
   + boolean contieneAlergeno(Alergeno a)
-}
-class SugerenciaProducto {
-  - static final long serialVersionUID
-  - Empleado empleado
-  - Producto producto
-  - EstadoSolicitud estado
-  - Administrador administrador
-  + SugerenciaProducto(Empleado e,Producto p)
-  + Producto getProducto()
-  + EstadoSolicitud getEstado()
-  + void responder(Administrador a,boolean aprobar)
+  - static void validar(boolean condicion,String mensaje)
+  - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class Tienda {
   - static final long serialVersionUID
@@ -567,24 +551,24 @@ class Tienda {
   + double calcularDescuento(Persona c,double s)
   + double calcularImpuesto(double b)
   + boolean admitePropina()
+  - static void validar(boolean condicion,String mensaje)
+  - static double redondearDinero(double valor)
 }
 class Venta {
   - static final long serialVersionUID
   - String numero
-  - LocalDateTime fechaHora=LocalDateTime.now()
+  - LocalDateTime fechaHora
   - double subtotal,descuento,impuesto,propina,valorRedimido,totalPagado
   - int puntosRedimidos,puntosGanados
   - boolean alergenosInformados,cerrada
   - Persona comprador
   - PuntoVenta puntoVenta
-  - List<ItemVenta> items=new ArrayList<>()
-  - boolean codigoCompartido
+  - List<ItemVenta> items
   + Venta(String n,Persona c,PuntoVenta pv)
   - void abierta()
   + void agregarItem(Producto p,int cantidad)
   + boolean requiereInfoAlergenos()
   + void marcarAlergenosInformados()
-  + void aplicarCodigoCompartido()
   + void calcularTotales(PuntoVenta pv)
   + void aplicarPropina(double v)
   + void redimirPuntos(int p,double valor)
@@ -604,6 +588,9 @@ class Venta {
   + int getPuntosGanados()
   + void setPuntosGanados(int n)
   + String getNumero()
+  - static void validar(boolean condicion,String mensaje)
+  - static double redondearDinero(double valor)
+  - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 }
 package "modelo.competencias" {
@@ -616,8 +603,8 @@ class Competencia {
   - LocalDate fechaInicio,fechaFin,cierreInscripciones
   - int puntosVictoria
   - Deporte deporte
-  - List<InscripcionCompetencia> inscripciones=new ArrayList<>()
-  - List<PartidoOficial> partidos=new ArrayList<>()
+  - List<InscripcionCompetencia> inscripciones
+  - List<PartidoOficial> partidos
   + Competencia(String cod,String nom,String org,Deporte d,Categoria cat,FormatoCompetencia formato,LocalDate ini,LocalDate fin,LocalDate cierre)
   + boolean inscripcionesAbiertas(LocalDate f)
   + int puntosPor(Resultado r)
@@ -634,22 +621,26 @@ class Competencia {
   + EstadoCompetencia getEstado()
   + String getCodigo()
   + void finalizar()
+  - static void validar(boolean condicion,String mensaje)
+  - static String textoRequerido(String valor)
+  - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class EntradaRanking {
   - static final long serialVersionUID
   - Socio jugador
   - int partidosJugados,puntosRanking
-  - Map<String,Integer> acumulados=new LinkedHashMap<>()
+  - Map<String,Integer> acumulados
   + EntradaRanking(Socio s)
   + void acumular(Estadistica e)
   + Socio getJugador()
   + int getPartidosJugados()
   + int getPuntosRanking()
   + Map<String,Integer> getAcumulados()
+  - static void validar(boolean condicion,String mensaje)
 }
 class InscripcionCompetencia {
   - static final long serialVersionUID
-  - LocalDate fechaInscripcion=LocalDate.now()
+  - LocalDate fechaInscripcion
   - int puntosAcumulados,partidosJugados
   - boolean eliminada
   - Competencia competencia
@@ -667,17 +658,19 @@ class InscripcionCompetencia {
   + List<Socio> getNomina()
   + boolean isEliminada()
   + void eliminar()
+  - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class Ranking {
   - static final long serialVersionUID
   - Deporte deporte
   - LocalDate ultimaActualizacion
-  - Map<Socio,EntradaRanking> entradas=new LinkedHashMap<>()
-  - Set<Estadistica> procesadas=new HashSet<>()
+  - Map<Socio,EntradaRanking> entradas
+  - Set<Estadistica> procesadas
   + Ranking(Deporte d)
   + void actualizar(Estadistica e)
   + EntradaRanking getEntrada(Socio s)
   + List<EntradaRanking> getPosiciones()
+  - static void validar(boolean condicion,String mensaje)
 }
 }
 package "modelo.deportes" {
@@ -688,7 +681,7 @@ class Academia {
   - double valorMensualidad
   - Deporte deporte
   - Entrenador entrenador
-  - List<InscripcionAcademia> inscripciones=new ArrayList<>()
+  - List<InscripcionAcademia> inscripciones
   + Academia(String n,Deporte d,Entrenador en,int min,int max,int cupo,String h,double valor)
   + boolean tieneCupo()
   + boolean admiteNivel(int n)
@@ -697,6 +690,9 @@ class Academia {
   + String getNombre()
   + double getValorMensualidad()
   + Entrenador getEntrenador()
+  - static void validar(boolean condicion,String mensaje)
+  - static int enteroPositivo(int valor)
+  - static double redondearDinero(double valor)
 }
 class Deporte {
   - static final long serialVersionUID
@@ -717,6 +713,9 @@ class Deporte {
   + int getDuracionPartidoMin()
   + boolean isPermiteEmpate()
   + TipoEstadistica getTipoEstadistica()
+  - static void validar(boolean condicion,String mensaje)
+  - static String textoRequerido(String valor)
+  - static int enteroPositivo(int valor)
 }
 class Equipo {
   - static final long serialVersionUID
@@ -725,8 +724,7 @@ class Equipo {
   - int cupoMaximo
   - Deporte deporte
   - Entrenador entrenador
-  - boolean activo
-  - List<InscripcionEquipo> inscripciones=new ArrayList<>()
+  - List<InscripcionEquipo> inscripciones
   + Equipo(String n,Categoria c,int cupo,Deporte d,Entrenador en)
   + boolean tieneCupo()
   + boolean esIntegrante(Socio s)
@@ -736,8 +734,9 @@ class Equipo {
   + Categoria getCategoria()
   + String getNombre()
   + Entrenador getEntrenador()
-  + boolean isActivo()
-  + void darDeBaja()
+  - static void validar(boolean condicion,String mensaje)
+  - static String textoRequerido(String valor)
+  - static int enteroPositivo(int valor)
 }
 class InscripcionAcademia {
   - static final long serialVersionUID
@@ -784,11 +783,13 @@ class Existencia {
   + Producto getProducto()
   + Ubicacion getUbicacion()
   + void setStockMinimo(int n)
+  - static void validar(boolean condicion,String mensaje)
+  - static int enteroPositivo(int valor)
 }
 class Inventario {
   - static final long serialVersionUID
-  - List<Existencia> existencias=new ArrayList<>()
-  - List<MovimientoInventario> movimientos=new ArrayList<>()
+  - List<Existencia> existencias
+  - List<MovimientoInventario> movimientos
   + boolean estaRegistrado(Producto p)
   + int getCantidad(Producto p,Ubicacion u)
   + List<Existencia> consultar(Ubicacion u)
@@ -797,10 +798,11 @@ class Inventario {
   + Traslado trasladar(Producto p,Ubicacion o,Ubicacion d,int n,Administrador a)
   + void descontar(Producto p,Ubicacion u,int n)
   + List<MovimientoInventario> getMovimientos()
+  - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 abstract class MovimientoInventario {
   - static final long serialVersionUID
-  # LocalDateTime fechaHora=LocalDateTime.now()
+  # LocalDateTime fechaHora
   # int cantidad
   # Producto producto
   # Ubicacion destino
@@ -808,17 +810,20 @@ abstract class MovimientoInventario {
   # boolean aplicado
   # MovimientoInventario(Producto p,Ubicacion d,int n,Administrador a)
   + abstract void aplicar(Inventario inv)
+  - static int enteroPositivo(int valor)
 }
 class Reabastecimiento {
   - static final long serialVersionUID
   + Reabastecimiento(Producto p,Ubicacion d,int n,Administrador a)
   + void aplicar(Inventario inv)
+  - static void validar(boolean condicion,String mensaje)
 }
 class Traslado {
   - static final long serialVersionUID
   - Ubicacion origen
   + Traslado(Producto p,Ubicacion o,Ubicacion d,int n,Administrador a)
   + void aplicar(Inventario inv)
+  - static void validar(boolean condicion,String mensaje)
 }
 class Ubicacion {
   - static final long serialVersionUID
@@ -828,12 +833,13 @@ class Ubicacion {
   + String getCodigo()
   + String getNombre()
   + TipoUbicacion getTipo()
+  - static String textoRequerido(String valor)
 }
 }
 package "modelo.personal" {
 class SolicitudCambioTurno {
   - static final long serialVersionUID
-  - LocalDate fechaSolicitud=LocalDate.now(),fechaRespuesta
+  - LocalDate fechaSolicitud
   - String motivo,observacion
   - EstadoSolicitud estado
   - Empleado solicitante
@@ -847,6 +853,8 @@ class SolicitudCambioTurno {
   + Turno getTurnoPropuesto()
   + Empleado getSolicitante()
   + EstadoSolicitud getEstado()
+  - static void validar(boolean condicion,String mensaje)
+  - static String textoRequerido(String valor)
 }
 class Turno {
   - static final long serialVersionUID
@@ -862,6 +870,7 @@ class Turno {
   + LocalTime getHoraFin()
   + Empleado getEmpleado()
   + String getId()
+  - static void validar(boolean condicion,String mensaje)
 }
 }
 package "modelo.personas" {
@@ -871,28 +880,30 @@ class Administrador {
   + Administrador(String doc,String nom,LocalDate nac,String login,String clave,String codigo,String dato)
   + String getTipo()
   + String getCargo()
+  - static String textoRequerido(String valor)
 }
 abstract class Empleado {
   - static final long serialVersionUID
   - String codigoEmpleado
   - LocalDate fechaContratacion
-  - String codigoDescuento
   # Empleado(String doc,String nom,LocalDate nac,String login,String clave,String codigo)
   + String getTipo()
   + String getCodigoEmpleado()
-  + String getCodigoDescuento()
   + LocalDate getFechaContratacion()
+  - static String textoRequerido(String valor)
 }
 class Entrenador {
   - static final long serialVersionUID
   - String licencia
-  - List<Deporte> especialidades=new ArrayList<>()
+  - List<Deporte> especialidades
   + Entrenador(String doc,String nom,LocalDate nac,String login,String clave,String codigo,String dato)
   + String getTipo()
   + String getLicencia()
   + void agregarEspecialidad(Deporte d)
   + boolean puedeEntrenar(Deporte d)
   + List<Deporte> getEspecialidades()
+  - static String textoRequerido(String valor)
+  - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 class Fisioterapeuta {
   - static final long serialVersionUID
@@ -900,6 +911,7 @@ class Fisioterapeuta {
   + Fisioterapeuta(String doc,String nom,LocalDate nac,String login,String clave,String codigo,String dato)
   + String getTipo()
   + String getTarjetaProfesional()
+  - static String textoRequerido(String valor)
 }
 class NivelDeportivo {
   - static final long serialVersionUID
@@ -911,6 +923,7 @@ class NivelDeportivo {
   + int diferenciaCon(NivelDeportivo otro)
   + int getNivel()
   + LocalDate getFechaActualizacion()
+  - static void validar(boolean condicion,String mensaje)
 }
 abstract class Persona {
   - static final long serialVersionUID
@@ -928,6 +941,8 @@ abstract class Persona {
   + String getTelefono()
   + String getCorreo()
   + void actualizarContacto(String tel,String mail)
+  - static void validar(boolean condicion,String mensaje)
+  - static String textoRequerido(String valor)
 }
 class Sancion {
   - static final long serialVersionUID
@@ -941,19 +956,17 @@ class Sancion {
   + boolean aplicaA(Deporte d)
   + Socio getSocio()
   + String getMotivo()
+  - static void validar(boolean condicion,String mensaje)
+  - static String textoRequerido(String valor)
 }
 class Socio {
   - static final long serialVersionUID
-  - boolean bebidaCaliente
-  + boolean tieneBebidaCaliente()
-  + void terminarBebida()
-  + void recibirBebidaCaliente()
   - String numeroSocio
   - LocalDate fechaAfiliacion
   - boolean activo
-  - Map<Deporte,NivelDeportivo> niveles=new LinkedHashMap<>()
-  - List<Sancion> sanciones=new ArrayList<>()
-  - CuentaFidelizacion cuenta=new CuentaFidelizacion()
+  - Map<Deporte,NivelDeportivo> niveles
+  - List<Sancion> sanciones
+  - CuentaFidelizacion cuenta
   + Socio(String doc,String nom,LocalDate nac,String login,String clave,String numero)
   + int getNivel(Deporte d)
   + void asignarNivel(Deporte d,int nivel)
@@ -966,40 +979,100 @@ class Socio {
   + String getNumeroSocio()
   + LocalDate getFechaAfiliacion()
   + List<Sancion> getSanciones()
+  - static void validar(boolean condicion,String mensaje)
+  - static String textoRequerido(String valor)
+  - static <T> List<T> copiaLectura(Collection<T> valores)
 }
 }
 package "modelo.tipos" {
 enum Categoria {
+  SUB_13
+  SUB_15
+  SUB_17
+  MAYORES
+
   - final int edadMinima, edadMaxima
   + int getEdadMinima()
   + int getEdadMaxima()
   + static Categoria paraEdad(int edad)
 }
 enum ConceptoMensualidad {
+  AFILIACION
+  ACADEMIA
+
 }
 enum EstadoAsistencia {
+  ASISTIO
+  FALTO
+  LLEGO_TARDE
+
 }
 enum EstadoCompetencia {
+  INSCRIPCIONES_ABIERTAS
+  EN_CURSO
+  FINALIZADA
+
 }
 enum EstadoPartido {
+  PROGRAMADO
+  FINALIZADO
+  CANCELADO
+
 }
 enum EstadoReserva {
+  CONFIRMADA
+  CANCELADA
+  FINALIZADA
+
 }
 enum EstadoSolicitud {
+  PENDIENTE
+  APROBADA
+  RECHAZADA
+
 }
 enum FormatoCompetencia {
+  LIGA
+  ELIMINACION_DIRECTA
+  GRUPOS_Y_ELIMINACION
+
 }
 enum ModalidadReserva {
+  INDIVIDUAL
+  DOBLES
+  GRUPAL
+
 }
 enum Resultado {
+  VICTORIA
+  EMPATE
+  DERROTA
+
 }
 enum Rubro {
+  ARTICULOS_DEPORTIVOS
+  CAFETERIA
+  MENSUALIDADES
+
 }
 enum TipoEstadistica {
+  FUTBOL
+  BALONCESTO
+  VOLEIBOL
+  INDIVIDUAL
+
 }
 enum TipoSancion {
+  AMONESTACION
+  SUSPENSION_DEPORTIVA
+  SUSPENSION_TOTAL
+
 }
 enum TipoUbicacion {
+  BODEGA
+  TIENDA
+  CAFETERIA
+
 }
 }
 package "persistencia" {
@@ -1017,14 +1090,15 @@ class DatosPrueba {
   + static void main(String[] args)
 }
 class PruebasSistema {
-  - static int exitos
-  - static void comprobar(boolean c,String n)
-  - static void rechaza(Runnable r,String n)
+  - static int correctas
+  - static void verificar(boolean condicion,String caso)
+  - static void rechazar(Runnable operacion,String caso)
   + static void main(String[] args)
 }
 }
 Academia --> Deporte
 Academia --> Entrenador
+Academia --> InscripcionAcademia
 ClubDeportivo --> GestorComercio
 ClubDeportivo --> GestorCompetencias
 ClubDeportivo --> GestorDeportivo
@@ -1042,6 +1116,8 @@ Competencia --> Categoria
 Competencia --> Deporte
 Competencia --> EstadoCompetencia
 Competencia --> FormatoCompetencia
+Competencia --> InscripcionCompetencia
+Competencia --> PartidoOficial
 ConsolaAdministrador --> Administrador
 ConsolaBase --> ClubDeportivo
 ConsolaBase <|-- ConsolaAdministrador
@@ -1057,9 +1133,11 @@ Empleado <|-- Administrador
 Empleado <|-- Entrenador
 Empleado <|-- Fisioterapeuta
 EntradaRanking --> Socio
+Entrenador --> Deporte
 Equipo --> Categoria
 Equipo --> Deporte
 Equipo --> Entrenador
+Equipo --> InscripcionEquipo
 Estadistica --> Partido
 Estadistica --> Socio
 Estadistica <|-- EstadisticaBaloncesto
@@ -1072,14 +1150,29 @@ Evento <|-- Reserva
 Evento <|-- SesionEntrenamiento
 Existencia --> Producto
 Existencia --> Ubicacion
+GestorComercio --> Alergeno
 GestorComercio --> Cafeteria
-GestorComercio --> GestorInstalaciones
 GestorComercio --> GestorUsuarios
+GestorComercio --> Inventario
+GestorComercio --> Mensualidad
+GestorComercio --> Producto
 GestorComercio --> Tienda
-GestorCompetencias --> GestorDeportivo
+GestorComercio --> Venta
+GestorCompetencias --> Competencia
 GestorCompetencias --> GestorInstalaciones
+GestorDeportivo --> Academia
+GestorDeportivo --> Deporte
+GestorDeportivo --> Equipo
 GestorDeportivo --> GestorInstalaciones
+GestorDeportivo --> PartidoPractica
+GestorDeportivo --> Ranking
+GestorDeportivo --> SesionEntrenamiento
+GestorInstalaciones --> Instalacion
+GestorInstalaciones --> Reserva
+GestorPersonal --> SolicitudCambioTurno
+GestorPersonal --> Turno
 GestorReportes --> GestorComercio
+GestorUsuarios --> Persona
 Ingrediente --> Alergeno
 InscripcionAcademia --> Academia
 InscripcionAcademia --> Socio
@@ -1089,6 +1182,9 @@ InscripcionCompetencia --> Socio
 InscripcionEquipo --> Equipo
 InscripcionEquipo --> Socio
 Instalacion --> Deporte
+Instalacion --> Evento
+Inventario --> Existencia
+Inventario --> MovimientoInventario
 ItemVenta --> Producto
 Mensualidad --> Academia
 Mensualidad --> ConceptoMensualidad
@@ -1100,11 +1196,11 @@ MovimientoInventario <|-- Reabastecimiento
 MovimientoInventario <|-- Traslado
 NivelDeportivo --> Deporte
 NivelDeportivo --> Socio
+Partido --> Estadistica
 Partido --> EstadoPartido
-Partido <|-- PartidoInterno
+Partido --> Socio
 Partido <|-- PartidoOficial
 Partido <|-- PartidoPractica
-PartidoInterno --> Equipo
 PartidoOficial --> Competencia
 PartidoOficial --> InscripcionCompetencia
 PartidoPractica --> Deporte
@@ -1112,14 +1208,18 @@ PartidoPractica --> Persona
 Persona <|-- Empleado
 Persona <|-- Socio
 Producto <|-- ArticuloDeportivo
-Producto <|-- Bebida
 Producto <|-- Snack
 PuntoVenta --> Ubicacion
+PuntoVenta --> Venta
 PuntoVenta <|-- Cafeteria
 PuntoVenta <|-- Tienda
 Ranking --> Deporte
+Ranking --> EntradaRanking
+Ranking --> Estadistica
+Ranking --> Socio
 RegistroAsistencia --> EstadoAsistencia
 RegistroAsistencia --> Socio
+ReporteVentas --> Rubro
 Reserva --> EstadoReserva
 Reserva --> ModalidadReserva
 Reserva --> Socio
@@ -1127,19 +1227,21 @@ Sancion --> Deporte
 Sancion --> Socio
 Sancion --> TipoSancion
 SesionEntrenamiento --> Entrenador
+SesionEntrenamiento --> RegistroAsistencia
 SesionEntrenamiento --> Socio
 Snack --> Ingrediente
+Socio --> CuentaFidelizacion
+Socio --> Deporte
+Socio --> NivelDeportivo
+Socio --> Sancion
 SolicitudCambioTurno --> Administrador
 SolicitudCambioTurno --> Empleado
 SolicitudCambioTurno --> EstadoSolicitud
 SolicitudCambioTurno --> Turno
-SugerenciaProducto --> Administrador
-SugerenciaProducto --> Empleado
-SugerenciaProducto --> EstadoSolicitud
-SugerenciaProducto --> Producto
 Traslado --> Ubicacion
 Turno --> Empleado
 Ubicacion --> TipoUbicacion
+Venta --> ItemVenta
 Venta --> Persona
 Venta --> PuntoVenta
 PersistenciaJson ..|> IPersistenciaClub

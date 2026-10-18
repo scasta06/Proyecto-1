@@ -20,8 +20,14 @@ public class ConsolaAdministrador extends ConsolaBase {
         admin=p;
     }
     public void mostrarMenu() {
-        ReporteVentas r=club.getGestorReportes().generarReporteVentas(LocalDate.now().withDayOfMonth(1),LocalDate.now());
-        System.out.println("Ventas del mes: "+r.getTotal()+" / "+r.getTotalesPorRubro());
-        System.out.println("Equipos: "+club.getGestorDeportivo().getEquipos().size());
+        while(true) {
+            System.out.println("1. Consultar resumen / 0. Salir");
+            String opcion=pedirCadena("Opción: ");
+            if(opcion.equals("0")||opcion.isEmpty())return;
+            if(opcion.equals("1")) {
+                System.out.println("Ventas del mes: "+club.getGestorReportes().generarReporteVentas(LocalDate.now().withDayOfMonth(1),LocalDate.now()).getTotal());
+            }
+            else System.out.println("Opción inválida");
+        }
     }
 }

@@ -24,28 +24,28 @@ public class GestorPersonal implements Serializable {
         horaCierre=fin;
     }
     public void asignarTurno(Turno t) {
-        Validacion.exigir(turnos.stream().noneMatch(x->x.getId().equals(t.getId())||(x.getEmpleado()==t.getEmpleado()&&x.seTraslapaCon(t))),"Turno duplicado o superpuesto");
+        validar(turnos.stream().noneMatch(x->x.getId().equals(t.getId())||(x.getEmpleado()==t.getEmpleado()&&x.seTraslapaCon(t))),"Turno duplicado o superpuesto");
         turnos.add(t);
     }
     public SolicitudCambioTurno solicitarCambio(Empleado e,Turno actual,Turno propuesto,String motivo) {
-        Validacion.exigir(turnos.contains(actual)&&actual.getEmpleado()==e&&propuesto.getEmpleado()==e,"Turno de otro empleado");
+        validar(turnos.contains(actual)&&actual.getEmpleado()==e&&propuesto.getEmpleado()==e,"Turno de otro empleado");
         SolicitudCambioTurno s=new SolicitudCambioTurno(e,actual,propuesto,motivo);
         solicitudes.add(s);
         return s;
     }
     public void aprobarCambio(SolicitudCambioTurno s,Administrador a) {
-        Validacion.exigir(solicitudes.contains(s)&&s.getEstado()==EstadoSolicitud.PENDIENTE&&turnos.contains(s.getTurnoActual()),"Solicitud inválida");
+        validar(solicitudes.contains(s)&&s.getEstado()==EstadoSolicitud.PENDIENTE&&turnos.contains(s.getTurnoActual()),"Solicitud inválida");
         List<Turno> nuevos=new ArrayList<>(turnos);
         nuevos.remove(s.getTurnoActual());
         Turno p=s.getTurnoPropuesto();
-        Validacion.exigir(nuevos.stream().noneMatch(t->t.getEmpleado()==p.getEmpleado()&&t.seTraslapaCon(p)),"Turnos superpuestos");
+        validar(nuevos.stream().noneMatch(t->t.getEmpleado()==p.getEmpleado()&&t.seTraslapaCon(p)),"Turnos superpuestos");
         nuevos.add(p);
         if(!coberturaMinimaCumplida(nuevos,s.getTurnoActual().getFecha())||!coberturaMinimaCumplida(nuevos,p.getFecha()))throw new TurnoException("El cambio deja al club sin cobertura mínima");
         s.aprobar(a,LocalDate.now());
         turnos=nuevos;
     }
     public void rechazarCambio(SolicitudCambioTurno s,Administrador a,String obs) {
-        Validacion.exigir(solicitudes.contains(s),"Solicitud desconocida");
+        validar(solicitudes.contains(s),"Solicitud desconocida");
         s.rechazar(a,obs,LocalDate.now());
     }
     public boolean coberturaMinimaCumplida(List<Turno> lista,LocalDate f) {
@@ -62,9 +62,15 @@ public class GestorPersonal implements Serializable {
         return (int)lista.stream().filter(t->t.cubre(f,h)&&tipo.isInstance(t.getEmpleado())).map(Turno::getEmpleado).distinct().count();
     }
     public List<Turno> getTurnos() {
-        return Validacion.copia(turnos);
+        return copiaLectura(turnos);
     }
     public List<SolicitudCambioTurno> getSolicitudes() {
-        return Validacion.copia(solicitudes);
+        return copiaLectura(solicitudes);
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
+    }
+    private static <T> List<T> copiaLectura(Collection<T> valores) {
+        return Collections.unmodifiableList(new ArrayList<>(valores));
     }
 }

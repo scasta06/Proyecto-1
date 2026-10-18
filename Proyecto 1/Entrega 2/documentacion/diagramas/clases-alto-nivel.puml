@@ -52,8 +52,6 @@ class GestorUsuarios {
 }
 class ReporteVentas {
 }
-class Validacion {
-}
 }
 package "modelo.actividades" {
 abstract class Estadistica {
@@ -72,8 +70,6 @@ class Instalacion {
 }
 abstract class Partido {
 }
-class PartidoInterno {
-}
 class PartidoOficial {
 }
 class PartidoPractica {
@@ -90,8 +86,6 @@ class Alergeno {
 }
 class ArticuloDeportivo {
 }
-class Bebida {
-}
 class Cafeteria {
 }
 class CuentaFidelizacion {
@@ -107,8 +101,6 @@ abstract class Producto {
 abstract class PuntoVenta {
 }
 class Snack {
-}
-class SugerenciaProducto {
 }
 class Tienda {
 }
@@ -219,6 +211,7 @@ class PruebasSistema {
 }
 Academia --> Deporte
 Academia --> Entrenador
+Academia --> InscripcionAcademia
 ClubDeportivo --> GestorComercio
 ClubDeportivo --> GestorCompetencias
 ClubDeportivo --> GestorDeportivo
@@ -236,6 +229,8 @@ Competencia --> Categoria
 Competencia --> Deporte
 Competencia --> EstadoCompetencia
 Competencia --> FormatoCompetencia
+Competencia --> InscripcionCompetencia
+Competencia --> PartidoOficial
 ConsolaAdministrador --> Administrador
 ConsolaBase --> ClubDeportivo
 ConsolaBase <|-- ConsolaAdministrador
@@ -251,9 +246,11 @@ Empleado <|-- Administrador
 Empleado <|-- Entrenador
 Empleado <|-- Fisioterapeuta
 EntradaRanking --> Socio
+Entrenador --> Deporte
 Equipo --> Categoria
 Equipo --> Deporte
 Equipo --> Entrenador
+Equipo --> InscripcionEquipo
 Estadistica --> Partido
 Estadistica --> Socio
 Estadistica <|-- EstadisticaBaloncesto
@@ -266,14 +263,29 @@ Evento <|-- Reserva
 Evento <|-- SesionEntrenamiento
 Existencia --> Producto
 Existencia --> Ubicacion
+GestorComercio --> Alergeno
 GestorComercio --> Cafeteria
-GestorComercio --> GestorInstalaciones
 GestorComercio --> GestorUsuarios
+GestorComercio --> Inventario
+GestorComercio --> Mensualidad
+GestorComercio --> Producto
 GestorComercio --> Tienda
-GestorCompetencias --> GestorDeportivo
+GestorComercio --> Venta
+GestorCompetencias --> Competencia
 GestorCompetencias --> GestorInstalaciones
+GestorDeportivo --> Academia
+GestorDeportivo --> Deporte
+GestorDeportivo --> Equipo
 GestorDeportivo --> GestorInstalaciones
+GestorDeportivo --> PartidoPractica
+GestorDeportivo --> Ranking
+GestorDeportivo --> SesionEntrenamiento
+GestorInstalaciones --> Instalacion
+GestorInstalaciones --> Reserva
+GestorPersonal --> SolicitudCambioTurno
+GestorPersonal --> Turno
 GestorReportes --> GestorComercio
+GestorUsuarios --> Persona
 Ingrediente --> Alergeno
 InscripcionAcademia --> Academia
 InscripcionAcademia --> Socio
@@ -283,6 +295,9 @@ InscripcionCompetencia --> Socio
 InscripcionEquipo --> Equipo
 InscripcionEquipo --> Socio
 Instalacion --> Deporte
+Instalacion --> Evento
+Inventario --> Existencia
+Inventario --> MovimientoInventario
 ItemVenta --> Producto
 Mensualidad --> Academia
 Mensualidad --> ConceptoMensualidad
@@ -294,11 +309,11 @@ MovimientoInventario <|-- Reabastecimiento
 MovimientoInventario <|-- Traslado
 NivelDeportivo --> Deporte
 NivelDeportivo --> Socio
+Partido --> Estadistica
 Partido --> EstadoPartido
-Partido <|-- PartidoInterno
+Partido --> Socio
 Partido <|-- PartidoOficial
 Partido <|-- PartidoPractica
-PartidoInterno --> Equipo
 PartidoOficial --> Competencia
 PartidoOficial --> InscripcionCompetencia
 PartidoPractica --> Deporte
@@ -306,14 +321,18 @@ PartidoPractica --> Persona
 Persona <|-- Empleado
 Persona <|-- Socio
 Producto <|-- ArticuloDeportivo
-Producto <|-- Bebida
 Producto <|-- Snack
 PuntoVenta --> Ubicacion
+PuntoVenta --> Venta
 PuntoVenta <|-- Cafeteria
 PuntoVenta <|-- Tienda
 Ranking --> Deporte
+Ranking --> EntradaRanking
+Ranking --> Estadistica
+Ranking --> Socio
 RegistroAsistencia --> EstadoAsistencia
 RegistroAsistencia --> Socio
+ReporteVentas --> Rubro
 Reserva --> EstadoReserva
 Reserva --> ModalidadReserva
 Reserva --> Socio
@@ -321,19 +340,21 @@ Sancion --> Deporte
 Sancion --> Socio
 Sancion --> TipoSancion
 SesionEntrenamiento --> Entrenador
+SesionEntrenamiento --> RegistroAsistencia
 SesionEntrenamiento --> Socio
 Snack --> Ingrediente
+Socio --> CuentaFidelizacion
+Socio --> Deporte
+Socio --> NivelDeportivo
+Socio --> Sancion
 SolicitudCambioTurno --> Administrador
 SolicitudCambioTurno --> Empleado
 SolicitudCambioTurno --> EstadoSolicitud
 SolicitudCambioTurno --> Turno
-SugerenciaProducto --> Administrador
-SugerenciaProducto --> Empleado
-SugerenciaProducto --> EstadoSolicitud
-SugerenciaProducto --> Producto
 Traslado --> Ubicacion
 Turno --> Empleado
 Ubicacion --> TipoUbicacion
+Venta --> ItemVenta
 Venta --> Persona
 Venta --> PuntoVenta
 PersistenciaJson ..|> IPersistenciaClub

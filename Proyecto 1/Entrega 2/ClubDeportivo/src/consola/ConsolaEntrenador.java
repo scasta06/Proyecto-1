@@ -20,6 +20,14 @@ public class ConsolaEntrenador extends ConsolaBase {
         entrenador=p;
     }
     public void mostrarMenu() {
-        System.out.println("Entrenamientos asignados: "+club.getGestorDeportivo().getSesiones().stream().filter(s->s.getEntrenador()==entrenador).count());
+        while(true) {
+            System.out.println("1. Consultar resumen / 0. Salir");
+            String opcion=pedirCadena("Opción: ");
+            if(opcion.equals("0")||opcion.isEmpty())return;
+            if(opcion.equals("1")) {
+                System.out.println("Sesiones: "+club.getGestorDeportivo().getSesiones().stream().filter(s->s.getEntrenador()==entrenador).count());
+            }
+            else System.out.println("Opción inválida");
+        }
     }
 }

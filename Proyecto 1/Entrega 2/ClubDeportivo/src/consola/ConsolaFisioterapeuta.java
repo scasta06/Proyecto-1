@@ -20,6 +20,14 @@ public class ConsolaFisioterapeuta extends ConsolaBase {
         fisio=p;
     }
     public void mostrarMenu() {
-        System.out.println("Turnos asignados: "+club.getGestorPersonal().getTurnos().stream().filter(t->t.getEmpleado()==fisio).count());
+        while(true) {
+            System.out.println("1. Consultar resumen / 0. Salir");
+            String opcion=pedirCadena("Opción: ");
+            if(opcion.equals("0")||opcion.isEmpty())return;
+            if(opcion.equals("1")) {
+                System.out.println("Turnos: "+club.getGestorPersonal().getTurnos().stream().filter(t->t.getEmpleado()==fisio).count());
+            }
+            else System.out.println("Opción inválida");
+        }
     }
 }

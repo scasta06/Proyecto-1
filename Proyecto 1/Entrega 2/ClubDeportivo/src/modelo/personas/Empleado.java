@@ -17,11 +17,9 @@ public abstract class Empleado extends Persona implements Serializable {
     private static final long serialVersionUID = 1L;
     private String codigoEmpleado;
     private LocalDate fechaContratacion;
-    private String codigoDescuento;
     protected Empleado(String doc,String nom,LocalDate nac,String login,String clave,String codigo) {
         super(doc,nom,nac,login,clave);
-        codigoEmpleado=Validacion.texto(codigo);
-        codigoDescuento="EMP-"+codigo;
+        codigoEmpleado=textoRequerido(codigo);
         fechaContratacion=LocalDate.now();
     }
     public String getTipo() {
@@ -30,10 +28,11 @@ public abstract class Empleado extends Persona implements Serializable {
     public String getCodigoEmpleado() {
         return codigoEmpleado;
     }
-    public String getCodigoDescuento() {
-        return codigoDescuento;
-    }
     public LocalDate getFechaContratacion() {
         return fechaContratacion;
+    }
+    private static String textoRequerido(String valor) {
+        if(valor==null||valor.isBlank())throw new ClubException("Texto obligatorio");
+        return valor.trim();
     }
 }

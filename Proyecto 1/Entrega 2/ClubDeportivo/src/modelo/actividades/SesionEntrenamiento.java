@@ -29,7 +29,7 @@ public class SesionEntrenamiento extends Evento implements Serializable {
         return convocados.contains(s);
     }
     public RegistroAsistencia registrarAsistencia(Socio s,EstadoAsistencia e,Integer nota,String com) {
-        Validacion.exigir(!cancelada&&estaConvocado(s),"Jugador no convocado o sesión cancelada");
+        validar(!cancelada&&estaConvocado(s),"Jugador no convocado o sesión cancelada");
         RegistroAsistencia r=new RegistroAsistencia(s,e,nota,com);
         registros.put(s,r);
         return r;
@@ -41,16 +41,26 @@ public class SesionEntrenamiento extends Evento implements Serializable {
         return entrenador;
     }
     public List<Socio> getConvocados() {
-        return Validacion.copia(convocados);
+        return copiaLectura(convocados);
     }
     public List<RegistroAsistencia> getRegistros() {
-        return Validacion.copia(registros.values());
+        return copiaLectura(registros.values());
     }
     public void cancelar() {
         cancelada=true;
         instalacion.liberar(this);
     }
     public void setObjetivo(String o) {
-        objetivo=Validacion.texto(o);
+        objetivo=textoRequerido(o);
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
+    }
+    private static String textoRequerido(String valor) {
+        if(valor==null||valor.isBlank())throw new ClubException("Texto obligatorio");
+        return valor.trim();
+    }
+    private static <T> List<T> copiaLectura(Collection<T> valores) {
+        return Collections.unmodifiableList(new ArrayList<>(valores));
     }
 }

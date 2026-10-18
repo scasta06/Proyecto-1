@@ -18,7 +18,7 @@ public class CuentaFidelizacion implements Serializable {
     private int puntos;
     public static final int PESOS_POR_PUNTO=1000,VALOR_PUNTO=10;
     public int acumular(double pago) {
-        int n=(int)(Validacion.dinero(pago)/PESOS_POR_PUNTO);
+        int n=(int)(redondearDinero(pago)/PESOS_POR_PUNTO);
         puntos+=n;
         return n;
     }
@@ -32,5 +32,9 @@ public class CuentaFidelizacion implements Serializable {
     }
     public int getPuntos() {
         return puntos;
+    }
+    private static double redondearDinero(double valor) {
+        if(!Double.isFinite(valor)||valor<0)throw new ClubException("Valor monetario inválido");
+        return Math.round(valor*100.0)/100.0;
     }
 }

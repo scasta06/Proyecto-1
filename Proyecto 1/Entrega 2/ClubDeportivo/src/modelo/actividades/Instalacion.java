@@ -15,16 +15,6 @@ import logica.*;
 import excepciones.*;
 public class Instalacion implements Serializable {
     private static final long serialVersionUID = 1L;
-    private boolean techada;
-    public boolean isTechada() {
-        return techada;
-    }
-    public void setTechada(boolean t) {
-        techada=t;
-    }
-    public boolean restringeBebidaCaliente() {
-        return deporte.getNombre().equalsIgnoreCase("Pádel")||(techada&&deporte.getNombre().equalsIgnoreCase("Tenis de mesa"));
-    }
     private String codigo,nombre;
     private int capacidadMaxima;
     private LocalTime horaApertura,horaCierre;
@@ -32,10 +22,10 @@ public class Instalacion implements Serializable {
     private Deporte deporte;
     private List<Evento> ocupaciones=new ArrayList<>();
     public Instalacion(String c,String n,int capacidad,LocalTime abre,LocalTime cierra,Deporte d) {
-        codigo=Validacion.texto(c);
-        nombre=Validacion.texto(n);
-        capacidadMaxima=Validacion.positivo(capacidad);
-        Validacion.exigir(abre.isBefore(cierra),"Horario inválido");
+        codigo=textoRequerido(c);
+        nombre=textoRequerido(n);
+        capacidadMaxima=enteroPositivo(capacidad);
+        validar(abre.isBefore(cierra),"Horario inválido");
         horaApertura=abre;
         horaCierre=cierra;
         deporte=d;
@@ -75,6 +65,20 @@ public class Instalacion implements Serializable {
         return horaCierre;
     }
     public List<Evento> getOcupaciones() {
-        return Validacion.copia(ocupaciones);
+        return copiaLectura(ocupaciones);
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
+    }
+    private static String textoRequerido(String valor) {
+        if(valor==null||valor.isBlank())throw new ClubException("Texto obligatorio");
+        return valor.trim();
+    }
+    private static int enteroPositivo(int valor) {
+        if(valor<=0)throw new ClubException("Debe ser positivo");
+        return valor;
+    }
+    private static <T> List<T> copiaLectura(Collection<T> valores) {
+        return Collections.unmodifiableList(new ArrayList<>(valores));
     }
 }

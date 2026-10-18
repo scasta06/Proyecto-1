@@ -18,12 +18,16 @@ public class Fisioterapeuta extends Empleado implements Serializable {
     private String tarjetaProfesional;
     public Fisioterapeuta(String doc,String nom,LocalDate nac,String login,String clave,String codigo,String dato) {
         super(doc,nom,nac,login,clave,codigo);
-        tarjetaProfesional=Validacion.texto(dato);
+        tarjetaProfesional=textoRequerido(dato);
     }
     public String getTipo() {
         return "FISIOTERAPEUTA";
     }
     public String getTarjetaProfesional() {
         return tarjetaProfesional;
+    }
+    private static String textoRequerido(String valor) {
+        if(valor==null||valor.isBlank())throw new ClubException("Texto obligatorio");
+        return valor.trim();
     }
 }

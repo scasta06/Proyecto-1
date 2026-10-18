@@ -50,6 +50,9 @@ public class Inventario implements Serializable {
         obtenerExistencia(p,u).disminuir(n);
     }
     public List<MovimientoInventario> getMovimientos() {
-        return Validacion.copia(movimientos);
+        return copiaLectura(movimientos);
+    }
+    private static <T> List<T> copiaLectura(Collection<T> valores) {
+        return Collections.unmodifiableList(new ArrayList<>(valores));
     }
 }

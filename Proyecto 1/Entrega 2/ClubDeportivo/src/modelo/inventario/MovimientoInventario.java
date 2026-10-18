@@ -24,8 +24,12 @@ public abstract class MovimientoInventario implements Serializable {
     protected MovimientoInventario(Producto p,Ubicacion d,int n,Administrador a) {
         producto=p;
         destino=d;
-        cantidad=Validacion.positivo(n);
+        cantidad=enteroPositivo(n);
         realizadoPor=Objects.requireNonNull(a);
     }
     public abstract void aplicar(Inventario inv);
+    private static int enteroPositivo(int valor) {
+        if(valor<=0)throw new ClubException("Debe ser positivo");
+        return valor;
+    }
 }

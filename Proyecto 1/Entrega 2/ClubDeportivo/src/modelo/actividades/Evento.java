@@ -21,11 +21,11 @@ public abstract class Evento implements Serializable {
     protected int duracionMinutos;
     protected Instalacion instalacion;
     protected Evento(String id,LocalDate f,LocalTime h,int dur,Instalacion i) {
-        this.id=Validacion.texto(id);
+        this.id=textoRequerido(id);
         fecha=Objects.requireNonNull(f);
         horaInicio=Objects.requireNonNull(h);
-        duracionMinutos=Validacion.positivo(dur);
-        Validacion.exigir(dur<=1440&&h.toSecondOfDay()+dur*60<=86400,"El evento cruza medianoche");
+        duracionMinutos=enteroPositivo(dur);
+        validar(dur<=1440&&h.toSecondOfDay()+dur*60<=86400,"El evento cruza medianoche");
         instalacion=i;
     }
     public LocalTime getHoraFin() {
@@ -46,5 +46,16 @@ public abstract class Evento implements Serializable {
     }
     public Instalacion getInstalacion() {
         return instalacion;
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
+    }
+    private static String textoRequerido(String valor) {
+        if(valor==null||valor.isBlank())throw new ClubException("Texto obligatorio");
+        return valor.trim();
+    }
+    private static int enteroPositivo(int valor) {
+        if(valor<=0)throw new ClubException("Debe ser positivo");
+        return valor;
     }
 }

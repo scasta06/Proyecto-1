@@ -18,8 +18,8 @@ public class Ubicacion implements Serializable {
     private String codigo,nombre;
     private TipoUbicacion tipo;
     public Ubicacion(String c,String n,TipoUbicacion t) {
-        codigo=Validacion.texto(c);
-        nombre=Validacion.texto(n);
+        codigo=textoRequerido(c);
+        nombre=textoRequerido(n);
         tipo=t;
     }
     public String getCodigo() {
@@ -30,5 +30,9 @@ public class Ubicacion implements Serializable {
     }
     public TipoUbicacion getTipo() {
         return tipo;
+    }
+    private static String textoRequerido(String valor) {
+        if(valor==null||valor.isBlank())throw new ClubException("Texto obligatorio");
+        return valor.trim();
     }
 }

@@ -18,21 +18,28 @@ public class Cafeteria extends PuntoVenta implements Serializable {
     public static final double TASA_IMPOCONSUMO=0.08,PROPINA_SUGERIDA=0.10;
     public Cafeteria(Ubicacion u) {
         super("Cafetería",u);
-        Validacion.exigir(u.getTipo()==TipoUbicacion.CAFETERIA,"Ubicación no es cafetería");
+        validar(u.getTipo()==TipoUbicacion.CAFETERIA,"Ubicación no es cafetería");
     }
     public boolean admiteProducto(Producto p) {
-        return p instanceof Snack||p instanceof Bebida;
+        return p instanceof Snack;
     }
     public double calcularDescuento(Persona c,double s) {
         return 0;
     }
     public double calcularImpuesto(double b) {
-        return Validacion.dinero(b*TASA_IMPOCONSUMO);
+        return redondearDinero(b*TASA_IMPOCONSUMO);
     }
     public boolean admitePropina() {
         return true;
     }
     public double sugerirPropina(double s) {
-        return Validacion.dinero(s*PROPINA_SUGERIDA);
+        return redondearDinero(s*PROPINA_SUGERIDA);
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
+    }
+    private static double redondearDinero(double valor) {
+        if(!Double.isFinite(valor)||valor<0)throw new ClubException("Valor monetario inválido");
+        return Math.round(valor*100.0)/100.0;
     }
 }

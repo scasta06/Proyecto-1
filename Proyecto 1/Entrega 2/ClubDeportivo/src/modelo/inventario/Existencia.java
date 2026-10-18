@@ -23,7 +23,7 @@ public class Existencia implements Serializable {
         ubicacion=u;
     }
     public void aumentar(int n) {
-        cantidad=Math.addExact(cantidad,Validacion.positivo(n));
+        cantidad=Math.addExact(cantidad,enteroPositivo(n));
     }
     public void disminuir(int n) {
         if(n<=0||n>cantidad)throw new InventarioException("Existencias insuficientes");
@@ -42,7 +42,14 @@ public class Existencia implements Serializable {
         return ubicacion;
     }
     public void setStockMinimo(int n) {
-        Validacion.exigir(n>=0,"Mínimo negativo");
+        validar(n>=0,"Mínimo negativo");
         stockMinimo=n;
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
+    }
+    private static int enteroPositivo(int valor) {
+        if(valor<=0)throw new ClubException("Debe ser positivo");
+        return valor;
     }
 }

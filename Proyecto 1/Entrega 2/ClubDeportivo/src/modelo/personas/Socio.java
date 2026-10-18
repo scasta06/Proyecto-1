@@ -15,16 +15,6 @@ import logica.*;
 import excepciones.*;
 public class Socio extends Persona implements Serializable {
     private static final long serialVersionUID = 1L;
-    private boolean bebidaCaliente;
-    public boolean tieneBebidaCaliente() {
-        return bebidaCaliente;
-    }
-    public void terminarBebida() {
-        bebidaCaliente=false;
-    }
-    public void recibirBebidaCaliente() {
-        bebidaCaliente=true;
-    }
     private String numeroSocio;
     private LocalDate fechaAfiliacion;
     private boolean activo=true;
@@ -33,7 +23,7 @@ public class Socio extends Persona implements Serializable {
     private CuentaFidelizacion cuenta=new CuentaFidelizacion();
     public Socio(String doc,String nom,LocalDate nac,String login,String clave,String numero) {
         super(doc,nom,nac,login,clave);
-        numeroSocio=Validacion.texto(numero);
+        numeroSocio=textoRequerido(numero);
         fechaAfiliacion=LocalDate.now();
     }
     public int getNivel(Deporte d) {
@@ -48,7 +38,7 @@ public class Socio extends Persona implements Serializable {
         return sanciones.stream().anyMatch(s->s.estaVigente(fecha)&&s.aplicaA(d));
     }
     public void agregarSancion(Sancion s) {
-        Validacion.exigir(s.getSocio()==this,"Sanción de otro socio");
+        validar(s.getSocio()==this,"Sanción de otro socio");
         sanciones.add(s);
     }
     public CuentaFidelizacion getCuenta() {
@@ -70,6 +60,16 @@ public class Socio extends Persona implements Serializable {
         return fechaAfiliacion;
     }
     public List<Sancion> getSanciones() {
-        return Validacion.copia(sanciones);
+        return copiaLectura(sanciones);
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
+    }
+    private static String textoRequerido(String valor) {
+        if(valor==null||valor.isBlank())throw new ClubException("Texto obligatorio");
+        return valor.trim();
+    }
+    private static <T> List<T> copiaLectura(Collection<T> valores) {
+        return Collections.unmodifiableList(new ArrayList<>(valores));
     }
 }

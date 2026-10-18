@@ -34,7 +34,7 @@ public class ConsolaPrincipal {
         }
     }
     private void iniciarSesion() {
-        Scanner s=new Scanner(System.in);
+        Scanner s=ConsolaBase.ENTRADA;
         System.out.println("Club Deportivo Séneca. Datos demo: admin / demo123");
         System.out.print("Login: ");
         if(!s.hasNextLine())return;

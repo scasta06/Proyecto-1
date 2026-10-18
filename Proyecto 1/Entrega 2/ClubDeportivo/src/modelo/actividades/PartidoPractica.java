@@ -20,11 +20,11 @@ public class PartidoPractica extends Partido implements Serializable {
     private Deporte deporte;
     public PartidoPractica(String id,Socio sol,Persona rival,Deporte d,LocalDate f,LocalTime h,Instalacion i) {
         super(id,f,h,d.getDuracionPartidoMin(),i);
-        Validacion.exigir(sol!=rival&&(rival instanceof Socio||rival instanceof Entrenador),"Rival inválido");
+        validar(sol!=rival&&(rival instanceof Socio||rival instanceof Entrenador),"Rival inválido");
         this.rival=rival;
         deporte=d;
-        if(rival instanceof Socio)Validacion.exigir(d.nivelesCompatibles(sol.getNivel(d),((Socio)rival).getNivel(d)),"Niveles incompatibles");
-        else Validacion.exigir(((Entrenador)rival).puedeEntrenar(d),"Entrenador sin especialidad");
+        if(rival instanceof Socio)validar(d.nivelesCompatibles(sol.getNivel(d),((Socio)rival).getNivel(d)),"Niveles incompatibles");
+        else validar(((Entrenador)rival).puedeEntrenar(d),"Entrenador sin especialidad");
         nivelesVerificados=true;
         agregarParticipante(sol);
         if(rival instanceof Socio)agregarParticipante((Socio)rival);
@@ -37,5 +37,8 @@ public class PartidoPractica extends Partido implements Serializable {
     }
     public boolean isNivelesVerificados() {
         return nivelesVerificados;
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
     }
 }

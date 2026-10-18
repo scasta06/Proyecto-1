@@ -25,7 +25,7 @@ public class Mensualidad implements Serializable {
         socio=s;
         periodo=p;
         concepto=c;
-        valor=Validacion.dinero(v);
+        valor=redondearDinero(v);
     }
     public Rubro getRubro() {
         return Rubro.MENSUALIDADES;
@@ -44,5 +44,9 @@ public class Mensualidad implements Serializable {
     }
     public LocalDate getFechaPago() {
         return fechaPago;
+    }
+    private static double redondearDinero(double valor) {
+        if(!Double.isFinite(valor)||valor<0)throw new ClubException("Valor monetario inválido");
+        return Math.round(valor*100.0)/100.0;
     }
 }

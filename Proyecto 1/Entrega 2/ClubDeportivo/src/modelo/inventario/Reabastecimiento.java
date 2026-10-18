@@ -19,8 +19,11 @@ public class Reabastecimiento extends MovimientoInventario implements Serializab
         super(p,d,n,a);
     }
     public void aplicar(Inventario inv) {
-        Validacion.exigir(!aplicado,"Movimiento ya aplicado");
+        validar(!aplicado,"Movimiento ya aplicado");
         inv.obtenerExistencia(producto,destino).aumentar(cantidad);
         aplicado=true;
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
     }
 }

@@ -22,7 +22,7 @@ public class EntradaRanking implements Serializable {
         jugador=s;
     }
     public void acumular(Estadistica e) {
-        Validacion.exigir(e.getJugador()==jugador,"Estadística de otro jugador");
+        validar(e.getJugador()==jugador,"Estadística de otro jugador");
         partidosJugados++;
         puntosRanking=Math.max(0,puntosRanking+e.calcularPuntosRanking());
         e.getValores().forEach((k,v)->acumulados.merge(k,v,Integer::sum));
@@ -38,5 +38,8 @@ public class EntradaRanking implements Serializable {
     }
     public Map<String,Integer> getAcumulados() {
         return Collections.unmodifiableMap(acumulados);
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
     }
 }

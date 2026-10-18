@@ -18,18 +18,25 @@ public class Tienda extends PuntoVenta implements Serializable {
     public static final double TASA_IVA=0.19,DESCUENTO_EMPLEADO=0.15,DESCUENTO_SOCIO=0.08;
     public Tienda(Ubicacion u) {
         super("Tienda",u);
-        Validacion.exigir(u.getTipo()==TipoUbicacion.TIENDA,"Ubicación no es tienda");
+        validar(u.getTipo()==TipoUbicacion.TIENDA,"Ubicación no es tienda");
     }
     public boolean admiteProducto(Producto p) {
         return p instanceof ArticuloDeportivo;
     }
     public double calcularDescuento(Persona c,double s) {
-        return c instanceof Empleado?Validacion.dinero(s*DESCUENTO_EMPLEADO):0;
+        return c instanceof Empleado?redondearDinero(s*DESCUENTO_EMPLEADO):c instanceof Socio?redondearDinero(s*DESCUENTO_SOCIO):0;
     }
     public double calcularImpuesto(double b) {
-        return Validacion.dinero(b*TASA_IVA);
+        return redondearDinero(b*TASA_IVA);
     }
     public boolean admitePropina() {
         return false;
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
+    }
+    private static double redondearDinero(double valor) {
+        if(!Double.isFinite(valor)||valor<0)throw new ClubException("Valor monetario inválido");
+        return Math.round(valor*100.0)/100.0;
     }
 }

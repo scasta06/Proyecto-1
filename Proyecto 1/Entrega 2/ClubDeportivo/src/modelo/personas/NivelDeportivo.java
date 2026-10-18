@@ -20,14 +20,14 @@ public class NivelDeportivo implements Serializable {
     private int nivel;
     private LocalDate fechaActualizacion;
     public NivelDeportivo(Socio s,Deporte d,int n) {
-        Validacion.exigir(n>=1&&n<=10,"Nivel fuera de 1..10");
+        validar(n>=1&&n<=10,"Nivel fuera de 1..10");
         socio=s;
         deporte=d;
         nivel=n;
         fechaActualizacion=LocalDate.now();
     }
     public int diferenciaCon(NivelDeportivo otro) {
-        Validacion.exigir(deporte==otro.deporte,"Disciplinas distintas");
+        validar(deporte==otro.deporte,"Disciplinas distintas");
         return Math.abs(nivel-otro.nivel);
     }
     public int getNivel() {
@@ -35,5 +35,8 @@ public class NivelDeportivo implements Serializable {
     }
     public LocalDate getFechaActualizacion() {
         return fechaActualizacion;
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
     }
 }

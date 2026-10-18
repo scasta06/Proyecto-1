@@ -18,13 +18,20 @@ public class Ingrediente implements Serializable {
     private String nombre;
     private List<Alergeno> alergenos;
     public Ingrediente(String n,List<Alergeno> a) {
-        nombre=Validacion.texto(n);
+        nombre=textoRequerido(n);
         alergenos=new ArrayList<>(a);
     }
     public String getNombre() {
         return nombre;
     }
     public List<Alergeno> getAlergenos() {
-        return Validacion.copia(alergenos);
+        return copiaLectura(alergenos);
+    }
+    private static String textoRequerido(String valor) {
+        if(valor==null||valor.isBlank())throw new ClubException("Texto obligatorio");
+        return valor.trim();
+    }
+    private static <T> List<T> copiaLectura(Collection<T> valores) {
+        return Collections.unmodifiableList(new ArrayList<>(valores));
     }
 }

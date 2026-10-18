@@ -23,18 +23,17 @@ public class Venta implements Serializable {
     private Persona comprador;
     private PuntoVenta puntoVenta;
     private List<ItemVenta> items=new ArrayList<>();
-    private boolean codigoCompartido;
     public Venta(String n,Persona c,PuntoVenta pv) {
         numero=n;
         comprador=c;
         puntoVenta=pv;
     }
     private void abierta() {
-        Validacion.exigir(!cerrada,"Venta cerrada");
+        validar(!cerrada,"Venta cerrada");
     }
     public void agregarItem(Producto p,int cantidad) {
         abierta();
-        Validacion.exigir(puntoVenta.admiteProducto(p),"Producto no admitido");
+        validar(puntoVenta.admiteProducto(p),"Producto no admitido");
         items.add(new ItemVenta(p,cantidad));
         alergenosInformados=false;
     }
@@ -45,27 +44,22 @@ public class Venta implements Serializable {
         abierta();
         alergenosInformados=true;
     }
-    public void aplicarCodigoCompartido() {
-        abierta();
-        codigoCompartido=true;
-    }
     public void calcularTotales(PuntoVenta pv) {
         abierta();
-        Validacion.exigir(pv==puntoVenta,"Punto de venta incorrecto");
-        subtotal=Validacion.dinero(items.stream().mapToDouble(ItemVenta::getSubtotal).sum());
+        validar(pv==puntoVenta,"Punto de venta incorrecto");
+        subtotal=redondearDinero(items.stream().mapToDouble(ItemVenta::getSubtotal).sum());
         descuento=pv.calcularDescuento(comprador,subtotal);
-        if(codigoCompartido&&comprador instanceof Socio&&pv instanceof Tienda)descuento=Validacion.dinero(subtotal*Tienda.DESCUENTO_SOCIO);
         impuesto=pv.calcularImpuesto(subtotal-descuento);
-        totalPagado=Validacion.dinero(subtotal-descuento+impuesto+propina-valorRedimido);
+        totalPagado=redondearDinero(subtotal-descuento+impuesto+propina-valorRedimido);
     }
     public void aplicarPropina(double v) {
         abierta();
-        Validacion.exigir(puntoVenta.admitePropina()||v==0,"La tienda no admite propina");
-        propina=Validacion.dinero(v);
+        validar(puntoVenta.admitePropina()||v==0,"La tienda no admite propina");
+        propina=redondearDinero(v);
     }
     public void redimirPuntos(int p,double valor) {
         abierta();
-        Validacion.exigir(p>=0&&valor==(double)p*CuentaFidelizacion.VALOR_PUNTO&&valor<=subtotal-descuento+impuesto,"Redención inválida");
+        validar(p>=0&&valor==(double)p*CuentaFidelizacion.VALOR_PUNTO&&valor<=subtotal-descuento+impuesto,"Redención inválida");
         puntosRedimidos=p;
         valorRedimido=valor;
     }
@@ -74,7 +68,7 @@ public class Venta implements Serializable {
     }
     public void cerrar() {
         abierta();
-        Validacion.exigir(!items.isEmpty()&&(!requiereInfoAlergenos()||alergenosInformados),"Venta vacía o alérgenos no informados");
+        validar(!items.isEmpty()&&(!requiereInfoAlergenos()||alergenosInformados),"Venta vacía o alérgenos no informados");
         cerrada=true;
     }
     public boolean isAlergenosInformados() {
@@ -90,7 +84,7 @@ public class Venta implements Serializable {
         return puntoVenta;
     }
     public List<ItemVenta> getItems() {
-        return Validacion.copia(items);
+        return copiaLectura(items);
     }
     public LocalDateTime getFechaHora() {
         return fechaHora;
@@ -118,5 +112,15 @@ public class Venta implements Serializable {
     }
     public String getNumero() {
         return numero;
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
+    }
+    private static double redondearDinero(double valor) {
+        if(!Double.isFinite(valor)||valor<0)throw new ClubException("Valor monetario inválido");
+        return Math.round(valor*100.0)/100.0;
+    }
+    private static <T> List<T> copiaLectura(Collection<T> valores) {
+        return Collections.unmodifiableList(new ArrayList<>(valores));
     }
 }

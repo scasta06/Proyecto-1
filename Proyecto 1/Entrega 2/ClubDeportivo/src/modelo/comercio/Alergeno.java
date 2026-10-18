@@ -17,7 +17,7 @@ public class Alergeno implements Serializable {
     private static final long serialVersionUID = 1L;
     private String nombre,descripcion;
     public Alergeno(String n,String d) {
-        nombre=Validacion.texto(n);
+        nombre=textoRequerido(n);
         descripcion=d;
     }
     public String getNombre() {
@@ -25,5 +25,9 @@ public class Alergeno implements Serializable {
     }
     public String getDescripcion() {
         return descripcion;
+    }
+    private static String textoRequerido(String valor) {
+        if(valor==null||valor.isBlank())throw new ClubException("Texto obligatorio");
+        return valor.trim();
     }
 }

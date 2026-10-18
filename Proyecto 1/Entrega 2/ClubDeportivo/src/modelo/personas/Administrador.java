@@ -18,12 +18,16 @@ public class Administrador extends Empleado implements Serializable {
     private String cargo;
     public Administrador(String doc,String nom,LocalDate nac,String login,String clave,String codigo,String dato) {
         super(doc,nom,nac,login,clave,codigo);
-        cargo=Validacion.texto(dato);
+        cargo=textoRequerido(dato);
     }
     public String getTipo() {
         return "ADMINISTRADOR";
     }
     public String getCargo() {
         return cargo;
+    }
+    private static String textoRequerido(String valor) {
+        if(valor==null||valor.isBlank())throw new ClubException("Texto obligatorio");
+        return valor.trim();
     }
 }

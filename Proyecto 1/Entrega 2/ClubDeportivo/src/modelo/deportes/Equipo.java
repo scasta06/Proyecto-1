@@ -20,18 +20,17 @@ public class Equipo implements Serializable {
     private int cupoMaximo;
     private Deporte deporte;
     private Entrenador entrenador;
-    private boolean activo=true;
     private List<InscripcionEquipo> inscripciones=new ArrayList<>();
     public Equipo(String n,Categoria c,int cupo,Deporte d,Entrenador en) {
-        Validacion.exigir(d.isEsDeConjunto()&&en.puedeEntrenar(d),"Deporte o entrenador no válido");
-        nombre=Validacion.texto(n);
+        validar(d.isEsDeConjunto()&&en.puedeEntrenar(d),"Deporte o entrenador no válido");
+        nombre=textoRequerido(n);
         categoria=c;
-        cupoMaximo=Validacion.positivo(cupo);
+        cupoMaximo=enteroPositivo(cupo);
         deporte=d;
         entrenador=en;
     }
     public boolean tieneCupo() {
-        return activo&&getJugadoresActivos().size()<cupoMaximo;
+        return getJugadoresActivos().size()<cupoMaximo;
     }
     public boolean esIntegrante(Socio s) {
         return getJugadoresActivos().contains(s);
@@ -57,11 +56,15 @@ public class Equipo implements Serializable {
     public Entrenador getEntrenador() {
         return entrenador;
     }
-    public boolean isActivo() {
-        return activo;
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
     }
-    public void darDeBaja() {
-        activo=false;
-        inscripciones.forEach(InscripcionEquipo::retirar);
+    private static String textoRequerido(String valor) {
+        if(valor==null||valor.isBlank())throw new ClubException("Texto obligatorio");
+        return valor.trim();
+    }
+    private static int enteroPositivo(int valor) {
+        if(valor<=0)throw new ClubException("Debe ser positivo");
+        return valor;
     }
 }

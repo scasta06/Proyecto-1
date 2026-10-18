@@ -15,33 +15,20 @@ import logica.*;
 import excepciones.*;
 public class GestorInstalaciones implements Serializable {
     private static final long serialVersionUID = 1L;
-    private Map<Socio,Instalacion> presentes=new LinkedHashMap<>();
-    public void ingresar(Socio s,Instalacion i,LocalDate fecha,LocalTime hora) {
-        Validacion.exigir(s.isActivo()&&!s.estaSuspendido(i.getDeporte(),fecha)&&!(s.tieneBebidaCaliente()&&i.restringeBebidaCaliente()),"Ingreso no permitido");
-        Validacion.exigir(reservas.stream().anyMatch(r->r.getSocio()==s&&r.getInstalacion()==i&&r.getEstado()==EstadoReserva.CONFIRMADA&&r.getFecha().equals(fecha)&&!hora.isBefore(r.getHoraInicio())&&hora.isBefore(r.getHoraFin())),"No hay reserva vigente");
-        presentes.put(s,i);
-    }
-    public void salir(Socio s) {
-        presentes.remove(s);
-    }
-    public boolean admiteBebidaCaliente(Socio s) {
-        Instalacion i=presentes.get(s);
-        return i==null||!i.restringeBebidaCaliente();
-    }
     private List<Instalacion> instalaciones=new ArrayList<>();
     private List<Reserva> reservas=new ArrayList<>();
     public void registrarInstalacion(Instalacion i) {
-        Validacion.exigir(instalaciones.stream().noneMatch(x->x.getCodigo().equals(i.getCodigo())),"Código duplicado");
+        validar(instalaciones.stream().noneMatch(x->x.getCodigo().equals(i.getCodigo())),"Código duplicado");
         instalaciones.add(i);
     }
     public List<Instalacion> getInstalaciones() {
-        return Validacion.copia(instalaciones);
+        return copiaLectura(instalaciones);
     }
     public List<Reserva> getReservas() {
-        return Validacion.copia(reservas);
+        return copiaLectura(reservas);
     }
     public Instalacion buscarDisponible(Deporte d,LocalDate f,LocalTime ini,int dur,int n) {
-        Validacion.exigir(dur>0&&ini.toSecondOfDay()+dur*60L<86400,"Duración inválida");
+        validar(dur>0&&ini.toSecondOfDay()+dur*60L<86400,"Duración inválida");
         return instalaciones.stream().filter(i->i.getDeporte()==d&&i.admiteCantidad(n)&&i.estaDisponible(f,ini,ini.plusMinutes(dur))).findFirst().orElseThrow(()->new ReservaException("No hay instalación disponible"));
     }
     public Reserva reservar(Socio s,Deporte d,LocalDate f,LocalTime ini,int dur,int n,ModalidadReserva m) {
@@ -53,7 +40,7 @@ public class GestorInstalaciones implements Serializable {
         return r;
     }
     public void cancelarReserva(Reserva r) {
-        Validacion.exigir(reservas.contains(r),"Reserva desconocida");
+        validar(reservas.contains(r),"Reserva desconocida");
         r.cancelar();
     }
     public Map<Instalacion,List<LocalTime>> consultarDisponibilidad(Deporte d,LocalDate f) {
@@ -64,8 +51,14 @@ public class GestorInstalaciones implements Serializable {
                 LocalTime h=LocalTime.of(m/60,m%60);
                 if(i.estaDisponible(f,h,h.plusMinutes(d.getDuracionPartidoMin())))horas.add(h);
             }
-            res.put(i,Validacion.copia(horas));
+            res.put(i,copiaLectura(horas));
         }
         return Collections.unmodifiableMap(res);
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
+    }
+    private static <T> List<T> copiaLectura(Collection<T> valores) {
+        return Collections.unmodifiableList(new ArrayList<>(valores));
     }
 }

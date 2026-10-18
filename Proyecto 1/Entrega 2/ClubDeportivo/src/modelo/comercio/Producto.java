@@ -18,9 +18,9 @@ public abstract class Producto implements Serializable {
     protected String codigo,nombre;
     protected double precio;
     protected Producto(String c,String n,double p) {
-        codigo=Validacion.texto(c);
-        nombre=Validacion.texto(n);
-        precio=Validacion.dinero(p);
+        codigo=textoRequerido(c);
+        nombre=textoRequerido(n);
+        precio=redondearDinero(p);
     }
     public abstract Rubro getRubro();
     public String getCodigo() {
@@ -31,5 +31,13 @@ public abstract class Producto implements Serializable {
     }
     public double getPrecio() {
         return precio;
+    }
+    private static String textoRequerido(String valor) {
+        if(valor==null||valor.isBlank())throw new ClubException("Texto obligatorio");
+        return valor.trim();
+    }
+    private static double redondearDinero(double valor) {
+        if(!Double.isFinite(valor)||valor<0)throw new ClubException("Valor monetario inválido");
+        return Math.round(valor*100.0)/100.0;
     }
 }

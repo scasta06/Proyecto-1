@@ -21,14 +21,14 @@ public class Sancion implements Serializable {
     private LocalDate fechaInicio,fechaFin;
     private Deporte deporte;
     public Sancion(Socio s,String m,TipoSancion t,LocalDate ini,LocalDate fin,Deporte d) {
-        Validacion.exigir(!fin.isBefore(ini),"Fechas de sanción invertidas");
+        validar(!fin.isBefore(ini),"Fechas de sanción invertidas");
         socio=Objects.requireNonNull(s);
-        motivo=Validacion.texto(m);
+        motivo=textoRequerido(m);
         tipo=Objects.requireNonNull(t);
         fechaInicio=ini;
         fechaFin=fin;
         deporte=d;
-        Validacion.exigir(t!=TipoSancion.SUSPENSION_DEPORTIVA||d!=null,"Falta deporte");
+        validar(t!=TipoSancion.SUSPENSION_DEPORTIVA||d!=null,"Falta deporte");
     }
     public boolean estaVigente(LocalDate f) {
         return tipo!=TipoSancion.AMONESTACION&&!f.isBefore(fechaInicio)&&!f.isAfter(fechaFin);
@@ -41,5 +41,12 @@ public class Sancion implements Serializable {
     }
     public String getMotivo() {
         return motivo;
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
+    }
+    private static String textoRequerido(String valor) {
+        if(valor==null||valor.isBlank())throw new ClubException("Texto obligatorio");
+        return valor.trim();
     }
 }

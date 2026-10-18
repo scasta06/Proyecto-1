@@ -22,8 +22,9 @@ public abstract class Estadistica implements Serializable {
     protected Estadistica(Socio j,Partido p,Map<String,Integer> v) {
         jugador=j;
         partido=p;
+        Objects.requireNonNull(v);
         valores=new LinkedHashMap<>(v);
-        Validacion.exigir(v.values().stream().allMatch(n->n!=null&&n>=0),"Estadísticas negativas o nulas");
+        validar(v.values().stream().allMatch(n->n!=null&&n>=0),"Estadísticas negativas o nulas");
     }
     public Map<String,Integer> getValores() {
         return Collections.unmodifiableMap(valores);
@@ -37,5 +38,8 @@ public abstract class Estadistica implements Serializable {
     }
     protected int valor(String k) {
         return valores.getOrDefault(k,0);
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
     }
 }

@@ -25,16 +25,16 @@ public class SolicitudCambioTurno implements Serializable {
         solicitante=e;
         turnoActual=a;
         turnoPropuesto=p;
-        this.motivo=Validacion.texto(motivo);
+        this.motivo=textoRequerido(motivo);
     }
     public void aprobar(Administrador a,LocalDate f) {
         responder(a,f,EstadoSolicitud.APROBADA,"");
     }
     public void rechazar(Administrador a,String obs,LocalDate f) {
-        responder(a,f,EstadoSolicitud.RECHAZADA,Validacion.texto(obs));
+        responder(a,f,EstadoSolicitud.RECHAZADA,textoRequerido(obs));
     }
     private void responder(Administrador a,LocalDate f,EstadoSolicitud e,String obs) {
-        Validacion.exigir(estado==EstadoSolicitud.PENDIENTE,"Solicitud ya respondida");
+        validar(estado==EstadoSolicitud.PENDIENTE,"Solicitud ya respondida");
         revisadaPor=Objects.requireNonNull(a);
         fechaRespuesta=f;
         estado=e;
@@ -51,5 +51,12 @@ public class SolicitudCambioTurno implements Serializable {
     }
     public EstadoSolicitud getEstado() {
         return estado;
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
+    }
+    private static String textoRequerido(String valor) {
+        if(valor==null||valor.isBlank())throw new ClubException("Texto obligatorio");
+        return valor.trim();
     }
 }

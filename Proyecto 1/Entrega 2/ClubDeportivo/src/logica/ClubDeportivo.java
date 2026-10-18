@@ -25,7 +25,7 @@ public class ClubDeportivo implements Serializable {
     private GestorPersonal personal;
     private GestorReportes reportes;
     public ClubDeportivo(String n,String nit,String dir,LocalTime ini,LocalTime fin) {
-        Validacion.exigir(ini.isBefore(fin),"Horario inválido");
+        validar(ini.isBefore(fin),"Horario inválido");
         nombre=n;
         this.nit=nit;
         direccion=dir;
@@ -36,8 +36,6 @@ public class ClubDeportivo implements Serializable {
         deportivo=new GestorDeportivo(instalaciones);
         competencias=new GestorCompetencias(instalaciones);
         comercio=new GestorComercio(new Tienda(new Ubicacion("T","Tienda",TipoUbicacion.TIENDA)),new Cafeteria(new Ubicacion("C","Cafetería",TipoUbicacion.CAFETERIA)),usuarios);
-        comercio.configurarInstalaciones(instalaciones);
-        competencias.configurarDeportivo(deportivo);
         personal=new GestorPersonal(ini,fin);
         reportes=new GestorReportes(comercio);
     }
@@ -67,5 +65,8 @@ public class ClubDeportivo implements Serializable {
     }
     public String getNombre() {
         return nombre;
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
     }
 }

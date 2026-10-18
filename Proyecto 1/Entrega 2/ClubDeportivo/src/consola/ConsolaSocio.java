@@ -20,7 +20,15 @@ public class ConsolaSocio extends ConsolaBase {
         socio=p;
     }
     public void mostrarMenu() {
-        System.out.println("Puntos: "+socio.getCuenta().getPuntos());
-        System.out.println("Reservas: "+club.getGestorInstalaciones().getReservas().stream().filter(r->r.getSocio()==socio).count());
+        while(true) {
+            System.out.println("1. Consultar resumen / 0. Salir");
+            String opcion=pedirCadena("Opción: ");
+            if(opcion.equals("0")||opcion.isEmpty())return;
+            if(opcion.equals("1")) {
+                System.out.println("Puntos: "+socio.getCuenta().getPuntos());
+                System.out.println("Reservas: "+club.getGestorInstalaciones().getReservas().stream().filter(r->r.getSocio()==socio).count());
+            }
+            else System.out.println("Opción inválida");
+        }
     }
 }

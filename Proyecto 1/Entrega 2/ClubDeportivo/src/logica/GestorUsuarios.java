@@ -20,7 +20,7 @@ public class GestorUsuarios implements Serializable {
         return personas.values().stream().filter(p->p.getLogin().equals(login)&&p.verificarContrasena(clave)&&(!(p instanceof Socio)||((Socio)p).isActivo())).findFirst().orElseThrow(()->new ClubException("Credenciales inválidas"));
     }
     private void registrar(Persona p) {
-        Validacion.exigir(!personas.containsKey(p.getDocumento())&&personas.values().stream().noneMatch(x->x.getLogin().equals(p.getLogin())),"Documento o login duplicado");
+        validar(!personas.containsKey(p.getDocumento())&&personas.values().stream().noneMatch(x->x.getLogin().equals(p.getLogin())),"Documento o login duplicado");
         personas.put(p.getDocumento(),p);
     }
     public void registrarSocio(Socio s) {
@@ -46,6 +46,12 @@ public class GestorUsuarios implements Serializable {
         return x;
     }
     public List<Persona> getPersonas() {
-        return Validacion.copia(personas.values());
+        return copiaLectura(personas.values());
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
+    }
+    private static <T> List<T> copiaLectura(Collection<T> valores) {
+        return Collections.unmodifiableList(new ArrayList<>(valores));
     }
 }

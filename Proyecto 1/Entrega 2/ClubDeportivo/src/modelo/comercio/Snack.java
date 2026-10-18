@@ -19,7 +19,7 @@ public class Snack extends Producto implements Serializable {
     private List<Ingrediente> ingredientes;
     public Snack(String c,String n,double p,int cal,List<Ingrediente> ing) {
         super(c,n,p);
-        Validacion.exigir(cal>=0&&!ing.isEmpty(),"Snack sin ingredientes o calorías negativas");
+        validar(cal>=0&&!ing.isEmpty(),"Snack sin ingredientes o calorías negativas");
         calorias=cal;
         ingredientes=new ArrayList<>(ing);
     }
@@ -27,12 +27,18 @@ public class Snack extends Producto implements Serializable {
         return Rubro.CAFETERIA;
     }
     public List<Ingrediente> getIngredientes() {
-        return Validacion.copia(ingredientes);
+        return copiaLectura(ingredientes);
     }
     public List<Alergeno> getAlergenos() {
         return ingredientes.stream().flatMap(i->i.getAlergenos().stream()).distinct().collect(Collectors.toUnmodifiableList());
     }
     public boolean contieneAlergeno(Alergeno a) {
         return getAlergenos().contains(a);
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
+    }
+    private static <T> List<T> copiaLectura(Collection<T> valores) {
+        return Collections.unmodifiableList(new ArrayList<>(valores));
     }
 }

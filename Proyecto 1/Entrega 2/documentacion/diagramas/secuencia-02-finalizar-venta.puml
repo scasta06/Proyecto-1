@@ -9,7 +9,6 @@ participant PuntoVenta as P
 Comprador -> G: finalizarVenta(v, propina, puntos)
 G -> V: validar estado, items y alérgenos informados
 G -> I: getCantidad(producto, ubicacion)
-G -> G: validar bebida caliente e instalación actual
 G -> V: aplicarPropina(propina)
 G -> V: calcularTotales(puntoVenta)
 G -> C: puedeRedimir(puntos)

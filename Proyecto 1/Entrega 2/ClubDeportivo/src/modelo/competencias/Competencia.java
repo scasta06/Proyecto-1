@@ -25,10 +25,10 @@ public class Competencia implements Serializable {
     private List<InscripcionCompetencia> inscripciones=new ArrayList<>();
     private List<PartidoOficial> partidos=new ArrayList<>();
     public Competencia(String cod,String nom,String org,Deporte d,Categoria cat,FormatoCompetencia formato,LocalDate ini,LocalDate fin,LocalDate cierre) {
-        Validacion.exigir(!fin.isBefore(ini)&&!cierre.isAfter(ini),"Fechas inválidas");
-        codigo=Validacion.texto(cod);
-        nombre=Validacion.texto(nom);
-        organizador=Validacion.texto(org);
+        validar(!fin.isBefore(ini)&&!cierre.isAfter(ini),"Fechas inválidas");
+        codigo=textoRequerido(cod);
+        nombre=textoRequerido(nom);
+        organizador=textoRequerido(org);
         deporte=d;
         categoria=cat;
         this.formato=formato;
@@ -43,7 +43,7 @@ public class Competencia implements Serializable {
         return r==Resultado.VICTORIA?puntosVictoria:r==Resultado.EMPATE?puntosEmpate:puntosDerrota;
     }
     public void agregarInscripcion(InscripcionCompetencia i) {
-        Validacion.exigir(i.getCompetencia()==this&&!inscripciones.contains(i),"Inscripción inválida");
+        validar(i.getCompetencia()==this&&!inscripciones.contains(i),"Inscripción inválida");
         inscripciones.add(i);
     }
     public void agregarPartido(PartidoOficial p) {
@@ -69,10 +69,10 @@ public class Competencia implements Serializable {
         return fechaFin;
     }
     public List<InscripcionCompetencia> getInscripciones() {
-        return Validacion.copia(inscripciones);
+        return copiaLectura(inscripciones);
     }
     public List<PartidoOficial> getPartidos() {
-        return Validacion.copia(partidos);
+        return copiaLectura(partidos);
     }
     public EstadoCompetencia getEstado() {
         return estado;
@@ -81,7 +81,17 @@ public class Competencia implements Serializable {
         return codigo;
     }
     public void finalizar() {
-        Validacion.exigir(partidos.stream().allMatch(p->p.getEstado()!=EstadoPartido.PROGRAMADO),"Hay partidos pendientes");
+        validar(partidos.stream().allMatch(p->p.getEstado()!=EstadoPartido.PROGRAMADO),"Hay partidos pendientes");
         estado=EstadoCompetencia.FINALIZADA;
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
+    }
+    private static String textoRequerido(String valor) {
+        if(valor==null||valor.isBlank())throw new ClubException("Texto obligatorio");
+        return valor.trim();
+    }
+    private static <T> List<T> copiaLectura(Collection<T> valores) {
+        return Collections.unmodifiableList(new ArrayList<>(valores));
     }
 }

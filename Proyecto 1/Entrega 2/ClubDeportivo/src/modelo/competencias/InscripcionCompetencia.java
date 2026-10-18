@@ -51,12 +51,15 @@ public class InscripcionCompetencia implements Serializable {
         return competencia;
     }
     public List<Socio> getNomina() {
-        return Validacion.copia(nomina);
+        return copiaLectura(nomina);
     }
     public boolean isEliminada() {
         return eliminada;
     }
     public void eliminar() {
         eliminada=true;
+    }
+    private static <T> List<T> copiaLectura(Collection<T> valores) {
+        return Collections.unmodifiableList(new ArrayList<>(valores));
     }
 }

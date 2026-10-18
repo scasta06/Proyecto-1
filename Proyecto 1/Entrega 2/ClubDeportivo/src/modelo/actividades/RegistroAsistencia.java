@@ -20,7 +20,7 @@ public class RegistroAsistencia implements Serializable {
     private Integer notaDesempeno;
     private String comentario;
     public RegistroAsistencia(Socio s,EstadoAsistencia e,Integer nota,String com) {
-        Validacion.exigir(nota==null||(nota>=1&&nota<=5),"Nota fuera de 1..5");
+        validar(nota==null||(nota>=1&&nota<=5),"Nota fuera de 1..5");
         jugador=s;
         estado=Objects.requireNonNull(e);
         notaDesempeno=nota;
@@ -40,5 +40,8 @@ public class RegistroAsistencia implements Serializable {
     }
     public String getComentario() {
         return comentario;
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
     }
 }

@@ -18,12 +18,12 @@ public abstract class Persona implements Serializable {
     private String documento,nombre,telefono,correo,login,contrasena;
     private LocalDate fechaNacimiento;
     protected Persona(String doc,String nom,LocalDate nacimiento,String login,String clave) {
-        documento=Validacion.texto(doc);
-        nombre=Validacion.texto(nom);
+        documento=textoRequerido(doc);
+        nombre=textoRequerido(nom);
         fechaNacimiento=Objects.requireNonNull(nacimiento);
-        Validacion.exigir(!nacimiento.isAfter(LocalDate.now()),"Nacimiento futuro");
-        this.login=Validacion.texto(login);
-        contrasena=hash(Validacion.texto(clave));
+        validar(!nacimiento.isAfter(LocalDate.now()),"Nacimiento futuro");
+        this.login=textoRequerido(login);
+        contrasena=hash(textoRequerido(clave));
         telefono="";
         correo="";
     }
@@ -61,7 +61,14 @@ public abstract class Persona implements Serializable {
         return correo;
     }
     public void actualizarContacto(String tel,String mail) {
-        telefono=Validacion.texto(tel);
-        correo=Validacion.texto(mail);
+        telefono=textoRequerido(tel);
+        correo=textoRequerido(mail);
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
+    }
+    private static String textoRequerido(String valor) {
+        if(valor==null||valor.isBlank())throw new ClubException("Texto obligatorio");
+        return valor.trim();
     }
 }

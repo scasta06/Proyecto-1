@@ -27,16 +27,22 @@ public abstract class PuntoVenta implements Serializable {
     public abstract double calcularImpuesto(double base);
     public abstract boolean admitePropina();
     public void registrarVenta(Venta v) {
-        Validacion.exigir(v.isCerrada()&&v.getPuntoVenta()==this&&!ventas.contains(v),"Venta no registrable");
+        validar(v.isCerrada()&&v.getPuntoVenta()==this&&!ventas.contains(v),"Venta no registrable");
         ventas.add(v);
     }
     public Ubicacion getUbicacion() {
         return ubicacion;
     }
     public List<Venta> getVentas() {
-        return Validacion.copia(ventas);
+        return copiaLectura(ventas);
     }
     public String getNombre() {
         return nombre;
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
+    }
+    private static <T> List<T> copiaLectura(Collection<T> valores) {
+        return Collections.unmodifiableList(new ArrayList<>(valores));
     }
 }

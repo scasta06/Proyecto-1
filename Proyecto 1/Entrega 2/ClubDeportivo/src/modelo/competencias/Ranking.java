@@ -23,7 +23,7 @@ public class Ranking implements Serializable {
         deporte=d;
     }
     public void actualizar(Estadistica e) {
-        Validacion.exigir(e.getPartido().getDeporte()==deporte&&!procesadas.contains(e),"Estadística repetida o de otra disciplina");
+        validar(e.getPartido().getDeporte()==deporte&&!procesadas.contains(e),"Estadística repetida o de otra disciplina");
         getEntrada(e.getJugador()).acumular(e);
         procesadas.add(e);
         ultimaActualizacion=LocalDate.now();
@@ -33,5 +33,8 @@ public class Ranking implements Serializable {
     }
     public List<EntradaRanking> getPosiciones() {
         return entradas.values().stream().sorted(Comparator.comparingInt(EntradaRanking::getPuntosRanking).reversed().thenComparing(e->e.getJugador().getDocumento())).collect(Collectors.toUnmodifiableList());
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
     }
 }

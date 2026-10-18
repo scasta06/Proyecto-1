@@ -20,7 +20,7 @@ public class ReporteVentas implements Serializable {
     private Map<YearMonth,Map<Rubro,Double>> totalesPorMes=new TreeMap<>();
     private int transacciones;
     public ReporteVentas(LocalDate ini,LocalDate fin) {
-        Validacion.exigir(!fin.isBefore(ini),"Periodo invertido");
+        validar(!fin.isBefore(ini),"Periodo invertido");
         fechaInicio=ini;
         fechaFin=fin;
     }
@@ -30,7 +30,7 @@ public class ReporteVentas implements Serializable {
         transacciones++;
     }
     public double getTotal() {
-        return Validacion.dinero(totalesPorRubro.values().stream().mapToDouble(Double::doubleValue).sum());
+        return redondearDinero(totalesPorRubro.values().stream().mapToDouble(Double::doubleValue).sum());
     }
     public boolean estaVacio() {
         return transacciones==0;
@@ -45,5 +45,12 @@ public class ReporteVentas implements Serializable {
     }
     public int getTransacciones() {
         return transacciones;
+    }
+    private static void validar(boolean condicion,String mensaje) {
+        if(!condicion)throw new ClubException(mensaje);
+    }
+    private static double redondearDinero(double valor) {
+        if(!Double.isFinite(valor)||valor<0)throw new ClubException("Valor monetario inválido");
+        return Math.round(valor*100.0)/100.0;
     }
 }
