@@ -92,29 +92,10 @@ La compilación con Java 17 y `-Xlint:all` no presenta advertencias. El programa
 pruebas finaliza con **46 verificaciones correctas**, incluyendo persistencia,
 inscripciones, reservas, sanciones, estadísticas, ventas, inventario y turnos.
 
-## Diagramas
+## Modelo de referencia
 
-Los diagramas se obtuvieron de esta implementación y se entregan con sus fuentes:
-
-- [Clases de diseño: atributos, métodos y relaciones](diagramas/clases-diseno.puml).
-- [Clases de alto nivel: tipos y relaciones](diagramas/clases-alto-nivel.puml).
-- [Secuencia de reserva](diagramas/secuencia-01-reservar.puml).
-- [Secuencia de venta](diagramas/secuencia-02-finalizar-venta.puml).
-- [Secuencia de cambio de turno](diagramas/secuencia-03-aprobar-turno.puml).
-- [Secuencia de partido oficial](diagramas/secuencia-04-partido-oficial.puml).
-- [Secuencia de persistencia](diagramas/secuencia-05-persistencia.puml).
-
-![Paquetes y clases](diagramas/paquetes.svg)
-
-![Reserva](diagramas/secuencia-01-reservar.svg)
-
-![Venta](diagramas/secuencia-02-finalizar-venta.svg)
-
-![Turno](diagramas/secuencia-03-aprobar-turno.svg)
-
-![Partido oficial](diagramas/secuencia-04-partido-oficial.svg)
-
-![Persistencia](diagramas/secuencia-05-persistencia.svg)
+La implementación se basa en `Modelo_clases_final.pdf`, proporcionado por el usuario.
+Los diagramas generados anteriormente se retiraron de esta entrega.
 
 ## Correspondencia con el material del curso
 
@@ -123,7 +104,7 @@ Se revisaron los nueve PDF entregados por el usuario y se aplicaron estos criter
 | Diapositivas | Aplicación en el código |
 |---|---|
 | 2. POO en Java-1 | Atributos privados, constructores, getters y paso de mensajes entre objetos |
-| 2. UML | Diagramas de clases de diseño y de alto nivel, más una secuencia por escenario |
+| 2. UML | Clases, relaciones y herencias del modelo final proporcionado |
 | 2. Extra convenciones Java | Nombres de clases y métodos, constantes en mayúsculas, imports explícitos, carpetas src/srctest/datos/bin |
 | 2. Extra Preguntas_OO | Constructores con los datos necesarios, firmas claras y accesores para atributos consultables |
 | 3. Herencia y polimorfismo | extends, super, clases abstractas, interfaces y anotaciones @Override |
