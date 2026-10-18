@@ -1,0 +1,55 @@
+OK 1 - Autenticación
+OK 2 - Clave incorrecta
+OK 3 - Usuario duplicado
+OK 4 - Límites de categorías del modelo
+OK 5 - Nivel fuera de 1..10
+OK 6 - Reserva ocupa instalación
+OK 7 - Reserva superpuesta
+OK 8 - Reservas contiguas permitidas
+OK 9 - Cancelación libera instalación
+OK 10 - Cancelación repetida
+OK 11 - Reserva fuera de horario
+OK 12 - Modalidad y cupo incompatibles
+OK 13 - Partido de práctica
+OK 14 - Niveles incompatibles
+OK 15 - Ranking individual actualizado
+OK 16 - Estadística duplicada
+OK 17 - Resultado repetido
+OK 18 - Asistencia con evaluación
+OK 19 - Jugador no convocado
+OK 20 - Nota fuera de rango
+OK 21 - Un único equipo por deporte
+OK 22 - Descuento compartido e IVA
+OK 23 - Descuento de inventario
+OK 24 - Fidelización sobre base sin impuesto
+OK 25 - Venta no se cobra dos veces
+OK 26 - Descuento empleado del 15 por ciento
+OK 27 - Stock insuficiente
+OK 28 - Alérgenos requieren informar
+OK 29 - Rechazo no modifica inventario
+OK 30 - Impuesto, propina y redención
+OK 31 - Traslado de existencias
+OK 32 - Traslado sin stock
+OK 33 - Aprobación de sugerencia
+OK 34 - Tabla de posiciones
+OK 35 - Suspensión por dos amarillas
+OK 36 - Suspensión cumplida en siguiente partido
+OK 37 - Cobertura mínima
+OK 38 - Cambio deja hueco de cobertura
+OK 39 - Rechazo conserva turno y solicitud
+OK 40 - Mensualidad duplicada
+OK 41 - Reporte por rubro y periodo
+OK 42 - No se vende bebida caliente dentro de pádel
+OK 43 - No se entra con bebida caliente
+OK 44 - Ingreso después de terminar bebida
+OK 45 - Persistencia de credenciales
+OK 46 - Persistencia conserva relaciones
+OK 47 - Persistencia conserva ventas
+OK 48 - Archivo inválido rechazado
+OK 49 - Partido interno exige mínimo por equipo
+OK 50 - Partido interno con ambos equipos habilitados
+OK 51 - Cambio con cobertura se aprueba
+OK 52 - Eliminación no admite empate
+OK 53 - Derrota elimina al equipo
+OK 54 - Equipo eliminado no vuelve a jugar
+RESULTADO: 54 verificaciones correctas.

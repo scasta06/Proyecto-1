@@ -1,0 +1,24 @@
+@startuml
+title 04-partido-oficial
+actor Entrenador
+participant GestorCompetencias as G
+participant Competencia as C
+participant GestorDeportivo as D
+participant PartidoOficial as P
+Entrenador -> G: programarPartido(c, inscripcion, rival, fecha, hora, local)
+G -> C: validar inscripción, fechas y eliminación
+G -> D: habilitadoOficial(c, socio)
+G -> G: comprobar mínimo habilitado
+create P
+G -> P: new PartidoOficial(...)
+G -> P: agregarParticipante(socio habilitado)
+G -> C: agregarPartido(p)
+G -> D: prepararSanciones(p, nomina)
+Entrenador -> G: registrarResultado(p, propio, rival)
+G -> P: registrarResultado(propio, rival)
+G -> D: cumplirSanciones(p)
+G -> C: inscripcion.sumarPuntos(p.getPuntosObtenidos())
+Entrenador -> D: registrarEstadistica(entrenador, p, jugador, valores)
+D -> P: agregarEstadistica(e)
+D -> D: actualizar tarjetas y Ranking.actualizar(e)
+@enduml

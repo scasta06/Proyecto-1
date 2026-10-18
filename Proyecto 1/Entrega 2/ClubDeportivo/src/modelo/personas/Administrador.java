@@ -1,0 +1,29 @@
+package modelo.personas;
+import java.io.*;
+import java.time.*;
+import java.util.*;
+import java.util.stream.*;
+import modelo.personas.*;
+import modelo.deportes.*;
+import modelo.actividades.*;
+import modelo.competencias.*;
+import modelo.personal.*;
+import modelo.inventario.*;
+import modelo.comercio.*;
+import modelo.tipos.*;
+import logica.*;
+import excepciones.*;
+public class Administrador extends Empleado implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private String cargo;
+    public Administrador(String doc,String nom,LocalDate nac,String login,String clave,String codigo,String dato) {
+        super(doc,nom,nac,login,clave,codigo);
+        cargo=Validacion.texto(dato);
+    }
+    public String getTipo() {
+        return "ADMINISTRADOR";
+    }
+    public String getCargo() {
+        return cargo;
+    }
+}

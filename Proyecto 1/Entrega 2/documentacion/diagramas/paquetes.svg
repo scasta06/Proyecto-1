@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1900" viewBox="0 0 1500 1900">
+<rect width="100%" height="100%" fill="#f4f7fb"/>
+<text x="30" y="40" font-family="Arial" font-size="26" fill="#152e4b">Club Deportivo Séneca · paquetes y clases</text>
+<rect x="25" y="70" width="475" height="340" rx="12" fill="white" stroke="#c2cfdf"/>
+<text x="43" y="100" font-family="Arial" font-size="20" font-weight="bold" fill="#244a78">consola</text>
+<text x="43" y="128" font-family="Arial" font-size="16" fill="#26384d">ConsolaAdministrador</text>
+<text x="43" y="148" font-family="Arial" font-size="16" fill="#26384d">ConsolaBase (abstracta)</text>
+<text x="43" y="168" font-family="Arial" font-size="16" fill="#26384d">ConsolaEntrenador</text>
+<text x="43" y="188" font-family="Arial" font-size="16" fill="#26384d">ConsolaFisioterapeuta</text>
+<text x="43" y="208" font-family="Arial" font-size="16" fill="#26384d">ConsolaPrincipal</text>
+<text x="43" y="228" font-family="Arial" font-size="16" fill="#26384d">ConsolaSocio</text>
+<rect x="520" y="70" width="475" height="340" rx="12" fill="white" stroke="#c2cfdf"/>
+<text x="538" y="100" font-family="Arial" font-size="20" font-weight="bold" fill="#244a78">excepciones</text>
+<text x="538" y="128" font-family="Arial" font-size="16" fill="#26384d">ClubException</text>
+<text x="538" y="148" font-family="Arial" font-size="16" fill="#26384d">InscripcionException</text>
+<text x="538" y="168" font-family="Arial" font-size="16" fill="#26384d">InventarioException</text>
+<text x="538" y="188" font-family="Arial" font-size="16" fill="#26384d">ParticipacionException</text>
+<text x="538" y="208" font-family="Arial" font-size="16" fill="#26384d">ReservaException</text>
+<text x="538" y="228" font-family="Arial" font-size="16" fill="#26384d">TurnoException</text>
+<text x="538" y="248" font-family="Arial" font-size="16" fill="#26384d">VentaException</text>
+<rect x="1015" y="70" width="475" height="340" rx="12" fill="white" stroke="#c2cfdf"/>
+<text x="1033" y="100" font-family="Arial" font-size="20" font-weight="bold" fill="#244a78">logica</text>
+<text x="1033" y="128" font-family="Arial" font-size="16" fill="#26384d">ClubDeportivo</text>
+<text x="1033" y="148" font-family="Arial" font-size="16" fill="#26384d">GestorComercio</text>
+<text x="1033" y="168" font-family="Arial" font-size="16" fill="#26384d">GestorCompetencias</text>
+<text x="1033" y="188" font-family="Arial" font-size="16" fill="#26384d">GestorDeportivo</text>
+<text x="1033" y="208" font-family="Arial" font-size="16" fill="#26384d">GestorInstalaciones</text>
+<text x="1033" y="228" font-family="Arial" font-size="16" fill="#26384d">GestorPersonal</text>
+<text x="1033" y="248" font-family="Arial" font-size="16" fill="#26384d">GestorReportes</text>
+<text x="1033" y="268" font-family="Arial" font-size="16" fill="#26384d">GestorUsuarios</text>
+<text x="1033" y="288" font-family="Arial" font-size="16" fill="#26384d">ReporteVentas</text>
+<text x="1033" y="308" font-family="Arial" font-size="16" fill="#26384d">Validacion</text>
+<rect x="25" y="430" width="475" height="340" rx="12" fill="white" stroke="#c2cfdf"/>
+<text x="43" y="460" font-family="Arial" font-size="20" font-weight="bold" fill="#244a78">modelo.actividades</text>
+<text x="43" y="488" font-family="Arial" font-size="16" fill="#26384d">Estadistica (abstracta)</text>
+<text x="43" y="508" font-family="Arial" font-size="16" fill="#26384d">EstadisticaBaloncesto</text>
+<text x="43" y="528" font-family="Arial" font-size="16" fill="#26384d">EstadisticaFutbol</text>
+<text x="43" y="548" font-family="Arial" font-size="16" fill="#26384d">EstadisticaIndividual</text>
+<text x="43" y="568" font-family="Arial" font-size="16" fill="#26384d">EstadisticaVoleibol</text>
+<text x="43" y="588" font-family="Arial" font-size="16" fill="#26384d">Evento (abstracta)</text>
+<text x="43" y="608" font-family="Arial" font-size="16" fill="#26384d">Instalacion</text>
+<text x="43" y="628" font-family="Arial" font-size="16" fill="#26384d">Partido (abstracta)</text>
+<text x="43" y="648" font-family="Arial" font-size="16" fill="#26384d">PartidoInterno</text>
+<text x="43" y="668" font-family="Arial" font-size="16" fill="#26384d">PartidoOficial</text>
+<text x="43" y="688" font-family="Arial" font-size="16" fill="#26384d">PartidoPractica</text>
+<text x="43" y="708" font-family="Arial" font-size="16" fill="#26384d">RegistroAsistencia</text>
+<text x="43" y="728" font-family="Arial" font-size="16" fill="#26384d">Reserva</text>
+<text x="43" y="748" font-family="Arial" font-size="16" fill="#26384d">SesionEntrenamiento</text>
+<rect x="520" y="430" width="475" height="340" rx="12" fill="white" stroke="#c2cfdf"/>
+<text x="538" y="460" font-family="Arial" font-size="20" font-weight="bold" fill="#244a78">modelo.comercio</text>
+<text x="538" y="488" font-family="Arial" font-size="16" fill="#26384d">Alergeno</text>
+<text x="538" y="508" font-family="Arial" font-size="16" fill="#26384d">ArticuloDeportivo</text>
+<text x="538" y="528" font-family="Arial" font-size="16" fill="#26384d">Bebida</text>
+<text x="538" y="548" font-family="Arial" font-size="16" fill="#26384d">Cafeteria</text>
+<text x="538" y="568" font-family="Arial" font-size="16" fill="#26384d">CuentaFidelizacion</text>
+<text x="538" y="588" font-family="Arial" font-size="16" fill="#26384d">Ingrediente</text>
+<text x="538" y="608" font-family="Arial" font-size="16" fill="#26384d">ItemVenta</text>
+<text x="538" y="628" font-family="Arial" font-size="16" fill="#26384d">Mensualidad</text>
+<text x="538" y="648" font-family="Arial" font-size="16" fill="#26384d">Producto (abstracta)</text>
+<text x="538" y="668" font-family="Arial" font-size="16" fill="#26384d">PuntoVenta (abstracta)</text>
+<text x="538" y="688" font-family="Arial" font-size="16" fill="#26384d">Snack</text>
+<text x="538" y="708" font-family="Arial" font-size="16" fill="#26384d">SugerenciaProducto</text>
+<text x="538" y="728" font-family="Arial" font-size="16" fill="#26384d">Tienda</text>
+<text x="538" y="748" font-family="Arial" font-size="16" fill="#26384d">Venta</text>
+<rect x="1015" y="430" width="475" height="340" rx="12" fill="white" stroke="#c2cfdf"/>
+<text x="1033" y="460" font-family="Arial" font-size="20" font-weight="bold" fill="#244a78">modelo.competencias</text>
+<text x="1033" y="488" font-family="Arial" font-size="16" fill="#26384d">Competencia</text>
+<text x="1033" y="508" font-family="Arial" font-size="16" fill="#26384d">EntradaRanking</text>
+<text x="1033" y="528" font-family="Arial" font-size="16" fill="#26384d">InscripcionCompetencia</text>
+<text x="1033" y="548" font-family="Arial" font-size="16" fill="#26384d">Ranking</text>
+<rect x="25" y="790" width="475" height="340" rx="12" fill="white" stroke="#c2cfdf"/>
+<text x="43" y="820" font-family="Arial" font-size="20" font-weight="bold" fill="#244a78">modelo.deportes</text>
+<text x="43" y="848" font-family="Arial" font-size="16" fill="#26384d">Academia</text>
+<text x="43" y="868" font-family="Arial" font-size="16" fill="#26384d">Deporte</text>
+<text x="43" y="888" font-family="Arial" font-size="16" fill="#26384d">Equipo</text>
+<text x="43" y="908" font-family="Arial" font-size="16" fill="#26384d">InscripcionAcademia</text>
+<text x="43" y="928" font-family="Arial" font-size="16" fill="#26384d">InscripcionEquipo</text>
+<rect x="520" y="790" width="475" height="340" rx="12" fill="white" stroke="#c2cfdf"/>
+<text x="538" y="820" font-family="Arial" font-size="20" font-weight="bold" fill="#244a78">modelo.inventario</text>
+<text x="538" y="848" font-family="Arial" font-size="16" fill="#26384d">Existencia</text>
+<text x="538" y="868" font-family="Arial" font-size="16" fill="#26384d">Inventario</text>
+<text x="538" y="888" font-family="Arial" font-size="16" fill="#26384d">MovimientoInventario (abstracta)</text>
+<text x="538" y="908" font-family="Arial" font-size="16" fill="#26384d">Reabastecimiento</text>
+<text x="538" y="928" font-family="Arial" font-size="16" fill="#26384d">Traslado</text>
+<text x="538" y="948" font-family="Arial" font-size="16" fill="#26384d">Ubicacion</text>
+<rect x="1015" y="790" width="475" height="340" rx="12" fill="white" stroke="#c2cfdf"/>
+<text x="1033" y="820" font-family="Arial" font-size="20" font-weight="bold" fill="#244a78">modelo.personal</text>
+<text x="1033" y="848" font-family="Arial" font-size="16" fill="#26384d">SolicitudCambioTurno</text>
+<text x="1033" y="868" font-family="Arial" font-size="16" fill="#26384d">Turno</text>
+<rect x="25" y="1150" width="475" height="340" rx="12" fill="white" stroke="#c2cfdf"/>
+<text x="43" y="1180" font-family="Arial" font-size="20" font-weight="bold" fill="#244a78">modelo.personas</text>
+<text x="43" y="1208" font-family="Arial" font-size="16" fill="#26384d">Administrador</text>
+<text x="43" y="1228" font-family="Arial" font-size="16" fill="#26384d">Empleado (abstracta)</text>
+<text x="43" y="1248" font-family="Arial" font-size="16" fill="#26384d">Entrenador</text>
+<text x="43" y="1268" font-family="Arial" font-size="16" fill="#26384d">Fisioterapeuta</text>
+<text x="43" y="1288" font-family="Arial" font-size="16" fill="#26384d">NivelDeportivo</text>
+<text x="43" y="1308" font-family="Arial" font-size="16" fill="#26384d">Persona (abstracta)</text>
+<text x="43" y="1328" font-family="Arial" font-size="16" fill="#26384d">Sancion</text>
+<text x="43" y="1348" font-family="Arial" font-size="16" fill="#26384d">Socio</text>
+<rect x="520" y="1150" width="475" height="340" rx="12" fill="white" stroke="#c2cfdf"/>
+<text x="538" y="1180" font-family="Arial" font-size="20" font-weight="bold" fill="#244a78">modelo.tipos</text>
+<text x="538" y="1208" font-family="Arial" font-size="16" fill="#26384d">Categoria</text>
+<text x="538" y="1228" font-family="Arial" font-size="16" fill="#26384d">ConceptoMensualidad</text>
+<text x="538" y="1248" font-family="Arial" font-size="16" fill="#26384d">EstadoAsistencia</text>
+<text x="538" y="1268" font-family="Arial" font-size="16" fill="#26384d">EstadoCompetencia</text>
+<text x="538" y="1288" font-family="Arial" font-size="16" fill="#26384d">EstadoPartido</text>
+<text x="538" y="1308" font-family="Arial" font-size="16" fill="#26384d">EstadoReserva</text>
+<text x="538" y="1328" font-family="Arial" font-size="16" fill="#26384d">EstadoSolicitud</text>
+<text x="538" y="1348" font-family="Arial" font-size="16" fill="#26384d">FormatoCompetencia</text>
+<text x="538" y="1368" font-family="Arial" font-size="16" fill="#26384d">ModalidadReserva</text>
+<text x="538" y="1388" font-family="Arial" font-size="16" fill="#26384d">Resultado</text>
+<text x="538" y="1408" font-family="Arial" font-size="16" fill="#26384d">Rubro</text>
+<text x="538" y="1428" font-family="Arial" font-size="16" fill="#26384d">TipoEstadistica</text>
+<text x="538" y="1448" font-family="Arial" font-size="16" fill="#26384d">TipoSancion</text>
+<text x="538" y="1468" font-family="Arial" font-size="16" fill="#26384d">TipoUbicacion</text>
+<rect x="1015" y="1150" width="475" height="340" rx="12" fill="white" stroke="#c2cfdf"/>
+<text x="1033" y="1180" font-family="Arial" font-size="20" font-weight="bold" fill="#244a78">persistencia</text>
+<text x="1033" y="1208" font-family="Arial" font-size="16" fill="#26384d">IPersistenciaClub</text>
+<text x="1033" y="1228" font-family="Arial" font-size="16" fill="#26384d">PersistenciaJson</text>
+<rect x="25" y="1510" width="475" height="340" rx="12" fill="white" stroke="#c2cfdf"/>
+<text x="43" y="1540" font-family="Arial" font-size="20" font-weight="bold" fill="#244a78">pruebas</text>
+<text x="43" y="1568" font-family="Arial" font-size="16" fill="#26384d">DatosPrueba</text>
+<text x="43" y="1588" font-family="Arial" font-size="16" fill="#26384d">PruebasSistema</text>
+</svg>

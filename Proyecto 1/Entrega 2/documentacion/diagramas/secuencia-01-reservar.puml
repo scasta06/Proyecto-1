@@ -1,0 +1,21 @@
+@startuml
+title 01-reservar
+actor Socio
+participant GestorInstalaciones as G
+participant Deporte as D
+participant Instalacion as I
+participant Reserva as R
+Socio -> G: reservar(s, d, fecha, inicio, duracion, n, modalidad)
+G -> Socio: isActivo() / estaSuspendido(d, fecha)
+G -> D: cantidadReservaValida(n)
+G -> G: buscarDisponible(d, fecha, inicio, duracion, n)
+G -> I: admiteCantidad(n) / estaDisponible(fecha, inicio, fin)
+alt datos válidos e instalación disponible
+create R
+G -> R: new Reserva(...)
+G -> I: agregarOcupacion(r)
+G --> Socio: reserva confirmada
+else restricción incumplida
+G --> Socio: ReservaException o ClubException
+end
+@enduml

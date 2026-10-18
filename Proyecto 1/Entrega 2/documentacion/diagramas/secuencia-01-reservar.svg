@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="875" viewBox="0 0 1200 875">
+<defs><marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8" fill="#244a78"/></marker></defs>
+<rect width="100%" height="100%" fill="white"/>
+<text x="25" y="30" font-family="Arial" font-size="21" font-weight="bold">secuencia-01-reservar</text>
+<rect x="5.0" y="55" width="190" height="45" rx="6" fill="#e7eff8" stroke="#244a78"/>
+<text x="100.0" y="83" text-anchor="middle" font-family="Arial" font-size="14">Socio</text>
+<path d="M100.0 100 V855" stroke="#b4bfcd" stroke-dasharray="5 5"/>
+<rect x="255.0" y="55" width="190" height="45" rx="6" fill="#e7eff8" stroke="#244a78"/>
+<text x="350.0" y="83" text-anchor="middle" font-family="Arial" font-size="14">GestorInstalaciones</text>
+<path d="M350.0 100 V855" stroke="#b4bfcd" stroke-dasharray="5 5"/>
+<rect x="505.0" y="55" width="190" height="45" rx="6" fill="#e7eff8" stroke="#244a78"/>
+<text x="600.0" y="83" text-anchor="middle" font-family="Arial" font-size="14">Deporte</text>
+<path d="M600.0 100 V855" stroke="#b4bfcd" stroke-dasharray="5 5"/>
+<rect x="755.0" y="55" width="190" height="45" rx="6" fill="#e7eff8" stroke="#244a78"/>
+<text x="850.0" y="83" text-anchor="middle" font-family="Arial" font-size="14">Instalacion</text>
+<path d="M850.0 100 V855" stroke="#b4bfcd" stroke-dasharray="5 5"/>
+<rect x="1005.0" y="55" width="190" height="45" rx="6" fill="#e7eff8" stroke="#244a78"/>
+<text x="1100.0" y="83" text-anchor="middle" font-family="Arial" font-size="14">Reserva</text>
+<path d="M1100.0 100 V855" stroke="#b4bfcd" stroke-dasharray="5 5"/>
+<path d="M100.0 140 H350.0" fill="none" stroke="#244a78" marker-end="url(#arrow)"/>
+<text x="108.0" y="130" font-family="Arial" font-size="12" fill="#26384d">reservar(s, d, fecha, inicio, duracion, n, modalidad)</text>
+<path d="M350.0 205 H100.0" fill="none" stroke="#244a78" marker-end="url(#arrow)"/>
+<text x="108.0" y="195" font-family="Arial" font-size="12" fill="#26384d">isActivo() / estaSuspendido(d, fecha)</text>
+<path d="M350.0 270 H600.0" fill="none" stroke="#244a78" marker-end="url(#arrow)"/>
+<text x="358.0" y="260" font-family="Arial" font-size="12" fill="#26384d">cantidadReservaValida(n)</text>
+<path d="M350.0 335 h45 v20 h-45" fill="none" stroke="#244a78" marker-end="url(#arrow)"/>
+<text x="360.0" y="325" font-family="Arial" font-size="12" fill="#26384d">buscarDisponible(d, fecha, inicio, duracion, n)</text>
+<path d="M350.0 400 H850.0" fill="none" stroke="#244a78" marker-end="url(#arrow)"/>
+<text x="358.0" y="390" font-family="Arial" font-size="12" fill="#26384d">admiteCantidad(n) / estaDisponible(fecha, inicio, fin)</text>
+<text x="20" y="465" font-family="Arial" font-size="13" font-weight="bold" fill="#81552c">alt datos válidos e instalación disponible</text>
+<path d="M350.0 530 H1100.0" fill="none" stroke="#244a78" marker-end="url(#arrow)"/>
+<text x="358.0" y="520" font-family="Arial" font-size="12" fill="#26384d">new Reserva(...)</text>
+<path d="M350.0 595 H850.0" fill="none" stroke="#244a78" marker-end="url(#arrow)"/>
+<text x="358.0" y="585" font-family="Arial" font-size="12" fill="#26384d">agregarOcupacion(r)</text>
+<path d="M350.0 660 H100.0" fill="none" stroke="#244a78" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+<text x="108.0" y="650" font-family="Arial" font-size="12" fill="#26384d">reserva confirmada</text>
+<text x="20" y="725" font-family="Arial" font-size="13" font-weight="bold" fill="#81552c">else restricción incumplida</text>
+<path d="M350.0 790 H100.0" fill="none" stroke="#244a78" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+<text x="108.0" y="780" font-family="Arial" font-size="12" fill="#26384d">ReservaException o ClubException</text>
+</svg>

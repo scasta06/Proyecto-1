@@ -1,0 +1,26 @@
+@startuml
+title 02-finalizar-venta
+actor Comprador
+participant GestorComercio as G
+participant Venta as V
+participant Inventario as I
+participant CuentaFidelizacion as C
+participant PuntoVenta as P
+Comprador -> G: finalizarVenta(v, propina, puntos)
+G -> V: validar estado, items y alérgenos informados
+G -> I: getCantidad(producto, ubicacion)
+G -> G: validar bebida caliente e instalación actual
+G -> V: aplicarPropina(propina)
+G -> V: calcularTotales(puntoVenta)
+G -> C: puedeRedimir(puntos)
+alt todas las validaciones pasan
+G -> V: redimirPuntos(puntos, valor)
+G -> V: calcularTotales(puntoVenta) / cerrar()
+G -> C: redimir(puntos) / acumular(baseFidelizacion)
+G -> I: descontar(producto, ubicacion, cantidad)
+G -> P: registrarVenta(v)
+G --> Comprador: venta cerrada
+else operación rechazada
+G --> Comprador: excepción; no se descuenta stock ni puntos
+end
+@enduml
