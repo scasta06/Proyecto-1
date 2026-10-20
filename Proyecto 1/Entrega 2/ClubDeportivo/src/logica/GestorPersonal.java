@@ -76,16 +76,17 @@ public class GestorPersonal implements Serializable
             if(!t.getHoraInicio().isBefore(horaApertura)&&t.getHoraInicio().isBefore(horaCierre))cortes.add(t.getHoraInicio());
             if(!t.getHoraFin().isBefore(horaApertura)&&t.getHoraFin().isBefore(horaCierre))cortes.add(t.getHoraFin());
         }
-        for(LocalTime h:cortes)if(contarDisponibles(lista,f,h,Entrenador.class)<MIN_ENTRENADORES||contarDisponibles(lista,f,h,Fisioterapeuta.class)<MIN_FISIOTERAPEUTAS)return false;
+        for(LocalTime h:cortes)if(contarDisponibles(lista,f,h,true)<MIN_ENTRENADORES||contarDisponibles(lista,f,h,false)<MIN_FISIOTERAPEUTAS)return false;
         return true;
     }
-    private int contarDisponibles(List<Turno> lista,LocalDate f,LocalTime h,Class<?> tipo)
+    private int contarDisponibles(List<Turno> lista,LocalDate f,LocalTime h,boolean contarEntrenadores)
     {
         List<Empleado> contados = new ArrayList<Empleado>();
         for (Turno turno : lista)
         {
             Empleado empleado = turno.getEmpleado();
-            if (turno.cubre(f, h) && tipo.isInstance(empleado) && !contados.contains(empleado))
+            boolean tipoCorrecto = contarEntrenadores ? empleado instanceof Entrenador : empleado instanceof Fisioterapeuta;
+            if (turno.cubre(f, h) && tipoCorrecto && !contados.contains(empleado))
             {
                 contados.add(empleado);
             }

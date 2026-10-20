@@ -38,6 +38,7 @@ public class PartidoOficial extends Partido implements Serializable
     }
     public int getPuntosObtenidos() throws ClubException
     {
+        validar(getEstado() == EstadoPartido.FINALIZADO, "Partido sin resultado");
         return competencia.puntosMarcador(getMarcadorPropio(),getMarcadorRival());
     }
     @Override
@@ -79,6 +80,7 @@ public class PartidoOficial extends Partido implements Serializable
     protected void validarAlineacion() throws ClubException
     {
         super.validarAlineacion();
+        if (inscripcion.getEquipo() != null) inscripcion.getEquipo().validarOrdenPartido(competencia.getCodigo(),getFecha().atTime(getHoraInicio()));
         int minimo = getDeporte().isEsDeConjunto() ? getDeporte().getJugadoresEnCampo() : 1;
         if (getParticipantes().size() < minimo || inscripcion.isEliminada()) throw new ParticipacionException("Nómina insuficiente o eliminada");
         for (Socio socio : getParticipantes())
@@ -88,11 +90,23 @@ public class PartidoOficial extends Partido implements Serializable
     @Override
     protected void cumplirSuspensiones()
     {
-        if (inscripcion.getEquipo() != null) inscripcion.getEquipo().cumplirSuspensiones(competencia.getCodigo());
+        if (inscripcion.getEquipo() != null)
+        {
+            inscripcion.getEquipo().registrarPartidoDisputado(competencia.getCodigo(),getFecha().atTime(getHoraInicio()));
+            inscripcion.getEquipo().cumplirSuspensiones(competencia.getCodigo());
+        }
+    }
+    @Override
+    protected void validarRegistroEstadisticas() throws ClubException
+    {
+        if (inscripcion.getEquipo() != null) inscripcion.getEquipo().validarFechaEstadisticas(competencia.getCodigo(),getFecha().atTime(getHoraInicio()));
     }
     @Override
     public void registrarTarjetas(Socio socio, int amarillas, int rojas) throws ClubException
     {
+        validarRegistroEstadisticas();
+        if (!participo(socio) || getEstado() != EstadoPartido.FINALIZADO)
+            throw new ParticipacionException("Jugador ajeno o partido sin resultado");
         if (inscripcion.getEquipo() != null) inscripcion.getEquipo().registrarTarjetas(socio,competencia.getCodigo(),amarillas,rojas,competencia.getLimiteAmarillas());
     }
     public boolean isEsLocal() { return esLocal; }

@@ -50,7 +50,7 @@ public class GestorCompetencias implements Serializable
     public InscripcionCompetencia inscribirEquipo(Competencia c,Equipo e,List<Socio> nomina) throws ClubException
     {
         abierta(c);
-        if (e.getDeporte() != c.getDeporte() || e.getCategoria() != c.getCategoria() || !c.getDeporte().nominaValida(nomina.size()))
+        if (!e.isActivo() || e.getDeporte() != c.getDeporte() || e.getCategoria() != c.getCategoria() || !c.getDeporte().nominaValida(nomina.size()))
         {
             throw new InscripcionException("Equipo o tamaño de nómina no válido");
         }

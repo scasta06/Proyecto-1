@@ -27,15 +27,27 @@ public class PartidoPractica extends Partido implements Serializable
     public PartidoPractica(String id,Socio sol,Persona rival,Deporte d,LocalDate f,LocalTime h,Instalacion i) throws ClubException
     {
         super(id,f,h,d.getDuracionPartidoMin(),i);
+        validar(!d.isEsDeConjunto() && !d.esPadel(), "La práctica individual requiere tenis o tenis de mesa");
         validar(sol!=rival&&(rival instanceof Socio||rival instanceof Entrenador),"Rival inválido");
         this.rival=rival;
         deporte=d;
         if(rival instanceof Socio)validar(d.nivelesCompatibles(sol.getNivel(d),((Socio)rival).getNivel(d)),"Niveles incompatibles");
         else validar(((Entrenador)rival).puedeEntrenar(d),"Entrenador sin especialidad");
-        nivelesVerificados=true;
         ladoPropio.add(sol);
         agregarParticipante(sol);
         if(rival instanceof Socio)agregarParticipante((Socio)rival);
+        nivelesVerificados=true;
+    }
+    @Override
+    public void agregarParticipante(Socio socio) throws ClubException
+    {
+        validar(!nivelesVerificados, "Los jugadores de la práctica ya están definidos");
+        super.agregarParticipante(socio);
+    }
+    @Override
+    public void quitarParticipante(Socio socio) throws ClubException
+    {
+        throw new ParticipacionException("Cancele y reprograme la práctica para cambiar sus jugadores");
     }
     public boolean incluyeEntrenador()
     {

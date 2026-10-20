@@ -58,6 +58,7 @@ public abstract class Partido extends Evento implements Serializable
         {
             validar(anterior.getJugador() != e.getJugador(), "Estadística duplicada");
         }
+        validarRegistroEstadisticas();
         estadisticas.add(e);
     }
     public abstract Deporte getDeporte();
@@ -109,6 +110,7 @@ public abstract class Partido extends Evento implements Serializable
         }
     }
     protected void cumplirSuspensiones() { }
+    protected void validarRegistroEstadisticas() throws ClubException { }
     public void registrarTarjetas(Socio socio, int amarillas, int rojas) throws ClubException
     {
         if (amarillas != 0 || rojas != 0) throw new ParticipacionException("El partido no admite tarjetas");

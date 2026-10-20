@@ -99,9 +99,10 @@ public class GestorComercio implements Serializable
     {
         return s.getIngredientes();
     }
-    public synchronized Venta finalizarVenta(Venta v,double propina,int puntos) throws ClubException
+    public Venta finalizarVenta(Venta v,double propina,int puntos) throws ClubException
     {
         validar(pendientes.contains(v)&&!v.isCerrada()&&!v.getItems().isEmpty()&&(!v.requiereInfoAlergenos()||alergenosInformados(v)),"Venta vacía, desconocida o alérgenos no informados");
+        validar(!(v.getComprador() instanceof Socio) || ((Socio)v.getComprador()).isActivo(), "Socio dado de baja antes del pago");
         validar(puntos>=0,"Redención no permitida");
         Map<Producto,Integer> cantidades=new LinkedHashMap<>();
         for (ItemVenta item : v.getItems())
@@ -149,7 +150,7 @@ public class GestorComercio implements Serializable
     }
     public Mensualidad registrarMensualidad(Socio s,YearMonth periodo,ConceptoMensualidad c,double valor) throws ClubException
     {
-        validar(s.isActivo(), "Socio inactivo");
+        validar(usuarios.getPersonas().contains(s) && s.isActivo(), "Socio desconocido o inactivo");
         for (Mensualidad anterior : mensualidades)
         {
             validar(!(anterior.getSocio() == s && anterior.getPeriodo().equals(periodo) && anterior.getConcepto() == c), "Mensualidad duplicada");

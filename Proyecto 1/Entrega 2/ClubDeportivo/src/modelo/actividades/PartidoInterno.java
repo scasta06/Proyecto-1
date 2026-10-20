@@ -50,10 +50,15 @@ public class PartidoInterno extends Partido
         super.validarAlineacion();
         for (Equipo equipo : new Equipo[] {local,visitante})
         {
+            equipo.validarOrdenPartido("INTERNOS",getFecha().atTime(getHoraInicio()));
             int cantidad = 0;
             for (Socio socio : getParticipantes())
             {
-                if (equipo.esIntegrante(socio))
+                if (getEquipoDe(socio) == equipo)
+                {
+                    if (!equipo.esIntegrante(socio)) throw new ParticipacionException("Jugador retirado de su equipo original");
+                }
+                if (getEquipoDe(socio) == equipo && equipo.esIntegrante(socio))
                 {
                     if (equipo.suspendidoPorTarjetas(socio,"INTERNOS")) throw new ParticipacionException("Jugador suspendido por tarjetas");
                     cantidad++;
@@ -65,12 +70,23 @@ public class PartidoInterno extends Partido
     @Override
     protected void cumplirSuspensiones()
     {
+        local.registrarPartidoDisputado("INTERNOS",getFecha().atTime(getHoraInicio()));
+        visitante.registrarPartidoDisputado("INTERNOS",getFecha().atTime(getHoraInicio()));
         local.cumplirSuspensiones("INTERNOS");
         visitante.cumplirSuspensiones("INTERNOS");
     }
     @Override
+    protected void validarRegistroEstadisticas() throws ClubException
+    {
+        local.validarFechaEstadisticas("INTERNOS",getFecha().atTime(getHoraInicio()));
+        visitante.validarFechaEstadisticas("INTERNOS",getFecha().atTime(getHoraInicio()));
+    }
+    @Override
     public void registrarTarjetas(Socio socio, int amarillas, int rojas) throws ClubException
     {
+        validarRegistroEstadisticas();
+        if (!participo(socio) || getEstado() != modelo.tipos.EstadoPartido.FINALIZADO)
+            throw new ParticipacionException("Jugador ajeno o partido sin resultado");
         getEquipoDe(socio).registrarTarjetas(socio,"INTERNOS",amarillas,rojas,2);
     }
 }

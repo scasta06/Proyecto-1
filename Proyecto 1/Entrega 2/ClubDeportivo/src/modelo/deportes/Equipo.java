@@ -5,6 +5,7 @@ import excepciones.InscripcionException;
 import excepciones.ParticipacionException;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +18,7 @@ public class Equipo implements Serializable
 {
     private static final long serialVersionUID = 1L;
     private String nombre;
+    private Map<String,LocalDateTime> ultimosPartidos = new HashMap<>();
     private boolean dadoDeBaja;
     private Map<String, Map<Socio,Integer>> amarillas = new HashMap<>();
     private Map<String, List<Socio>> suspendidos = new HashMap<>();
@@ -108,6 +110,21 @@ public class Equipo implements Serializable
         for (InscripcionEquipo inscripcion : inscripciones) inscripcion.retirar();
     }
 
+    public void validarOrdenPartido(String circuito, LocalDateTime fecha) throws ClubException
+    {
+        if (ultimosPartidos != null && ultimosPartidos.containsKey(circuito) && !fecha.isAfter(ultimosPartidos.get(circuito)))
+            throw new ParticipacionException("Ya se registró un partido posterior de este equipo");
+    }
+    public void registrarPartidoDisputado(String circuito, LocalDateTime fecha)
+    {
+        if (ultimosPartidos == null) ultimosPartidos = new HashMap<>();
+        ultimosPartidos.put(circuito,fecha);
+    }
+    public void validarFechaEstadisticas(String circuito, LocalDateTime fecha) throws ClubException
+    {
+        if (ultimosPartidos != null && ultimosPartidos.containsKey(circuito) && fecha.isBefore(ultimosPartidos.get(circuito)))
+            throw new ParticipacionException("Registre las estadísticas antes de disputar el siguiente partido del equipo");
+    }
     private void prepararDisciplina()
     {
         if (amarillas == null) amarillas = new HashMap<>();
