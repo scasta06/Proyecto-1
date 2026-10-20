@@ -19,6 +19,7 @@ public class Instalacion implements Serializable
     private LocalTime horaApertura;
     private LocalTime horaCierre;
     private boolean enMantenimiento;
+    private boolean techada;
     private Deporte deporte;
     private List<Evento> ocupaciones=new ArrayList<>();
     public Instalacion(String c,String n,int capacidad,LocalTime abre,LocalTime cierra,Deporte d) throws ClubException
@@ -109,4 +110,10 @@ public class Instalacion implements Serializable
     {
         return new ArrayList<T>(valores);
     }
+    public void setTechada(boolean valor) { techada = valor; }
+    public boolean restringeBebidaCaliente()
+    {
+        return deporte.esPadel() || (deporte.esTenisMesa() && techada);
+    }
+
 }

@@ -2,6 +2,8 @@ package modelo.personas;
 
 import excepciones.ClubException;
 import excepciones.InscripcionException;
+import excepciones.ReservaException;
+import excepciones.VentaException;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import modelo.actividades.Instalacion;
 import modelo.comercio.CuentaFidelizacion;
 import modelo.deportes.Deporte;
 
@@ -19,6 +22,8 @@ public class Socio extends Persona implements Serializable
     private String numeroSocio;
     private LocalDate fechaAfiliacion;
     private boolean activo=true;
+    private boolean bebidaCaliente;
+    private Instalacion instalacionActual;
     private Map<Deporte,NivelDeportivo> niveles=new LinkedHashMap<>();
     private List<Sancion> sanciones=new ArrayList<>();
     private CuentaFidelizacion cuenta=new CuentaFidelizacion();
@@ -36,6 +41,7 @@ public class Socio extends Persona implements Serializable
     }
     public void asignarNivel(Deporte d,int nivel) throws ClubException
     {
+        validar(nivel >= 1 && nivel <= 3, "Nivel: 1 Principiante, 2 Intermedio, 3 Avanzado");
         niveles.put(Objects.requireNonNull(d),new NivelDeportivo(this,d,nivel));
     }
     public boolean estaSuspendido(Deporte d,LocalDate fecha)
@@ -96,4 +102,21 @@ public class Socio extends Persona implements Serializable
     {
         return new ArrayList<T>(valores);
     }
+    public boolean tieneBebidaCaliente() { return bebidaCaliente; }
+    public Instalacion getInstalacionActual() { return instalacionActual; }
+    public void recibirBebidaCaliente() throws ClubException
+    {
+        if (instalacionActual != null && instalacionActual.restringeBebidaCaliente())
+            throw new VentaException("No se despachan bebidas calientes en esta instalación");
+        bebidaCaliente = true;
+    }
+    public void terminarBebida() { bebidaCaliente = false; }
+    public void entrarInstalacion(Instalacion instalacion) throws ClubException
+    {
+        if (!activo || instalacion == null || (bebidaCaliente && instalacion.restringeBebidaCaliente()))
+            throw new ReservaException("No puede usar la instalación con una bebida caliente");
+        instalacionActual = instalacion;
+    }
+    public void salirInstalacion() { instalacionActual = null; }
+
 }

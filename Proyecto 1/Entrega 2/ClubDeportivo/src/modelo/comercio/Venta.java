@@ -1,12 +1,14 @@
 package modelo.comercio;
 
 import excepciones.ClubException;
+import excepciones.VentaException;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import modelo.personas.Persona;
+import modelo.personas.Socio;
 
 public class Venta implements Serializable
 {
@@ -23,6 +25,7 @@ public class Venta implements Serializable
     private int puntosGanados;
     private boolean alergenosInformados;
     private boolean cerrada;
+    private boolean codigoCompartido;
     private Persona comprador;
     private PuntoVenta puntoVenta;
     private List<ItemVenta> items=new ArrayList<>();
@@ -49,11 +52,7 @@ public class Venta implements Serializable
         {
             if (item.getProducto() instanceof Snack)
             {
-                Snack snack = (Snack) item.getProducto();
-                if (!snack.getAlergenos().isEmpty())
-                {
-                    return true;
-                }
+                return true;
             }
         }
         return false;
@@ -74,6 +73,8 @@ public class Venta implements Serializable
         }
         subtotal = redondearDinero(suma);
         descuento=pv.calcularDescuento(comprador,subtotal);
+        if (codigoCompartido && comprador instanceof Socio && pv instanceof Tienda)
+            descuento = redondearDinero(subtotal*Tienda.DESCUENTO_SOCIO);
         impuesto=pv.calcularImpuesto(subtotal-descuento);
         totalPagado=redondearDinero(subtotal-descuento+impuesto+propina-valorRedimido);
     }
@@ -92,7 +93,7 @@ public class Venta implements Serializable
     }
     public double getBaseFidelizacion()
     {
-        return Math.max(0,subtotal-descuento-valorRedimido);
+        return totalPagado;
     }
     public void cerrar() throws ClubException
     {
@@ -158,7 +159,7 @@ public class Venta implements Serializable
     }
     private static void validar(boolean condicion,String mensaje) throws ClubException
     {
-        if(!condicion)throw new ClubException(mensaje);
+        if(!condicion)throw new VentaException(mensaje);
     }
     private static double redondearDinero(double valor) throws ClubException
     {
@@ -169,4 +170,13 @@ public class Venta implements Serializable
     {
         return new ArrayList<T>(valores);
     }
+    public void aplicarCodigoCompartido() throws ClubException
+    {
+        abierta();
+        validar(puntoVenta instanceof Tienda && comprador instanceof Socio, "Código solo para socios en tienda");
+        codigoCompartido = true;
+    }
+    public int getPuntosRedimidos() { return puntosRedimidos; }
+    public double getValorRedimido() { return valorRedimido; }
+
 }

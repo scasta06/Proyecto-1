@@ -1,6 +1,7 @@
 package logica;
 
 import excepciones.ClubException;
+import excepciones.ParticipacionException;
 import excepciones.ReservaException;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -53,7 +54,13 @@ public class GestorInstalaciones implements Serializable
     }
     public Reserva reservar(Socio s,Deporte d,LocalDate f,LocalTime ini,int dur,int n,ModalidadReserva m) throws ClubException
     {
-        if(!s.isActivo()||s.estaSuspendido(d,f)||!d.cantidadReservaValida(n)||m==null||(m==ModalidadReserva.INDIVIDUAL&&n!=2)||(m==ModalidadReserva.DOBLES&&n!=4))throw new ReservaException("Reserva incompatible con el socio, modalidad o cupo");
+        if (!s.isActivo() || s.estaSuspendido(d,f)) throw new ParticipacionException("Socio suspendido o inactivo");
+        if (!d.cantidadReservaValida(n) || m == null ||
+            (d.isEsDeConjunto() && m != ModalidadReserva.GRUPAL) ||
+            (!d.isEsDeConjunto() && m == ModalidadReserva.GRUPAL) ||
+            (m == ModalidadReserva.INDIVIDUAL && n != 2) ||
+            (m == ModalidadReserva.DOBLES && n != 4) || (d.esPadel() && m != ModalidadReserva.DOBLES))
+            throw new ReservaException("Modalidad o cantidad de jugadores inválida");
         Instalacion i=buscarDisponible(d,f,ini,dur,n);
         Reserva r=new Reserva(UUID.randomUUID().toString(),s,f,ini,dur,i,n,m);
         i.agregarOcupacion(r);
@@ -88,4 +95,12 @@ public class GestorInstalaciones implements Serializable
     {
         return new ArrayList<T>(valores);
     }
+    public void ingresar(Socio socio, Instalacion instalacion) throws ClubException
+    {
+        if (!instalaciones.contains(instalacion) || instalacion.isEnMantenimiento() || socio.estaSuspendido(instalacion.getDeporte(),LocalDate.now()))
+            throw new ReservaException("Instalación o socio no habilitado");
+        socio.entrarInstalacion(instalacion);
+    }
+    public void salir(Socio socio) { socio.salirInstalacion(); }
+
 }

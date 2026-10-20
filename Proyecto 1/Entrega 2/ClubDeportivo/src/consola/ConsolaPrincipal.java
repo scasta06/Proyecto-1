@@ -17,7 +17,7 @@ public class ConsolaPrincipal
     public static void main(String[] args)
     {
         String ruta=args.length>0?args[0]:"datos/club-ejemplo.json";
-        persistencia.IPersistenciaClub p=new persistencia.PersistenciaJson();
+        IPersistenciaClub p=new PersistenciaJson();
         try
         {
             ConsolaPrincipal c=new ConsolaPrincipal();

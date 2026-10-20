@@ -8,6 +8,7 @@ public class ArticuloDeportivo extends Producto implements Serializable
 {
     private static final long serialVersionUID = 1L;
     private String marca;
+    private String categoria = "General";
     private String talla;
     public ArticuloDeportivo(String c,String n,double p,String marca,String talla) throws ClubException
     {
@@ -28,4 +29,11 @@ public class ArticuloDeportivo extends Producto implements Serializable
     {
         return talla;
     }
+    public String getCategoria() { return categoria == null ? "General" : categoria; }
+    public void setCategoria(String categoria) throws ClubException
+    {
+        if (categoria == null || categoria.trim().isEmpty()) throw new ClubException("Categoría obligatoria");
+        this.categoria = categoria.trim();
+    }
+
 }

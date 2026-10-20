@@ -1,6 +1,7 @@
 package modelo.inventario;
 
 import excepciones.ClubException;
+import excepciones.InventarioException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -60,6 +61,8 @@ public class Inventario implements Serializable
     }
     public Reabastecimiento reabastecer(Producto p,Ubicacion u,int n,Administrador a) throws ClubException
     {
+        if (p == null || u == null || a == null || n <= 0 || !estaRegistrado(p))
+            throw new InventarioException("Cantidad o producto no registrado");
         Reabastecimiento r=new Reabastecimiento(p,u,n,a);
         r.aplicar(this);
         movimientos.add(r);
@@ -67,6 +70,8 @@ public class Inventario implements Serializable
     }
     public Traslado trasladar(Producto p,Ubicacion o,Ubicacion d,int n,Administrador a) throws ClubException
     {
+        if (p == null || o == null || d == null || a == null || n <= 0 || o == d || getCantidad(p,o) < n)
+            throw new InventarioException("Traslado inválido o existencias insuficientes");
         Traslado t=new Traslado(p,o,d,n,a);
         t.aplicar(this);
         movimientos.add(t);

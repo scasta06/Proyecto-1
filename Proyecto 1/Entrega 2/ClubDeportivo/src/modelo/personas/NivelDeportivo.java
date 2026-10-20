@@ -14,7 +14,7 @@ public class NivelDeportivo implements Serializable
     private LocalDate fechaActualizacion;
     public NivelDeportivo(Socio s,Deporte d,int n) throws ClubException
     {
-        validar(n>=1&&n<=10,"Nivel fuera de 1..10");
+        validar(n>=1&&n<=3,"Nivel fuera de 1..3");
         socio=s;
         deporte=d;
         nivel=n;

@@ -11,6 +11,7 @@ import logica.GestorUsuarios;
 import modelo.actividades.Instalacion;
 import modelo.comercio.Alergeno;
 import modelo.comercio.ArticuloDeportivo;
+import modelo.comercio.Bebida;
 import modelo.comercio.Ingrediente;
 import modelo.comercio.Producto;
 import modelo.comercio.Snack;
@@ -57,7 +58,7 @@ public final class DatosPrueba
         }
         for(String nombre:Arrays.asList("Tenis","Pádel","Tenis de mesa"))
         {
-            Deporte d=new Deporte(nombre,false,1,2,4,1,1,60,false,1,Arrays.asList(),TipoEstadistica.INDIVIDUAL);
+            Deporte d=new Deporte(nombre,false,1,nombre.equals("Pádel")?4:2,4,1,1,60,false,1,Arrays.asList(),TipoEstadistica.INDIVIDUAL);
             g.registrarDeporte(d);
             e.agregarEspecialidad(d);
             e2.agregarEspecialidad(d);
@@ -69,13 +70,19 @@ public final class DatosPrueba
         {
             Socio s=new Socio("S"+k,"Socio "+k,LocalDate.of(2000,1,1),"socio"+k,"demo123","SOC-"+k);
             u.registrarSocio(s);
-            for(Deporte d:g.getDeportes())if(!d.isEsDeConjunto())s.asignarNivel(d,k==16?8:3);
+            for(Deporte d:g.getDeportes())if(!d.isEsDeConjunto())s.asignarNivel(d,k==16?1:2);
             if(k<=14)g.inscribirEnEquipo(s,equipo,"Defensa",k);
         }
         Deporte tenis=g.getDeportes().get(3);
-        Academia academia=new Academia("Academia de tenis",tenis,e,1,5,20,"Lunes 10:00",150000);
+        Academia academia=new Academia("Academia de tenis",tenis,e,1,3,20,"Lunes 10:00",150000);
         g.registrarAcademia(academia);
         g.inscribirEnAcademia(u.buscarSocio("S1"),academia);
+        for (int indice : new int[] {4,5})
+        {
+            Deporte deporte=g.getDeportes().get(indice);
+            Academia otra=new Academia("Academia de "+deporte.getNombre(),deporte,e,1,3,20,"Martes 10:00",150000);
+            g.registrarAcademia(otra);
+        }
         GestorComercio com=c.getGestorComercio();
         Producto balon=new ArticuloDeportivo("BAL","Balón",100000,"Demo","5");
         com.registrarProducto(balon);
@@ -84,13 +91,20 @@ public final class DatosPrueba
         Snack snack=new Snack("GAL","Galleta",5000,100,Arrays.asList(new Ingrediente("Harina",Arrays.asList(gluten))));
         com.registrarProducto(snack);
         com.getInventario().reabastecer(snack,com.getCafeteria().getUbicacion(),20,a);
+        ((ArticuloDeportivo)balon).setCategoria("Balones");
+        Bebida cafe=new Bebida("CAF","Café",3000,true);
+        Bebida agua=new Bebida("AGU","Agua",2000,false);
+        com.registrarProducto(cafe);com.registrarProducto(agua);
+        com.getInventario().reabastecer(cafe,com.getCafeteria().getUbicacion(),20,a);
+        com.getInventario().reabastecer(agua,com.getCafeteria().getUbicacion(),20,a);
+        c.getGestorInstalaciones().getInstalaciones().get(5).setTechada(true);
         LocalDate f=LocalDate.now().plusDays(1);
         for(Empleado em:Arrays.asList(e,e2,fis))c.getGestorPersonal().asignarTurno(new Turno(em.getDocumento(),f,LocalTime.of(6,0),LocalTime.of(22,0),em));
         return c;
     }
     public static void main(String[] args) throws ClubException
     {
-        new persistencia.PersistenciaJson().salvar(crear(),args.length==0?"datos/club-ejemplo.json":args[0]);
+        new PersistenciaJson().salvar(crear(),args.length==0?"datos/club-ejemplo.json":args[0]);
         System.out.println("Datos de ejemplo creados");
     }
 }

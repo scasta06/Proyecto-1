@@ -1,6 +1,7 @@
 package modelo.actividades;
 
 import excepciones.ClubException;
+import excepciones.ParticipacionException;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -66,7 +67,7 @@ public class SesionEntrenamiento extends Evento implements Serializable
     }
     private static void validar(boolean condicion,String mensaje) throws ClubException
     {
-        if(!condicion)throw new ClubException(mensaje);
+        if(!condicion)throw new ParticipacionException(mensaje);
     }
     private static String textoRequerido(String valor) throws ClubException
     {

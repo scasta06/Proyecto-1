@@ -55,7 +55,7 @@ public class GestorPersonal implements Serializable
         Turno p=s.getTurnoPropuesto();
         for (Turno turno : nuevos)
         {
-            validar(!(turno.getEmpleado() == p.getEmpleado() && turno.seTraslapaCon(p)), "Turnos superpuestos");
+            validar(!turno.getId().equals(p.getId()) && !(turno.getEmpleado() == p.getEmpleado() && turno.seTraslapaCon(p)), "Turno duplicado o superpuesto");
         }
         nuevos.add(p);
         if(!coberturaMinimaCumplida(nuevos,s.getTurnoActual().getFecha())||!coberturaMinimaCumplida(nuevos,p.getFecha()))throw new TurnoException("El cambio deja al club sin cobertura mínima");
@@ -102,7 +102,7 @@ public class GestorPersonal implements Serializable
     }
     private static void validar(boolean condicion,String mensaje) throws ClubException
     {
-        if(!condicion)throw new ClubException(mensaje);
+        if(!condicion)throw new TurnoException(mensaje);
     }
     private static <T> List<T> copiaLectura(Collection<T> valores)
     {

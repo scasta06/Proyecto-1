@@ -18,7 +18,7 @@ public class Cafeteria extends PuntoVenta implements Serializable
     @Override
     public boolean admiteProducto(Producto p)
     {
-        return p instanceof Snack;
+        return p instanceof Snack || p instanceof Bebida;
     }
     @Override
     public double calcularDescuento(Persona c,double s)

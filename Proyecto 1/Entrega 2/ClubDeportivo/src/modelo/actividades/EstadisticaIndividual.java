@@ -10,6 +10,7 @@ public class EstadisticaIndividual extends Estadistica implements Serializable
     private static final long serialVersionUID = 1L;
     private int puntosAnotados;
     private boolean gano;
+    private Integer cambioRanking;
     public EstadisticaIndividual(Socio j,Partido p,Map<String,Integer> v) throws ClubException
     {
         super(j,p,v);
@@ -19,6 +20,8 @@ public class EstadisticaIndividual extends Estadistica implements Serializable
     @Override
     public int calcularPuntosRanking()
     {
-        return valor("gano")==1?20:-10;
+        return cambioRanking == null ? (gano ? 16 : -16) : cambioRanking;
     }
+    public void setCambioRanking(int cambio) { cambioRanking = cambio; }
+
 }

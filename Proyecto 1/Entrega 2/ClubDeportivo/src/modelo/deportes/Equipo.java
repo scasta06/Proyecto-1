@@ -2,10 +2,13 @@ package modelo.deportes;
 
 import excepciones.ClubException;
 import excepciones.InscripcionException;
+import excepciones.ParticipacionException;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import modelo.personas.Entrenador;
 import modelo.personas.Socio;
 import modelo.tipos.Categoria;
@@ -14,6 +17,9 @@ public class Equipo implements Serializable
 {
     private static final long serialVersionUID = 1L;
     private String nombre;
+    private boolean dadoDeBaja;
+    private Map<String, Map<Socio,Integer>> amarillas = new HashMap<>();
+    private Map<String, List<Socio>> suspendidos = new HashMap<>();
     private Categoria categoria;
     private int cupoMaximo;
     private Deporte deporte;
@@ -30,7 +36,7 @@ public class Equipo implements Serializable
     }
     public boolean tieneCupo()
     {
-        return getJugadoresActivos().size()<cupoMaximo;
+        return !dadoDeBaja && getJugadoresActivos().size()<cupoMaximo;
     }
     public boolean esIntegrante(Socio s)
     {
@@ -38,7 +44,7 @@ public class Equipo implements Serializable
     }
     public InscripcionEquipo inscribir(Socio s,String pos,int num,LocalDate f) throws ClubException
     {
-        if (!s.isActivo() || !tieneCupo() || esIntegrante(s) || Categoria.paraEdad(s.getEdad(f)) != categoria || !deporte.esPosicionValida(pos) || num < 0 || num > 99)
+        if (!s.isActivo() || s.estaSuspendido(deporte,f) || !tieneCupo() || esIntegrante(s) || Categoria.paraEdad(s.getEdad(f)) != categoria || !deporte.esPosicionValida(pos) || num < 0 || num > 99)
         {
             throw new InscripcionException("Inscripción de equipo inválida");
         }
@@ -95,4 +101,44 @@ public class Equipo implements Serializable
         if(valor<=0)throw new ClubException("Debe ser positivo");
         return valor;
     }
+    public boolean isActivo() { return !dadoDeBaja; }
+    public void darDeBaja()
+    {
+        dadoDeBaja = true;
+        for (InscripcionEquipo inscripcion : inscripciones) inscripcion.retirar();
+    }
+
+    private void prepararDisciplina()
+    {
+        if (amarillas == null) amarillas = new HashMap<>();
+        if (suspendidos == null) suspendidos = new HashMap<>();
+    }
+    public boolean suspendidoPorTarjetas(Socio socio, String circuito)
+    {
+        prepararDisciplina();
+        return suspendidos.containsKey(circuito) && suspendidos.get(circuito).contains(socio);
+    }
+    public void registrarTarjetas(Socio socio, String circuito, int amarillasPartido, int rojas, int limite) throws ClubException
+    {
+        prepararDisciplina();
+        if (amarillasPartido < 0 || amarillasPartido > 2 || rojas < 0 || rojas > 1 || limite < 1)
+            throw new ParticipacionException("Tarjetas inválidas");
+        if (!amarillas.containsKey(circuito)) amarillas.put(circuito,new HashMap<Socio,Integer>());
+        Map<Socio,Integer> acumuladas = amarillas.get(circuito);
+        Integer anteriores = acumuladas.get(socio);
+        int total = (anteriores == null ? 0 : anteriores) + amarillasPartido;
+        if (total >= limite || amarillasPartido == 2 || rojas == 1)
+        {
+            if (!suspendidos.containsKey(circuito)) suspendidos.put(circuito,new ArrayList<Socio>());
+            if (!suspendidos.get(circuito).contains(socio)) suspendidos.get(circuito).add(socio);
+            total = 0;
+        }
+        acumuladas.put(socio,total);
+    }
+    public void cumplirSuspensiones(String circuito)
+    {
+        prepararDisciplina();
+        if (suspendidos.containsKey(circuito)) suspendidos.get(circuito).clear();
+    }
+
 }

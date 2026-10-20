@@ -99,4 +99,9 @@ public class GestorUsuarios implements Serializable
     {
         return new ArrayList<T>(valores);
     }
+    public void darDeBajaSocio(String documento) throws ClubException
+    {
+        buscarSocio(documento).darDeBaja();
+    }
+
 }

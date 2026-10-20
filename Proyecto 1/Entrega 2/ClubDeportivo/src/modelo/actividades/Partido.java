@@ -12,6 +12,7 @@ import modelo.deportes.Deporte;
 import modelo.personas.Socio;
 import modelo.tipos.EstadoPartido;
 import modelo.tipos.Resultado;
+import modelo.tipos.TipoEstadistica;
 
 public abstract class Partido extends Evento implements Serializable
 {
@@ -19,8 +20,8 @@ public abstract class Partido extends Evento implements Serializable
     private EstadoPartido estado=EstadoPartido.PROGRAMADO;
     private int marcadorPropio;
     private int marcadorRival;
-    protected List<Socio> participantes=new ArrayList<>();
-    protected List<Estadistica> estadisticas=new ArrayList<>();
+    private List<Socio> participantes=new ArrayList<>();
+    private List<Estadistica> estadisticas=new ArrayList<>();
     protected Partido(String id,LocalDate f,LocalTime h,int dur,Instalacion i) throws ClubException
     {
         super(id,f,h,dur,i);
@@ -37,9 +38,13 @@ public abstract class Partido extends Evento implements Serializable
     public void registrarResultado(int propio,int rival) throws ClubException
     {
         if(estado!=EstadoPartido.PROGRAMADO||propio<0||rival<0||(!getDeporte().isPermiteEmpate()&&propio==rival))throw new ParticipacionException("Resultado inválido o ya registrado");
+        if (getDeporte().getTipoEstadistica() == TipoEstadistica.VOLEIBOL && (Math.max(propio,rival) != 3 || Math.min(propio,rival) >= 3))
+            throw new ParticipacionException("Voleibol se registra por sets: gana quien obtiene tres");
+        validarAlineacion();
         marcadorPropio=propio;
         marcadorRival=rival;
         estado=EstadoPartido.FINALIZADO;
+        cumplirSuspensiones();
     }
     public Resultado getResultado() throws ClubException
     {
@@ -48,7 +53,7 @@ public abstract class Partido extends Evento implements Serializable
     }
     public void agregarEstadistica(Estadistica e) throws ClubException
     {
-        validar(e.getPartido() == this && participo(e.getJugador()), "Estadística de otro partido o jugador");
+        validar(estado == EstadoPartido.FINALIZADO && e.getPartido() == this && participo(e.getJugador()), "Estadística de otro partido o jugador");
         for (Estadistica anterior : estadisticas)
         {
             validar(anterior.getJugador() != e.getJugador(), "Estadística duplicada");
@@ -95,4 +100,23 @@ public abstract class Partido extends Evento implements Serializable
     {
         return new ArrayList<T>(valores);
     }
+    protected void validarAlineacion() throws ClubException
+    {
+        for (Socio socio : participantes)
+        {
+            if (!socio.isActivo() || socio.estaSuspendido(getDeporte(),getFecha()))
+                throw new ParticipacionException("Participante suspendido o inactivo al disputar el partido");
+        }
+    }
+    protected void cumplirSuspensiones() { }
+    public void registrarTarjetas(Socio socio, int amarillas, int rojas) throws ClubException
+    {
+        if (amarillas != 0 || rojas != 0) throw new ParticipacionException("El partido no admite tarjetas");
+    }
+    public void quitarParticipante(Socio socio) throws ClubException
+    {
+        if (estado != EstadoPartido.PROGRAMADO) throw new ParticipacionException("Partido ya disputado");
+        participantes.remove(socio);
+    }
+
 }

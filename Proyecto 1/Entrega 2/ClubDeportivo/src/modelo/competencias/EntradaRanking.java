@@ -2,8 +2,10 @@ package modelo.competencias;
 
 import excepciones.ClubException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import modelo.actividades.Estadistica;
 import modelo.personas.Socio;
@@ -12,6 +14,7 @@ public class EntradaRanking implements Serializable
 {
     private static final long serialVersionUID = 1L;
     private Socio jugador;
+    private List<Integer> historialPuntos = new ArrayList<>();
     private int partidosJugados,puntosRanking=1000;
     private Map<String,Integer> acumulados=new LinkedHashMap<>();
     public EntradaRanking(Socio s)
@@ -23,6 +26,8 @@ public class EntradaRanking implements Serializable
         validar(e.getJugador() == jugador, "Estadística de otro jugador");
         partidosJugados++;
         puntosRanking = Math.max(0, puntosRanking + e.calcularPuntosRanking());
+        if (historialPuntos == null) historialPuntos = new ArrayList<>();
+        historialPuntos.add(puntosRanking);
         for (String clave : e.getValores().keySet())
         {
             Integer anterior = acumulados.get(clave);
@@ -53,4 +58,10 @@ public class EntradaRanking implements Serializable
     {
         if(!condicion)throw new ClubException(mensaje);
     }
+    public List<Integer> getHistorialPuntos()
+    {
+        if (historialPuntos == null) historialPuntos = new ArrayList<>();
+        return new ArrayList<>(historialPuntos);
+    }
+
 }

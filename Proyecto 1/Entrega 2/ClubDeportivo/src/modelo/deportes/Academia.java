@@ -23,7 +23,7 @@ public class Academia implements Serializable
     private List<InscripcionAcademia> inscripciones=new ArrayList<>();
     public Academia(String n,Deporte d,Entrenador en,int min,int max,int cupo,String h,double valor) throws ClubException
     {
-        validar(!d.isEsDeConjunto()&&en.puedeEntrenar(d)&&min>=1&&max<=10&&max>=min,"Academia inválida");
+        validar(!d.isEsDeConjunto()&&en.puedeEntrenar(d)&&min>=1&&max<=3&&max>=min,"Academia inválida");
         nombre=n;
         deporte=d;
         entrenador=en;
@@ -51,7 +51,7 @@ public class Academia implements Serializable
     }
     public InscripcionAcademia inscribir(Socio s,LocalDate f) throws ClubException
     {
-        if (!s.isActivo() || !tieneCupo() || !admiteNivel(s.getNivel(deporte)))
+        if (!s.isActivo() || s.estaSuspendido(deporte,f) || !tieneCupo() || !admiteNivel(s.getNivel(deporte)))
         {
             throw new InscripcionException("Inscripción de academia inválida");
         }

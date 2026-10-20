@@ -120,7 +120,7 @@ public final class PruebasSistema
                 socio.asignarNivel(tenis,11);
             }
         }
-        ,"Nivel fuera de 1..10");
+        ,"Nivel fuera de 1..3");
         Reserva reserva=instalaciones.reservar(socio,tenis,fecha,hora,60,2,ModalidadReserva.INDIVIDUAL);
         verificar(reserva.bloqueaInstalacion(),"Reserva confirmada");
         rechazar(new OperacionPrueba()
@@ -178,7 +178,7 @@ public final class PruebasSistema
             12, 1
         }
         ));
-        verificar(deportivo.consultarRanking(tenis).get(0).getPuntosRanking()==1020,"Actualizar ranking");
+        verificar(deportivo.consultarRanking(tenis).get(0).getPuntosRanking()==1016,"Actualizar ranking");
         rechazar(new OperacionPrueba()
         {
             @Override
@@ -238,9 +238,10 @@ public final class PruebasSistema
         Producto balon=comercio.getProductos().get(0);
         Venta venta=comercio.iniciarVenta(comercio.getTienda(),socio);
         comercio.agregarProducto(venta,balon,1);
+        comercio.aplicarCodigoDescuento(venta,entrenador.getCodigoDescuento());
         comercio.finalizarVenta(venta,0,0);
         verificar(venta.getDescuento()==8000&&venta.getImpuesto()==17480&&venta.getTotalPagado()==109480,"Descuento de socio e IVA del modelo");
-        verificar(socio.getCuenta().getPuntos()==92,"Acumulación de fidelización");
+        verificar(socio.getCuenta().getPuntos()==2189,"Acumulación de fidelización");
         rechazar(new OperacionPrueba()
         {
             @Override
@@ -279,7 +280,7 @@ public final class PruebasSistema
         ,"Informar alérgenos antes de venta");
         cafeteria.marcarAlergenosInformados();
         comercio.finalizarVenta(cafeteria,500,10);
-        verificar(cafeteria.getTotalPagado()==5800,"Impoconsumo, propina y redención");
+        verificar(cafeteria.getTotalPagado()==5890,"Impoconsumo, propina y redención");
         verificar(comercio.consultarIngredientes(snack).size()==1&&comercio.buscarSnacksConAlergeno(snack.getAlergenos().get(0)).contains(snack),"Ingredientes y alérgenos");
         Ubicacion bodega=new Ubicacion("B","Bodega",TipoUbicacion.BODEGA);
         comercio.getInventario().trasladar(balon,comercio.getTienda().getUbicacion(),bodega,2,admin);
@@ -295,6 +296,7 @@ public final class PruebasSistema
         ,"Traslado sin existencias");
         Competencia competencia=new Competencia("C1","Competencia de prueba","Organizador",futbol,Categoria.MAYORES,FormatoCompetencia.LIGA,fecha,fecha.plusDays(10),LocalDate.now());
         competencias.registrarCompetencia(competencia);
+        competencias.registrarRival(competencia,"Rival externo","A");
         InscripcionCompetencia inscripcion=competencias.inscribirEquipo(competencia,deportivo.getEquipos().get(0),deportivo.getEquipos().get(0).getJugadoresActivos());
         PartidoOficial partido=competencias.programarPartido(competencia,inscripcion,"Rival externo",fecha,LocalTime.of(14,0),true);
         competencias.registrarResultado(partido,2,1);
@@ -347,7 +349,7 @@ public final class PruebasSistema
         }
         ,"Mensualidad duplicada");
         ReporteVentas reporte=club.getGestorReportes().generarReporteVentas(LocalDate.now(),LocalDate.now());
-        verificar(reporte.getTransacciones()==4&&reporte.getTotal()==266430,"Reporte por rubro y periodo");
+        verificar(reporte.getTransacciones()==4&&reporte.getTotal()==266520,"Reporte por rubro y periodo");
         try
         {
             File carpeta = File.createTempFile("modelo-pdf-", "");
@@ -356,7 +358,7 @@ public final class PruebasSistema
                 throw new IOException("No se pudo crear la carpeta temporal de prueba");
             }
             String archivo=new File(carpeta, "club.json").getPath();
-            persistencia.IPersistenciaClub persistencia=new persistencia.PersistenciaJson();
+            IPersistenciaClub persistencia=new PersistenciaJson();
             persistencia.salvar(club,archivo);
             ClubDeportivo recuperado=persistencia.cargar(archivo);
             Socio guardado=recuperado.getGestorUsuarios().buscarSocio("S1");
@@ -384,7 +386,8 @@ public final class PruebasSistema
         {
             throw new AssertionError(e);
         }
-        System.out.println("RESULTADO: "+correctas+" verificaciones correctas.");
+        System.out.println("RESULTADO BASE: "+correctas+" verificaciones correctas.");
+        PruebasRevision.main(args);
     }
     private static Map<String, Integer> crearValores(String[] nombres, int[] valores)
     {

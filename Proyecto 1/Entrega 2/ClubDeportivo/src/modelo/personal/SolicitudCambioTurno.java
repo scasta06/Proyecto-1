@@ -1,6 +1,7 @@
 package modelo.personal;
 
 import excepciones.ClubException;
+import excepciones.TurnoException;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -59,7 +60,7 @@ public class SolicitudCambioTurno implements Serializable
     }
     private static void validar(boolean condicion,String mensaje) throws ClubException
     {
-        if(!condicion)throw new ClubException(mensaje);
+        if(!condicion)throw new TurnoException(mensaje);
     }
     private static String textoRequerido(String valor) throws ClubException
     {

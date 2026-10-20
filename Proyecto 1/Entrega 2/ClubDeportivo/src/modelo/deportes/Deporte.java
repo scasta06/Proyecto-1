@@ -63,20 +63,30 @@ public class Deporte implements Serializable
     }
     public boolean nivelesCompatibles(int a,int b)
     {
-        return Math.abs(a-b)<=diferenciaNivelPermitida;
+        // El ejemplo del enunciado excluye Principiante contra Intermedio.
+        return a >= 1 && a <= 3 && b >= 1 && b <= 3 && (a == b || (a >= 2 && b >= 2));
     }
     public Estadistica crearEstadistica(Socio j,Partido p,Map<String,Integer> v) throws ClubException
     {
         Set<String> claves;
         switch(tipoEstadistica)
         {
-            case FUTBOL:claves=new HashSet<String>(Arrays.asList("goles","asistencias"));
+            case FUTBOL:claves=new HashSet<String>(Arrays.asList("goles","asistencias","amarillas","rojas"));
             break;
             case BALONCESTO:claves=new HashSet<String>(Arrays.asList("puntos","rebotes"));
             break;
             case VOLEIBOL:claves=new HashSet<String>(Arrays.asList("aces","bloqueos"));
             break;
-            default:claves=new HashSet<String>(Arrays.asList("puntosAnotados","gano"));
+            default:
+                claves=new HashSet<String>(Arrays.asList("puntosAnotados","gano","setsGanados"));
+                if (!esTenisMesa()) claves.addAll(Arrays.asList("gamesGanados","aces","erroresNoForzados"));
+        }
+        validar(p.getDeporte() == this && v != null,"Deporte o valores inválidos");
+        for (Integer valor : v.values()) validar(valor != null && valor >= 0,"Valores negativos o nulos");
+        if (tipoEstadistica == TipoEstadistica.FUTBOL)
+        {
+            validar(!v.containsKey("amarillas") || v.get("amarillas") <= 2,"Máximo dos amarillas por partido");
+            validar(!v.containsKey("rojas") || v.get("rojas") <= 1,"Máximo una roja por partido");
         }
         validar(claves.containsAll(v.keySet()),"Atributo estadístico no definido para este deporte");
         if(v.containsKey("gano"))validar(v.get("gano")!=null&&(v.get("gano")==0||v.get("gano")==1),"gano debe ser 0 o 1");
@@ -126,4 +136,10 @@ public class Deporte implements Serializable
         if(valor<=0)throw new ClubException("Debe ser positivo");
         return valor;
     }
+    public boolean esPadel()
+    {
+        return nombre.equalsIgnoreCase("Pádel") || nombre.equalsIgnoreCase("Padel");
+    }
+    public boolean esTenisMesa() { return nombre.equalsIgnoreCase("Tenis de mesa"); }
+
 }

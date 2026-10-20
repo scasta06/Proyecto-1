@@ -19,7 +19,9 @@ public class Existencia implements Serializable
     }
     public void aumentar(int n) throws ClubException
     {
-        cantidad=Math.addExact(cantidad,enteroPositivo(n));
+        if (n <= 0 || (long)cantidad + n > Integer.MAX_VALUE)
+            throw new InventarioException("Cantidad fuera de rango");
+        cantidad += n;
     }
     public void disminuir(int n) throws ClubException
     {

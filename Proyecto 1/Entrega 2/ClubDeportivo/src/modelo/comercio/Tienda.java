@@ -5,7 +5,6 @@ import java.io.Serializable;
 import modelo.inventario.Ubicacion;
 import modelo.personas.Empleado;
 import modelo.personas.Persona;
-import modelo.personas.Socio;
 import modelo.tipos.TipoUbicacion;
 
 public class Tienda extends PuntoVenta implements Serializable
@@ -25,7 +24,7 @@ public class Tienda extends PuntoVenta implements Serializable
     @Override
     public double calcularDescuento(Persona c,double s) throws ClubException
     {
-        return c instanceof Empleado?redondearDinero(s*DESCUENTO_EMPLEADO):c instanceof Socio?redondearDinero(s*DESCUENTO_SOCIO):0;
+        return c instanceof Empleado?redondearDinero(s*DESCUENTO_EMPLEADO):0;
     }
     @Override
     public double calcularImpuesto(double b) throws ClubException

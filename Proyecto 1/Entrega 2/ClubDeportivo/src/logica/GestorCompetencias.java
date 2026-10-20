@@ -18,6 +18,7 @@ import modelo.deportes.Equipo;
 import modelo.personas.Socio;
 import modelo.tipos.Categoria;
 import modelo.tipos.EstadoCompetencia;
+import modelo.tipos.EstadoPartido;
 import modelo.tipos.Resultado;
 
 /** Coordina nominas, partidos oficiales y resultados de competencias. */
@@ -44,7 +45,7 @@ public class GestorCompetencias implements Serializable
     }
     private void abierta(Competencia c) throws ClubException
     {
-        validar(competencias.contains(c)&&c.inscripcionesAbiertas(LocalDate.now()),"Inscripciones cerradas");
+        if (!competencias.contains(c) || !c.inscripcionesAbiertas(LocalDate.now())) throw new InscripcionException("Inscripciones cerradas");
     }
     public InscripcionCompetencia inscribirEquipo(Competencia c,Equipo e,List<Socio> nomina) throws ClubException
     {
@@ -56,7 +57,7 @@ public class GestorCompetencias implements Serializable
         List<Socio> revisados = new ArrayList<Socio>();
         for (Socio socio : nomina)
         {
-            if (revisados.contains(socio) || !e.esIntegrante(socio) || socio.estaSuspendido(c.getDeporte(), c.getFechaInicio()))
+            if (revisados.contains(socio) || !e.esIntegrante(socio) || Categoria.paraEdad(socio.getEdad(c.getFechaInicio())) != c.getCategoria() || socio.estaSuspendido(c.getDeporte(), c.getFechaInicio()))
             {
                 throw new InscripcionException("Nómina no válida");
             }
@@ -88,10 +89,17 @@ public class GestorCompetencias implements Serializable
     public PartidoOficial programarPartido(Competencia c,InscripcionCompetencia i,String rival,LocalDate f,LocalTime ini,boolean local) throws ClubException
     {
         validar(competencias.contains(c)&&c.getInscripciones().contains(i)&&!i.isEliminada()&&c.getEstado()!=EstadoCompetencia.FINALIZADA&&!f.isBefore(c.getFechaInicio())&&!f.isAfter(c.getFechaFin()),"Partido fuera de competencia");
+        validar(c.tieneParticipante(rival),"Registre el rival externo antes de programar el partido");
+        c.validarEnfrentamiento(c.nombreDe(i),rival);
+        for (PartidoOficial anterior : c.getPartidos())
+        {
+            if (anterior.getEstado() == EstadoPartido.PROGRAMADO && anterior.getInscripcion() == i)
+                validar(!anterior.seTraslapaCon(f,ini,ini.plusMinutes(c.getDeporte().getDuracionPartidoMin())),"El equipo ya tiene un partido en ese horario");
+        }
         List<Socio> aptos = new ArrayList<Socio>();
         for (Socio socio : i.getNomina())
         {
-            if (socio.isActivo() && !socio.estaSuspendido(c.getDeporte(), f))
+            if (socio.isActivo() && !socio.estaSuspendido(c.getDeporte(), f) && (i.getEquipo() == null || (i.getEquipo().esIntegrante(socio) && !i.getEquipo().suspendidoPorTarjetas(socio,c.getCodigo()))))
             {
                 aptos.add(socio);
             }
@@ -111,9 +119,17 @@ public class GestorCompetencias implements Serializable
     public void registrarResultado(PartidoOficial p,int propio,int rival) throws ClubException
     {
         validar(competencias.contains(p.getCompetencia())&&p.getCompetencia().getPartidos().contains(p),"Partido desconocido");
+        for (PartidoOficial anterior : p.getCompetencia().getPartidos())
+        {
+            if (anterior != p && anterior.getInscripcion() == p.getInscripcion() && anterior.getEstado() == EstadoPartido.PROGRAMADO)
+                validar(!anterior.getFecha().isBefore(p.getFecha()) && !(anterior.getFecha().equals(p.getFecha()) && anterior.getHoraInicio().isBefore(p.getHoraInicio())),"Resuelva primero los partidos anteriores");
+        }
         boolean eliminacion=p.getFase().equals("ELIMINACION_DIRECTA");
         validar(!eliminacion||propio!=rival,"Eliminatoria sin ganador");
+        p.getCompetencia().validarEnfrentamiento(p.getCompetencia().nombreDe(p.getInscripcion()),p.getRival());
+        p.getCompetencia().validarResultadoNuevo(p.getId(),p.getCompetencia().nombreDe(p.getInscripcion()),p.getRival(),propio,rival);
         p.registrarResultado(propio,rival);
+        p.getCompetencia().contabilizar(p.getId(),p.getCompetencia().nombreDe(p.getInscripcion()),p.getRival(),propio,rival);
         p.getInscripcion().sumarPuntos(p.getPuntosObtenidos());
         if(eliminacion&&p.getResultado()==Resultado.DERROTA)p.getInscripcion().eliminar();
     }
@@ -129,4 +145,17 @@ public class GestorCompetencias implements Serializable
     {
         return new ArrayList<T>(valores);
     }
+    public void registrarRival(Competencia competencia, String institucion, String grupo) throws ClubException
+    {
+        validar(competencias.contains(competencia),"Competencia desconocida");
+        competencia.registrarParticipante(institucion,grupo);
+    }
+    public void registrarResultadoExterno(Competencia competencia, String id, String local, String visitante, int propio, int rival) throws ClubException
+    {
+        validar(competencias.contains(competencia) && competencia.getEstado() != EstadoCompetencia.FINALIZADA,"Competencia desconocida o finalizada");
+        for (InscripcionCompetencia inscripcion : competencia.getInscripciones())
+            validar(!competencia.nombreDe(inscripcion).equals(local) && !competencia.nombreDe(inscripcion).equals(visitante),"Los partidos del club se registran con su nómina oficial");
+        competencia.contabilizar("EXT-"+id,local,visitante,propio,rival);
+    }
+
 }

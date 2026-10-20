@@ -1,8 +1,8 @@
 package modelo.actividades;
 
 import excepciones.ClubException;
+import excepciones.ParticipacionException;
 import java.io.Serializable;
-import java.util.Objects;
 import modelo.personas.Socio;
 import modelo.tipos.EstadoAsistencia;
 
@@ -17,7 +17,8 @@ public class RegistroAsistencia implements Serializable
     {
         validar(nota==null||(nota>=1&&nota<=5),"Nota fuera de 1..5");
         jugador=s;
-        estado=Objects.requireNonNull(e);
+        validar(e != null && s != null,"Jugador y estado de asistencia obligatorios");
+        estado=e;
         notaDesempeno=nota;
         comentario=com;
     }
@@ -43,6 +44,6 @@ public class RegistroAsistencia implements Serializable
     }
     private static void validar(boolean condicion,String mensaje) throws ClubException
     {
-        if(!condicion)throw new ClubException(mensaje);
+        if(!condicion)throw new ParticipacionException(mensaje);
     }
 }

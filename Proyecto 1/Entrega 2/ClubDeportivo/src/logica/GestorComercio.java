@@ -2,6 +2,7 @@ package logica;
 
 import excepciones.ClubException;
 import excepciones.InventarioException;
+import excepciones.VentaException;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -11,6 +12,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import modelo.comercio.Alergeno;
+import modelo.comercio.ArticuloDeportivo;
+import modelo.comercio.Bebida;
 import modelo.comercio.Cafeteria;
 import modelo.comercio.CuentaFidelizacion;
 import modelo.comercio.Ingrediente;
@@ -19,13 +22,16 @@ import modelo.comercio.Mensualidad;
 import modelo.comercio.Producto;
 import modelo.comercio.PuntoVenta;
 import modelo.comercio.Snack;
+import modelo.comercio.SugerenciaProducto;
 import modelo.comercio.Tienda;
 import modelo.comercio.Venta;
 import modelo.inventario.Inventario;
+import modelo.personas.Administrador;
 import modelo.personas.Empleado;
 import modelo.personas.Persona;
 import modelo.personas.Socio;
 import modelo.tipos.ConceptoMensualidad;
+import modelo.tipos.EstadoSolicitud;
 
 /** Coordina las ventas y valida inventario y fidelizacion antes de cobrar. */
 public class GestorComercio implements Serializable
@@ -40,6 +46,7 @@ public class GestorComercio implements Serializable
     private int consecutivoVentas;
     private List<Venta> pendientes=new ArrayList<>();
     private GestorUsuarios usuarios;
+    private List<SugerenciaProducto> sugerencias = new ArrayList<>();
     public GestorComercio(Tienda t,Cafeteria c,GestorUsuarios u)
     {
         tienda=t;
@@ -62,10 +69,11 @@ public class GestorComercio implements Serializable
     {
         validar(!productos.containsKey(p.getCodigo()),"Producto duplicado");
         productos.put(p.getCodigo(),p);
+        inventario.obtenerExistencia(p, p instanceof ArticuloDeportivo ? tienda.getUbicacion() : cafeteria.getUbicacion());
     }
     public Venta iniciarVenta(PuntoVenta pv,Persona comprador) throws ClubException
     {
-        validar((pv==tienda||pv==cafeteria)&&(comprador instanceof Empleado||(comprador instanceof Socio&&((Socio)comprador).isActivo())),"Comprador o punto de venta inválido");
+        validar(usuarios.getPersonas().contains(comprador) && (pv==tienda||pv==cafeteria)&&(comprador instanceof Empleado||(comprador instanceof Socio&&((Socio)comprador).isActivo())),"Comprador o punto de venta inválido");
         Venta v=new Venta(String.format("V%06d",++consecutivoVentas),comprador,pv);
         pendientes.add(v);
         return v;
@@ -94,7 +102,7 @@ public class GestorComercio implements Serializable
     public synchronized Venta finalizarVenta(Venta v,double propina,int puntos) throws ClubException
     {
         validar(pendientes.contains(v)&&!v.isCerrada()&&!v.getItems().isEmpty()&&(!v.requiereInfoAlergenos()||alergenosInformados(v)),"Venta vacía, desconocida o alérgenos no informados");
-        validar(puntos>=0&&(v.getComprador() instanceof Socio||puntos==0),"Redención no permitida");
+        validar(puntos>=0,"Redención no permitida");
         Map<Producto,Integer> cantidades=new LinkedHashMap<>();
         for (ItemVenta item : v.getItems())
         {
@@ -106,23 +114,32 @@ public class GestorComercio implements Serializable
             cantidades.put(item.getProducto(), cantidadAnterior + item.getCantidad());
         }
         for(Map.Entry<Producto,Integer> e:cantidades.entrySet())if(inventario.getCantidad(e.getKey(),v.getPuntoVenta().getUbicacion())<e.getValue())throw new InventarioException("Stock cambió antes de pagar");
+        boolean bebidaCaliente = false;
+        for (ItemVenta item : v.getItems())
+        {
+            if (item.getProducto() instanceof Bebida && ((Bebida)item.getProducto()).isCaliente()) bebidaCaliente = true;
+        }
+        if (bebidaCaliente && v.getComprador() instanceof Socio)
+        {
+            Socio comprador = (Socio)v.getComprador();
+            validar(comprador.getInstalacionActual() == null || !comprador.getInstalacionActual().restringeBebidaCaliente(), "No se despachan bebidas calientes en esa instalación");
+        }
         v.aplicarPropina(propina);
         v.calcularTotales(v.getPuntoVenta());
-        Socio s=v.getComprador() instanceof Socio?(Socio)v.getComprador():null;
-        validar(s==null||s.getCuenta().puedeRedimir(puntos),"Puntos insuficientes");
+        CuentaFidelizacion cuenta = v.getComprador() instanceof Socio ? ((Socio)v.getComprador()).getCuenta() : ((Empleado)v.getComprador()).getCuenta();
+        validar(cuenta.puedeRedimir(puntos),"Puntos insuficientes");
         v.redimirPuntos(puntos,(double)puntos*CuentaFidelizacion.VALOR_PUNTO);
         v.calcularTotales(v.getPuntoVenta());
+        validar((long)cuenta.getPuntos()-puntos+(long)(v.getBaseFidelizacion()/CuentaFidelizacion.PESOS_POR_PUNTO) <= Integer.MAX_VALUE, "Saldo de puntos fuera de rango");
         v.cerrar();
-        if(s!=null)
-        {
-            s.getCuenta().redimir(puntos);
-            v.setPuntosGanados(s.getCuenta().acumular(v.getBaseFidelizacion()));
-        }
+        cuenta.redimir(puntos);
+        v.setPuntosGanados(cuenta.acumular(v.getBaseFidelizacion()));
         for (Producto producto : cantidades.keySet())
         {
             inventario.descontar(producto, v.getPuntoVenta().getUbicacion(), cantidades.get(producto));
         }
         v.getPuntoVenta().registrarVenta(v);
+        if (bebidaCaliente && v.getComprador() instanceof Socio) ((Socio)v.getComprador()).recibirBebidaCaliente();
         pendientes.remove(v);
         return v;
     }
@@ -192,10 +209,44 @@ public class GestorComercio implements Serializable
     }
     private static void validar(boolean condicion,String mensaje) throws ClubException
     {
-        if(!condicion)throw new ClubException(mensaje);
+        if(!condicion)throw new VentaException(mensaje);
     }
     private static <T> List<T> copiaLectura(Collection<T> valores)
     {
         return new ArrayList<T>(valores);
     }
+    public void aplicarCodigoDescuento(Venta venta, String codigo) throws ClubException
+    {
+        validar(pendientes.contains(venta), "Venta desconocida");
+        for (Persona persona : usuarios.getPersonas())
+        {
+            if (persona instanceof Empleado && ((Empleado)persona).getCodigoDescuento().equals(codigo))
+            {
+                venta.aplicarCodigoCompartido();
+                return;
+            }
+        }
+        throw new VentaException("Código de descuento inválido");
+    }
+
+    public SugerenciaProducto sugerirProducto(Empleado autor, Producto producto) throws ClubException
+    {
+        validar(usuarios.getPersonas().contains(autor), "Empleado no registrado");
+        if (sugerencias == null) sugerencias = new ArrayList<>();
+        SugerenciaProducto sugerencia = new SugerenciaProducto(producto, autor);
+        sugerencias.add(sugerencia);
+        return sugerencia;
+    }
+    public void resolverSugerencia(SugerenciaProducto sugerencia, Administrador admin, boolean aprobar) throws ClubException
+    {
+        validar(sugerencias != null && sugerencias.contains(sugerencia) && usuarios.getPersonas().contains(admin) && sugerencia.getEstado() == EstadoSolicitud.PENDIENTE, "Sugerencia o administrador inválido");
+        if (aprobar) registrarProducto(sugerencia.getProducto());
+        sugerencia.resolver(admin,aprobar);
+    }
+    public List<SugerenciaProducto> getSugerencias()
+    {
+        if (sugerencias == null) sugerencias = new ArrayList<>();
+        return new ArrayList<>(sugerencias);
+    }
+
 }

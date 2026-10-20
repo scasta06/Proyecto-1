@@ -71,6 +71,7 @@ public class ClubDeportivo implements Serializable
     }
     public GestorReportes getGestorReportes()
     {
+        reportes.configurarDeportivo(deportivo,competencias);
         return reportes;
     }
     public String getNombre()
